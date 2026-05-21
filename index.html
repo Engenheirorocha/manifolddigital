@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RefriTech Matrix Pro</title>
+
+<!-- CONEXÃO COM O MANIFESTO PARA INSTALAÇÃO OFFLINE -->
+<link rel="manifest" href="manifest.json">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#0d0d0f;
+    color:#a5a5b4;
+    font-family:'Courier New', Courier, monospace;
+    padding:15px;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
+
+.dispositivo-moldura{
+    width:100%;
+    max-width:460px;
+    background:linear-gradient(145deg,#16161a,#1f1f24);
+    border-radius:24px;
+    padding:15px;
+    border:3px solid #2d2d35;
+    box-shadow:0 15px 35px rgba(0,0,0,0.7);
+}
+
+header{
+    background:#0b0b0d;
+    border:1px solid #222;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:15px;
+    text-align:center;
+}
+
+header h1{
+    color:#00ff66;
+    font-size:20px;
+    letter-spacing:2px;
+    text-shadow:0 0 10px rgba(0,255,102,0.3);
+}
+
+header p{
+    font-size:10px;
+    color:#5a5a66;
+    margin-top:4px;
+}
+
+/* ABAS DE NAVEGAÇÃO */
+.abas-sistema{
+    display:flex;
+    gap:8px;
+    margin-bottom:15px;
+}
+
+.aba-link{
+    flex:1;
+    padding:10px;
+    border:none;
+    background:#111114;
+    color:#5a5a66;
+    border-radius:6px;
+    border:1px solid #222;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:11px;
+    transition:all 0.2s ease;
+}
+
+.aba-link:hover{
+    opacity:0.9;
+}
+
+.aba-link:active{
+    transform:scale(0.97);
+}
+
+.aba-link.selecionada{
+    background:#1c1c22;
+    color:#00ff66;
+    border-color:#00ff66;
+    box-shadow:inset 0 0 8px rgba(0,255,102,0.1);
+}
+
+.painel-grafico{
+    display:none;
+}
+
+.painel-grafico.ativo{
+    display:block;
+}
+
+/* DISPLAY DO MANIFOLD DIGITAL (ESTILO ELITECH) */
+.tela-cristal-liquido{
+    background:#050507;
+    border-radius:14px;
+    padding:20px 10px;
+    border:2px solid #1c1c22;
+    box-shadow:inset 0 0 20px rgba(0,0,0,1);
+    margin-bottom:15px;
+}
+
+.bloco-medidores{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.relogio-digital{
+    width:145px;
+    height:145px;
+    background:#09090c;
+    border-radius:50%;
+    border:4px solid #16161d;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    transition:all 0.3s ease;
+}
+
+.relogio-digital.azul{
+    border-top-color:#00d2ff;
+    border-right-color:#00d2ff;
+    box-shadow:0 0 15px rgba(0,210,255,0.2);
+}
+
+.relogio-digital.vermelho{
+    border-top-color:#ff3300;
+    border-left-color:#ff3300;
+    box-shadow:0 0 15px rgba(255,51,0,0.2);
+}
+
+.label{
+    font-size:9px;
+    color:#5a5a66;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+.valor{
+    font-size:clamp(18px,5vw,26px);
+    font-weight:bold;
+    font-family:sans-serif;
+    transition:all 0.3s ease;
+}
+
+.azul .valor{
+    color:#00d2ff;
+    text-shadow:0 0 10px rgba(0,210,255,0.4);
+}
+
+.vermelho .valor{
+    color:#ff3300;
+    text-shadow:0 0 10px rgba(255,51,0,0.4);
+}
+
+.unidade{
+    font-size:10px;
+    color:#5a5a66;
+}
+
+.status-central{
+    flex:1;
+    text-align:center;
+}
+
+.gas-tag{
+    display:inline-block;
+    padding:4px 8px;
+    background:#1c1c22;
+    border:1px solid #333;
+    border-radius:4px;
+    color:#fff;
+    font-size:10px;
+    margin-bottom:8px;
+}
+
+.alerta-luz{
+    font-size:11px;
+    font-weight:bold;
+    line-height:1.3;
+    color:#5a5a66;
+    transition: all 0.3s ease;
+}
+
+.grade-dados{
+    display:flex;
+    gap:8px;
+    justify-content:space-between;
+    background:#09090b;
+    border:1px solid #16161d;
+    border-radius:8px;
+    padding:10px;
+}
+
+.quadro-info{
+    flex:1;
+    text-align:center;
+}
+
+.sub{
+    display:block;
+    font-size:9px;
+    color:#5a5a66;
+    margin-bottom:4px;
+}
+
+.num{
+    font-size:13px;
+    color:#fff;
+    font-weight:bold;
+}
+
+.num.destaque{
+    color:#00ff66;
+    text-shadow:0 0 6px rgba(0,255,102,0.3);
+}
+
+/* CAMPOS DE CONTROLE */
+.controle-grupo{
+    margin-top:15px;
+}
+
+.controle-grupo label{
+    display:block;
+    margin-bottom:5px;
+    font-size:11px;
+    color:#5a5a66;
+    font-weight:bold;
+}
+
+.controle-grupo input,
+.controle-grupo select{
+    width:100%;
+    padding:10px;
+    background:#111114;
+    border:1px solid #222;
+    border-radius:6px;
+    color:#fff;
+    font-size:14px;
+    outline:none;
+}
+
+.controle-grupo input:focus,
+.controle-grupo select:focus{
+    border-color:#00ff66;
+}
+
+/* BOTÕES */
+button{
+    transition:all 0.2s ease;
+}
+
+button:active{
+    transform:scale(0.97);
+}
+
+.acao-gatilho{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+    text-transform:uppercase;
+    background:linear-gradient(180deg,#00ff66,#00cc52);
+    color:#000;
+    box-shadow:0 4px 15px rgba(0,255,102,0.2);
+}
+
+.acao-foto{
+    width:100%;
+    margin-top:8px;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #222;
+    background:#16161d;
+    color:#a5a5b4;
+    cursor:pointer;
+}
+
+/* PAINÉIS DE RESPOSTA/DIAGNÓSTICO */
+.painel-diagnostico-final{
+    margin-top:15px;
+    padding:12px;
+    background:#0f0f12;
+    border:1px solid #222;
+    border-radius:10px;
+    display:none;
+}
+
+.painel-diagnostico-final.ativo{
+    display:block;
+}
+
+.diag-header{
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.diag-desc{
+    font-size:11px;
+    line-height:1.5;
+    color:#848494;
+    font-family:sans-serif;
+}
+
+/* ANIMAÇÕES NEON DE PULSO COM BASE NAS VARIÁVEIS COMPORTAMENTAIS */
+@keyframes pulseGreen{
+    0%{text-shadow:0 0 5px #00ff66; color:#00ff66;}
+    50%{text-shadow:0 0 20px #00ff66; color:#00ffaa;}
+    100%{text-shadow:0 0 5px #00ff66; color:#00ff66;}
+}
+
+@keyframes pulseRed{
+    0%{text-shadow:0 0 5px #ff3300; color:#ff3300;}
+    50%{text-shadow:0 0 20px #ff3300; color:#ff6633;}
+    100%{text-shadow:0 0 5px #ff3300; color:#ff3300;}
+}
+
+@keyframes pulseYellow{
+    0%{text-shadow:0 0 5px #ffea00; color:#ffea00;}
+    50%{text-shadow:0 0 20px #ffea00; color:#ffff33;}
+    100%{text-shadow:0 0 5px #ffea00; color:#ffea00;}
+}
+
+.estavel{ animation:pulseGreen 1.5s infinite; }
+.critico{ animation:pulseRed 1s infinite; }
+.atencao{ animation:pulseYellow 1.5s infinite; }
+
+</style>
+</head>
+
+<body>
+
+<div class="dispositivo-moldura">
+
+<header>
+    <h1>REFRI-MATRIX AI</h1>
+    <p>SISTEMA ESPECIALISTA DE REFRIGERAÇÃO</p>
+</header>
+
+<div class="abas-sistema">
+    <button id="tab-man" class="aba-link selecionada" onclick="trocarVisualAba('manifold')">DISPLAY</button>
+    <button id="tab-err" class="aba-link" onclick="trocarVisualAba('erros')">MÁQUINAS / ERROS</button>
+</div>
+
+<!-- ABA 1: MANIFOLD DIGITAL INTUITIVO -->
+<div id="painel-man" class="painel-grafico ativo">
+
+<div class="tela-cristal-liquido">
+<div class="bloco-medidores">
+
+    <div class="relogio-digital azul">
+        <div class="label">PRESSÃO</div>
+        <div class="valor" id="val-p">00.0</div>
+        <div class="unidade">PSI</div>
+    </div>
+
+    <div class="status-central">
+        <div class="gas-tag" id="tag-gas-tela">R410A</div>
+        <div class="alerta-luz" id="txt-status-luz">STANDBY<br>---</div>
+    </div>
+
+    <div class="relogio-digital vermelho">
+        <div class="label">ALVO TUBO</div>
+        <div class="valor" id="val-alvo">--.-</div>
+        <div class="unidade">°C</div>
+    </div>
+
+</div>
+
+<div class="grade-dados">
+    <div class="quadro-info">
+        <span class="sub">V-SAT</span>
+        <span class="num" id="d-vsat">--.-°C</span>
+    </div>
+    <div class="quadro-info">
+        <span class="sub">EVAP</span>
+        <span class="num" id="d-evap">--.-°C</span>
+    </div>
+    <div class="quadro-info">
+        <span class="sub">SH REAL</span>
+        <span class="num destaque" id="d-sh">--.-°C</span>
+    </div>
+</div>
+</div>
+
+<div class="controle-grupo">
+    <label>Fluido Refrigerante</label>
+    <select id="op-gas" onchange="atualizarGas()">
+        <option value="R410A">R410A</option>
+        <option value="R22">R22</option>
+        <option value="R32">R32</option>
+    </select>
+</div>
+
+<div class="controle-grupo">
+    <label>Pressão Real lida (PSI)</label>
+    <input type="number" id="op-pressao" value="120" min="0" max="500">
+</div>
+
+<div class="controle-grupo">
+    <label>Termômetro de R$15 no Tubo (°C)</label>
+    <input type="number" id="op-temp" value="10" min="-30" max="80">
+</div>
+
+<button class="acao-gatilho" onclick="processarMotorTermodinamico()">
+    ANALISAR VARIÁVEIS
+</button>
+
+<button class="acao-foto" onclick="alert('Módulo de Visão Computacional: Em campo, este gatilho disparará o scanner óptico de alinhamento de ponteiros.')">
+    📷 ESCANEAR APARELHOS
+</button>
+
+<div id="painel-diagnostico" class="painel-diagnostico-final">
+    <div class="diag-header" id="diag-tit">---</div>
+    <div class="diag-desc" id="diag-txt">---</div>
+</div>
+
+</div>
+
+<!-- ABA 2: BUSCA DE ERROS COM SEGURANÇA ANTI-CÓPIA OFFLINE -->
+<div id="painel-err" class="painel-grafico">
+    <div class="controle-grupo">
+        <label>Buscar Sintoma ou Código Técnico</label>
+        <input type="text" id="campo-busca-erro" placeholder="Ex: Carrier E3, Midea EC, CH05...">
+    </div>
+    
+    <button class="acao-gatilho" style="background:linear-gradient(180deg,#00b0ff,#0091ea); color:#fff; box-shadow:0 4px 15px rgba(0,176,255,0.2);" onclick="pesquisarErroNoBanco()">
+        PESQUISAR BANCO
+    </button>
+</div>
+
+</div>
+
+<!-- ARQUITETURA INTEGRA EM JAVASCRIPT DE CAMPOS E PROCESSOS -->
+<script>
+    // BANCO DE DADOS OFICIAL DE FÁBRICA EMBUTIDO PARA USO 100% OFFLINE
+    const BANCO_DE_ERROS = [
+        { marca: "midea", codigo: "ec", defeito: "Falta de fluido refrigerante ou falha no sensor", solucao: "1. Verifique a pressão de trabalho (faça o teste na aba DISPLAY);\n2. Procure por vazamento ou manchas de óleo nas conexões;\n3. Teste o sensor de temperatura de degelo da evaporadora (10k)." },
+        { marca: "midea", codigo: "e1", defeito: "Erro de comunicação serial", solucao: "1. Verifique os cabos de interligação entre evaporadora e condensadora nos bornes 1, 2 e 3;\n2. Teste a tensão de comunicação (sinal oscilante em Corrente Contínua);\n3. Verifique se a placa da condensadora está energizada." },
+        { marca: "midea", codigo: "e3", defeito: "Falha no motor do ventilador da evaporadora", solucao: "1. Verifique se a turbina interna está travada manualmente;\n2. Teste os conectores do motor na placa eletrônica;\n3. Se o motor for PG, meça o capacitor da placa; se for BLDC, teste as tensões de alimentação." },
+        { marca: "samsung", codigo: "e101", defeito: "Erro de comunicação (timeout de recepção)", solucao: "1. Desligue o disjuntor por 5 minutos para resetar a memória das placas;\n2. Inspecione o cabo de sinal (fio F1/F2 ou 1/2);\n3. Verifique os LEDs de status na placa da unidade externa para ver se ela está processando." },
+        { marca: "samsung", codigo: "e201", defeito: "Erro de rastreamento de comunicação", solucao: "1. Ocorre muito em instalações novas ou após quedas de energia;\n2. Verifique se a quantidade de unidades internas bate com a configuração da placa externa;\n3. Faça o procedimento de auto-endereçamento na placa externa." },
+        { marca: "samsung", codigo: "e458", defeito: "Falha no motor do ventilador da condensadora", solucao: "1. Verifique se há sujeira ou folhas travando a hélice externa;\n2. Meça a fiação do motor do ventilador;\n3. Teste a saída de tensão da placa eletrônica externa para o ventilador." },
+        { marca: "lg", codigo: "ch05", defeito: "Falha de comunicação serial Inverter", solucao: "1. Limpe os bornes de interligação com limpa-contatos;\n2. Inspecione o cabo de sinal buscando emendas mal feitas ou fios partidos;\n3. Certifique-se de que a máquina possui aterramento independente e correto (essencial para LG)." },
+        { marca: "lg", codigo: "ch01", defeito: "Curto ou circuito aberto no sensor de ar interno", solucao: "1. Localize o sensor de temperatura ambiente na evaporadora;\n2. Use o multímetro na escala de Ohms e meça o sensor (deve marcar cerca de 10k ohms a 25°C);\n3. Substitua o sensor caso o valor esteja aberto ou zerado." },
+        { marca: "lg", codigo: "ch61", defeito: "Superaquecimento da serpentina da condensadora", solucao: "1. CONDENSADORA MUITO SUJA (causa principal). Faça a lavagem química;\n2. Verifique se o motor do ventilador externo está girando na velocidade correta;\n3. Certifique-se de que não há barreiras impedindo o vento quente de sair." },
+        { marca: "gree", codigo: "e6", defeito: "Falha de comunicação serial", solucao: "1. Verifique o cabo de sinal entre as unidades;\n2. Meça a resistência do cabo buscando curto-circuito;\n3. Teste o fusível de sinal na placa eletrônica externa." },
+        { marca: "consul", codigo: "e5", defeito: "Erro de comunicação entre as unidades", solucao: "1. Verifique a fiação de interligação;\n2. Teste se chega alimentação de 220V na unidade externa;\n3. Substitua a fiação caso haja emendas oxidadas." },
+        { marca: "fujitsu", codigo: "00:11", defeito: "Erro de comunicação serial fujitsu persistente", solucao: "1. Desligue os disjuntores e aguarde 10 minutos para descarregar os capacitores;\n2. Verifique se o cabo de sinal é blindado (blindagem deve estar aterrada corretamente);\n3. Verifique os LEDs piscantes na placa da condensadora." }
+    ];
+
+    function trocarVisualAba(nomeAba) {
+        document.querySelectorAll('.painel-grafico').forEach(p => p.classList.remove('ativo'));
+        document.getElementById('tab-man').classList.remove('selecionada');
+        document.getElementById('tab-err').classList.remove('selecionada');
+        
+        if(nomeAba === 'manifold') {
+            document.getElementById('painel-man').classList.add('ativo');
+            document.getElementById('tab-man').classList.add('selecionada');
+        } else {
+            document.getElementById('painel-err').classList.add('ativo');
+            document.getElementById('tab-err').classList.add('selecionada');
+        }
+    }
+
+    function atualizarGas() {
+        let gasSelecionado = document.getElementById('op-gas').value;
+        document.getElementById('tag-gas-tela').innerText = gasSelecionado;
+    }
+
+    // MOTOR TERMODINÂMICO INTEGRADO COM INTELIGÊNCIA ESPECIALISTA MULTI-GASES
+    function processarMotorTermodinamico() {
+        let pReal = parseFloat(document.getElementById('op-pressao').value);
+        let tReal = parseFloat(document.getElementById('op-temp').value);
+        let gas = document.getElementById('op-gas').value;
+        
+        if (isNaN(pReal) || isNaN(tReal)) { return; }
+
+        let vSat = 4.0; 
+        
+        // Conversões físicas calibradas por faixa operacional do gás
+        if (gas === "R410A") {
+            if (pReal < 110) vSat = -2.0;
+            else if (pReal >= 110 && pReal < 120) vSat = 1.5;
+            else if (pReal >= 120 && pReal < 135) vSat = 4.0;
+            else vSat = 10.0;
+        } else if (gas === "R22") {
+            if (pReal < 65) vSat = -5.0;
+            else if (pReal >= 65 && pReal < 75) vSat = 2.0;
+            else vSat = 8.0;
+        } else if (gas === "R32") {
+            if (pReal < 115) vSat = -3.0;
+            else if (pReal >= 115 && pReal < 130) vSat = 3.5;
+            else vSat = 11.0;
+        }
+
+        let sh = tReal - vSat;
+        let alvoTubo = vSat + 7; // Regra Inversa: Alvo inteligente de Temperatura
+
+        // Saída de dados nos relógios e micro-displays neon
+        document.getElementById('val-p').innerText = pReal.toFixed(1);
+        document.getElementById('val-alvo').innerText = alvoTubo.toFixed(1);
+        document.getElementById('d-vsat').innerText = vSat.toFixed(1) + "°C";
+        document.getElementById('d-evap').innerText = tReal.toFixed(1) + "°C";
+        document.getElementById('d-sh').innerText = sh.toFixed(1) + "°C";
+
+        let pDiag = document.getElementById('painel-diagnostico');
+        let dTit = document.getElementById('diag-tit');
+        let dTxt = document.getElementById('diag-txt');
+        let lStatus = document.getElementById('txt-status-luz');
+
+        pDiag.classList.add('ativo');
+        lStatus.className = "alerta-luz"; // Limpa os pulsos anteriores
+
+        // COMPARAÇÕES DOS DIAGNÓSTICOS CROSS-DATA COM ACIONAMENTO DOS PULSOS NEON
+        if ((gas === "R410A" && pReal > 145) || (gas === "R22" && pReal > 85)) {
+            pDiag.style.borderLeft = "4px solid #ff3300";
+            dTit.style.color = "#ff3300";
+            lStatus.classList.add('critico');
+            lStatus.innerHTML = "CRÍTICO<br>ALTA PRESSÃO";
+            dTit.innerText = "ALERTA: DISPERSÃO TÉRMICA BLOQUEADA";
+            dTxt.innerText = "A pressão de trabalho está excessiva. Avalie: 1. CONDENSADOR SUJO / OBSTRUÍDO NA UNIDADE EXTERNA; 2. BAIXA VENTILAÇÃO EXTERNA; 3. Excesso físico de carga de gás.";
+        } 
+        else if ((gas === "R410A" && pReal < 100) || (gas === "R22" && pReal < 55)) {
+            pDiag.style.borderLeft = "4px solid #ff3300";
+            dTit.style.color = "#ff3300";
+            lStatus.classList.add('critico');
+            lStatus.innerHTML = "CRÍTICO<br>BAIXA PRESSÃO";
+            if (sh > 11) {
+                dTit.innerText = "ALERTA: DEFASAGEM DE FLUIDO REFRIGERANTE";
+                dTxt.innerText = "Parâmetro indica falta de fluido ou vazamento ativo de gás. Pressão baixa combinada com tubo de sucção quente. Inspecione por traços de óleo nas porcas de conexão.";
+            } else {
+                dTit.innerText = "ALERTA: BLOQUEIO DE TROCA EVAPORADORA";
+                dTxt.innerText = "Risco severo de congelamento da serpentina interna. O fluxo de ar falhou. Verifique: FILTROS INTERNOS ENTUPIDOS, sujeira excessiva na turbina ou motor interno parado.";
+            }
+        } 
+        else {
+            if (sh >= 5 && sh <= 11) {
+                pDiag.style.borderLeft = "4px solid #00ff66";
+                dTit.style.color = "#00ff66";
+                lStatus.classList.add('estavel');
+                lStatus.innerHTML = "SISTEMA<br>ESTÁVEL";
+                dTit.innerText = "EQUIPAMENTO OPERANDO EM PARÂMETRO IDEAL";
+                dTxt.innerText = "O superaquecimento resultou em equilíbrio perfeito termodinâmico (" + sh.toFixed(1) + "°C). Compressor trabalhando refrigerado, com retorno seguro de gás e máxima eficiência.";
+            } else if (sh < 5) {
+                pDiag.style.borderLeft = "4px solid #ffea00";
+                dTit.style.color = "#ffea00";
+                lStatus.classList.add('atencao');
+                lStatus.innerHTML = "ATENÇÃO<br>SH BAIXO";
+                dTit.innerText = "CUIDADO: RISCO DE GOLPE DE LÍQUIDO";
+                dTxt.innerText = "Superaquecimento muito baixo. Perigo latente de retorno de fluido em estado líquido para o compressor, podendo estourar as palhetas mecânicas. Avalie expurgar uma fração de gás.";
+            } else {
+                pDiag.style.borderLeft = "4px solid #ffea00";
+                dTit.style.color = "#ffea00";
+                lStatus.classList.add('atencao');
+                lStatus.innerHTML = "ATENÇÃO<br>SH ALTO";
+                dTit.innerText = "CUIDADO: COMPRESSOR SUPER_AQUECIDO";
+                dTxt.innerText = "Superaquecimento alto. Falta fluido de retorno para refrigerar a bobina elétrica interna do compressor, gerando desarme por térmico. Adicione fluido refrigerante de forma controlada.";
+            }
+        }
+    }
+
+    // SISTEMA ESPECIALISTA DE BUSCA DE ERROS COM EXECUÇÃO ANTI-CÓPIA
+    function pesquisarErroNoBanco() {
+        let termoBusca = document.getElementById('campo-busca-erro').value.toLowerCase().trim();
+        let containerResultado = document.getElementById('painel-err');
+        
+        let resultadoAntigo = document.getElementById('box-resultado-erro');
+        if (resultadoAntigo) { resultadoAntigo.remove(); }
+
+        if (termoBusca === "") {
+            alert("Por favor, digite um código ou marca para processar.");
+            return;
+        }
+
+        let erroEncontrado = BANCO_DE_ERROS.find(item => 
+            termoBusca.includes(item.marca) || 
+            termoBusca.includes(item.codigo) ||
+            (item.marca + " " + item.codigo).includes(termoBusca)
+        );
+
+        let novaBox = document.createElement('div');
+        novaBox.id = 'box-resultado-erro';
+        novaBox.style.marginTop = "20px";
+        novaBox.style.padding = "15px";
+        novaBox.style.background = "#0f0f12";
+        novaBox.style.border = "1px solid #222";
+        novaBox.style.borderRadius = "10px";
+        novaBox.style.textAlign = "left";
+        
+        // LIMITADORES DE HARDWARE VISUAL (TRAVAS ANTI-SELEÇÃO DE CONTEÚDO)
+        novaBox.style.userSelect = "none";
+        novaBox.style.webkitUserSelect = "none";
+        novaBox.style.mozUserSelect = "none";
+        novaBox.style.msUserSelect = "none";
+
+        if (erroEncontrado) {
+            novaBox.style.borderLeft = "4px solid #00b0ff";
+            novaBox.innerHTML = `
+                <div style="font-weight:bold; color:#00b0ff; margin-bottom:5px; font-size:13px; text-transform:uppercase;">
+                    ${erroEncontrado.marca.toUpperCase()} - CÓDIGO ${erroEncontrado.codigo.toUpperCase()}
+                </div>
+                <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:8px;">
+                    Defeito: ${erroEncontrado.defeito}
+                </div>
+                <div style="font-size:11px; color:#a5a5b4; line-height:1.5; white-space: pre-line; font-family:sans-serif;">
+                    ${erroEncontrado.solucao}
+                </div>
+            `;
+        } else {
+            novaBox.style.borderLeft = "4px solid #ff3300";
+            novaBox.innerHTML = `
+                <div style="font-weight:bold; color:#ff3300; margin-bottom:5px; font-size:12px;">
+                    NENHUM REGISTRO ENCONTRADO
+                </div>
+                <div style="font-size:11px; color:#848494; font-family:sans-serif;">
+                    Código não localizado nesta versão local offline. Verifique a grafia física na placa eletrônica.
+                </div>
+            `;
+        }
+        containerResultado.appendChild(novaBox);
+    }
+
+    // ATIVAÇÃO DO SERVICE WORKER (RECURSO PWA PARA DEIXAR O APP OPERANDO SEM INTERNET)
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("sw.js")
+                .then(() => console.log("RefriTech pronto para operar Offline!"))
+                .catch((err) => console.log("Erro ao ativar modo offline:", err));
+        });
+    }
+</script>
+</body>
+</html>
