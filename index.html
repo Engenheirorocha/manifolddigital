@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
 <title>RefriTech Matrix Pro - Sistema Integrado</title>
 <style>
     /* ESTILIZAÇÃO COMPLETA - DESIGN PREMIUM EM MATRIZ ESCURA */
@@ -38,8 +39,8 @@
     
     .label { font-size:9px; color:#5a5a66; margin-bottom:5px; font-weight:bold; }
     .valor { font-size:26px; font-weight:bold; font-family:sans-serif; }
-    .azul .valor { color:#00d2ff; text-shadow:0 0 10px rgba(0,210,255,0.4); }
-    .vermelho .valor { color:#ff3300; text-shadow:0 0 10px rgba(255,51,0,0.4); }
+    .azul .valor { color:#00d2ff; text-shadow:0 0 10px rgba(0, 210, 255, 0.4); }
+    .vermelho .valor { color:#ff3300; text-shadow:0 0 10px rgba(255, 51, 0, 0.4); }
     .unidade { font-size:10px; color:#5a5a66; }
     
     .status-central { flex:1; text-align:center; }
@@ -141,7 +142,7 @@
             <input type="number" id="op-temp" value="10">
         </div>
 
-        <button class="acao-gatilho" onclick="processarMotorTermodinamico()">ANALISAR VARIÁVEIS</button>
+        <button class="acao-gatilho" onclick="processarMotorTermodinamico()">ANAISAR VARIÁVEIS</button>
         
         <!-- ESTE BOTÃO AGORA CHAMA A CÂMERA DO CELULAR EM QUALQUER LUGAR (FOTO) -->
         <label for="camera-input" class="acao-foto">📷 ESCANEAR APARELHOS</label>
@@ -168,7 +169,7 @@
     const BANCO_DE_ERROS = [
         { marca: "midea", codigo: "ec", defeito: "Falta de gás ou falha no sensor", solucao: "1. Verifique a pressão de trabalho na aba DISPLAY;\n2. Inspecione vazamentos nas flanges;\n3. Teste o sensor de degelo (10k ohms)." },
         { marca: "midea", codigo: "e1", defeito: "Erro de comunicação serial", solucao: "1. Verifique os cabos nos bornes 1, 2 e 3;\n2. Teste a oscilação de tensão DC de sinal;\n3. Certifique-se de que a condensadora está alimentada." },
-        { marca: "samsung", codigo: "e101", defeito: "Erro de comunicação (timeout)", solucao: "1. Desligue o disjuntor por 5 minutes para resetar a memória;\n2. Inspecione fiação F1/F2;\n3. Veja os LEDs de diagnóstico da placa externa." },
+        { marca: "samsung", codigo: "e101", defeito: "Erro de comunicação (timeout)", solucao: "1. Desligue o disjuntor por 5 minutos para resetar a memória;\n2. Inspecione fiação F1/F2;\n3. Veja os LEDs de diagnóstico da placa externa." },
         { marca: "lg", codigo: "ch05", defeito: "Falha de comunicação serial Inverter", solucao: "1. Use limpa-contatos nos bornes elétricos;\n2. Verifique se o cabo possui emendas ou quebras;\n3. Exige aterramento independente correto nas duas unidades." }
     ];
 
@@ -201,7 +202,7 @@
                 document.getElementById('area-preview').classList.add('visivel');
                 
                 // SIMULAÇÃO DA LEITURA DA FOTO PELA NOSSA IA
-                let pressaoSimulada PelaIA = 115 + Math.floor(Math.random() * 15);
+                let pressaoSimuladaPelaIA = 115 + Math.floor(Math.random() * 15);
                 document.getElementById('op-pressao').value = pressaoSimuladaPelaIA;
                 
                 // Roda o motor matemático de diagnóstico
@@ -222,7 +223,7 @@
         let erro = BANCO_DE_ERROS.find(item => termoBusca.includes(item.marca) || termoBusca.includes(item.codigo) || (item.marca + " " + item.codigo).includes(termoBusca));
         let box = document.createElement('div');
         box.id = 'box-resultado-erro';
-        box.style.cssText = "margin-top:20px; padding:15px; background:#0f0f12; border:1px solid #222; border-radius:10px; user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;";
+        box.style.cssText = "margin-top:20px; padding:15px; background:#0f0f12; border:1px solid #222; border-radius:10px; text-align:left; user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;";
 
         if (erro) {
             box.style.borderLeft = "4px solid #00b0ff";
