@@ -1,40 +1,26 @@
-export default function HVACDashboard() {
+// RefriCore IA - VERSÃO PRONTA PARA VITE (App.jsx)
+// Requisitos: React + Tailwind CSS configurado no projeto
+
+import React from "react";
+
+export default function App() {
   // =========================
-  // BASE DE GASES (CAMPO)
+  // BASE DE GASES
   // =========================
   const gases = {
-    R410A: {
-      nome: 'R410A',
-      glide: false,
-    },
-    R32: {
-      nome: 'R32',
-      glide: false,
-    },
-    R22: {
-      nome: 'R22',
-      glide: false,
-    },
-    R134a: {
-      nome: 'R134a',
-      glide: false,
-    },
-    R407C: {
-      nome: 'R407C',
-      glide: true,
-    },
-    R404A: {
-      nome: 'R404A',
-      glide: true,
-    },
+    R410A: { nome: "R410A" },
+    R32: { nome: "R32" },
+    R22: { nome: "R22" },
+    R134a: { nome: "R134a" },
+    R407C: { nome: "R407C" },
+    R404A: { nome: "R404A" },
   };
 
   // =========================
-  // SIMULAÇÃO DE LEITURAS DE CAMPO
-  // (depois isso vira input real)
+  // LEITURA DE CAMPO (TESTE)
   // =========================
   const leitura = {
-    gas: 'R410A',
+    gas: "R410A",
     pressaoBaixa: 118,
     pressaoAlta: 340,
     tempSucção: 12,
@@ -43,120 +29,144 @@ export default function HVACDashboard() {
   };
 
   // =========================
-  // FUNÇÕES TÉCNICAS
+  // FUNÇÕES TÉRMICAS (SIMPLIFICADAS)
   // =========================
-
-  function calcularEvaporacao(p) {
-    // simplificação (depois entra tabela PT real)
+  function evap(p) {
     return Math.round(p / 20);
   }
 
-  function calcularCondensacao(p) {
+  function cond(p) {
     return Math.round(p / 7);
   }
 
-  const evaporacao = calcularEvaporacao(leitura.pressaoBaixa);
-  const condensacao = calcularCondensacao(leitura.pressaoAlta);
+  const evaporacao = evap(leitura.pressaoBaixa);
+  const condensacao = cond(leitura.pressaoAlta);
 
   const superaquecimento = leitura.tempSucção - evaporacao;
   const subresfriamento = condensacao - leitura.tempLinhaLiquido;
 
   // =========================
-  // DIAGNÓSTICO SIMPLES
+  // DIAGNÓSTICO
   // =========================
-
   function diagnostico() {
     if (superaquecimento > 10 && subresfriamento < 3) {
       return {
-        nivel: 'Atenção',
-        texto: 'Possível baixa carga de gás',
+        nivel: "Atenção",
+        texto: "Possível baixa carga de gás",
       };
     }
 
     if (superaquecimento < 5) {
       return {
-        nivel: 'Atenção',
-        texto: 'Possível excesso de líquido no sistema',
+        nivel: "Atenção",
+        texto: "Possível excesso de líquido no sistema",
       };
     }
 
     return {
-      nivel: 'Normal',
-      texto: 'Sistema operando dentro dos parâmetros',
+      nivel: "Normal",
+      texto: "Sistema operando dentro dos parâmetros",
     };
   }
 
   const diag = diagnostico();
 
+  // =========================
+  // UI
+  // =========================
   return (
-    <div className="min-h-screen bg-black text-white p-6 font-sans">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold">RefriCore IA</h1>
-          <p className="text-zinc-400">Calculadora térmica HVAC em campo</p>
+          <p className="text-zinc-400">
+            Calculadora térmica HVAC em campo
+          </p>
         </div>
 
-        {/* GÁS EM USO */}
-        <div className="bg-zinc-900 p-4 rounded-2xl mb-6 border border-zinc-800">
-          <div className="text-sm text-zinc-400">Gás selecionado</div>
-          <div className="text-xl font-bold">{gases[leitura.gas].nome}</div>
+        {/* GÁS */}
+        <div className="bg-zinc-900 p-4 rounded-xl mb-6">
+          <div className="text-zinc-400 text-sm">Gás</div>
+          <div className="text-xl font-bold">
+            {gases[leitura.gas].nome}
+          </div>
         </div>
 
-        {/* LEITURAS */}
+        {/* ENTRADAS */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-
-          <div className="bg-zinc-900 p-4 rounded-2xl">
-            <div className="text-zinc-400">Pressão Baixa</div>
-            <div className="text-2xl font-bold">{leitura.pressaoBaixa} PSI</div>
+          <div className="bg-zinc-900 p-4 rounded-xl">
+            <div className="text-zinc-400">Baixa Pressão</div>
+            <div className="text-2xl font-bold">
+              {leitura.pressaoBaixa} PSI
+            </div>
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded-2xl">
-            <div className="text-zinc-400">Pressão Alta</div>
-            <div className="text-2xl font-bold">{leitura.pressaoAlta} PSI</div>
+          <div className="bg-zinc-900 p-4 rounded-xl">
+            <div className="text-zinc-400">Alta Pressão</div>
+            <div className="text-2xl font-bold">
+              {leitura.pressaoAlta} PSI
+            </div>
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded-2xl">
-            <div className="text-zinc-400">Temperatura Sucção</div>
-            <div className="text-2xl font-bold">{leitura.tempSucção}°C</div>
+          <div className="bg-zinc-900 p-4 rounded-xl">
+            <div className="text-zinc-400">Sucção</div>
+            <div className="text-2xl font-bold">
+              {leitura.tempSucção}°C
+            </div>
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded-2xl">
+          <div className="bg-zinc-900 p-4 rounded-xl">
             <div className="text-zinc-400">Linha Líquido</div>
-            <div className="text-2xl font-bold">{leitura.tempLinhaLiquido}°C</div>
+            <div className="text-2xl font-bold">
+              {leitura.tempLinhaLiquido}°C
+            </div>
           </div>
         </div>
 
-        {/* RESULTADOS TÉRMICOS */}
+        {/* RESULTADOS */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-
-          <div className="bg-cyan-950 p-4 rounded-2xl border border-cyan-700">
-            <div className="text-cyan-300">Evaporação</div>
-            <div className="text-3xl font-bold">{evaporacao}°C</div>
+          <div className="bg-cyan-900 p-4 rounded-xl">
+            <div>Evaporação</div>
+            <div className="text-3xl font-bold">
+              {evaporacao}°C
+            </div>
           </div>
 
-          <div className="bg-cyan-950 p-4 rounded-2xl border border-cyan-700">
-            <div className="text-cyan-300">Condensação</div>
-            <div className="text-3xl font-bold">{condensacao}°C</div>
+          <div className="bg-cyan-900 p-4 rounded-xl">
+            <div>Condensação</div>
+            <div className="text-3xl font-bold">
+              {condensacao}°C
+            </div>
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded-2xl">
-            <div className="text-zinc-400">Superaquecimento</div>
-            <div className="text-3xl font-bold">{superaquecimento.toFixed(1)}K</div>
+          <div className="bg-zinc-900 p-4 rounded-xl">
+            <div>Superaquecimento</div>
+            <div className="text-3xl font-bold">
+              {superaquecimento.toFixed(1)}K
+            </div>
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded-2xl">
-            <div className="text-zinc-400">Sub-resfriamento</div>
-            <div className="text-3xl font-bold">{subresfriamento.toFixed(1)}K</div>
+          <div className="bg-zinc-900 p-4 rounded-xl">
+            <div>Sub-resfriamento</div>
+            <div className="text-3xl font-bold">
+              {subresfriamento.toFixed(1)}K
+            </div>
           </div>
         </div>
 
         {/* DIAGNÓSTICO */}
-        <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
-          <div className="text-sm text-zinc-400">Diagnóstico inteligente</div>
-          <div className="text-2xl font-bold mt-2">{diag.nivel}</div>
-          <div className="text-zinc-300 mt-2">{diag.texto}</div>
+        <div className="bg-zinc-900 p-5 rounded-xl">
+          <div className="text-sm text-zinc-400">
+            Diagnóstico
+          </div>
+          <div className="text-2xl font-bold">
+            {diag.nivel}
+          </div>
+          <div className="text-zinc-300">
+            {diag.texto}
+          </div>
         </div>
 
       </div>
