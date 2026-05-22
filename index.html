@@ -411,12 +411,12 @@ button:active{transform:scale(.92)}
     <div class="gas-list">
       <div class="gas-chip active-gas" onclick="selectGas('R410A', this)">
         <strong>R410A</strong>
-        <small>Alta pressão</small>
+        <small>Split</small>
       </div>
 
       <div class="gas-chip" onclick="selectGas('R22', this)">
         <strong>R22</strong>
-        <small>Clássico</small>
+        <small>Antigo</small>
       </div>
 
       <div class="gas-chip" onclick="selectGas('R32', this)">
@@ -424,16 +424,51 @@ button:active{transform:scale(.92)}
         <small>A2L</small>
       </div>
 
+      <div class="gas-chip" onclick="selectGas('R407C', this)">
+        <strong>R407C</strong>
+        <small>Split/Chiller</small>
+      </div>
+
       <div class="gas-chip" onclick="selectGas('R134A', this)">
         <strong>R134a</strong>
         <small>Leve</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R404A', this)">
+        <strong>R404A</strong>
+        <small>Comercial</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R507A', this)">
+        <strong>R507A</strong>
+        <small>Freezer</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R448A', this)">
+        <strong>R448A</strong>
+        <small>Baixo GWP</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R449A', this)">
+        <strong>R449A</strong>
+        <small>Retrofit</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R600A', this)">
+        <strong>R600a</strong>
+        <small>Geladeira</small>
+      </div>
+
+      <div class="gas-chip" onclick="selectGas('R290', this)">
+        <strong>R290</strong>
+        <small>Propano</small>
       </div>
     </div>
 
     <div class="mode-title">Modo manual</div>
 
     <div class="search-area">
-      <input id="gasSearch" type="text" placeholder="Digite o gás: R410A, R22, R32..." oninput="searchGas()">
+      <input id="gasSearch" type="text" placeholder="Digite o gás: R410A, R22, R404A..." oninput="searchGas()">
     </div>
 
     <div class="gas-info" id="gasInfo"></div>
@@ -514,17 +549,9 @@ const gasData = {
     glide:"Muito baixo, cerca de 0,1 a 0,2 °C",
     transferencia:"Boa capacidade térmica, alta pressão de trabalho e boa troca térmica em sistemas projetados para R410A.",
     faixaEvaporacao:"Uso comum em evaporação próxima de -5 °C a +10 °C em ar-condicionado.",
-    faixaCondensacao:"Condensação comum entre 35 °C e 55 °C, dependendo da temperatura externa e limpeza da condensadora.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",
     campo:"Não usar em equipamento projetado para R22. Trabalha com pressões bem maiores; exige manifold, mangueiras e ferramentas compatíveis.",
-    pt:[
-      ["0 °C","~100 psi"],
-      ["5 °C","~118 psi"],
-      ["10 °C","~138 psi"],
-      ["20 °C","~203 psi"],
-      ["30 °C","~275 psi"],
-      ["40 °C","~360 psi"],
-      ["50 °C","~459 psi"]
-    ]
+    pt:[["0 °C","~100 psi"],["5 °C","~118 psi"],["10 °C","~138 psi"],["20 °C","~203 psi"],["30 °C","~275 psi"],["40 °C","~360 psi"],["50 °C","~459 psi"]]
   },
 
   "R22":{
@@ -541,18 +568,10 @@ const gasData = {
     pressaoCritica:"aprox. 49 bar / 4,9 MPa",
     glide:"Fluido puro, sem glide relevante.",
     transferencia:"Boa troca térmica e pressões moderadas; muito conhecido por técnicos de campo.",
-    faixaEvaporacao:"Uso comum em evaporação de -10 °C a +10 °C em ar-condicionado e refrigeração leve.",
+    faixaEvaporacao:"Uso comum em evaporação de -10 °C a +10 °C.",
     faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",
     campo:"Fluido antigo com restrições ambientais. Sempre verificar legislação, recolhimento e alternativas compatíveis.",
-    pt:[
-      ["0 °C","~57 psi"],
-      ["5 °C","~70 psi"],
-      ["10 °C","~84 psi"],
-      ["20 °C","~121 psi"],
-      ["30 °C","~158 psi"],
-      ["40 °C","~203 psi"],
-      ["50 °C","~256 psi"]
-    ]
+    pt:[["0 °C","~57 psi"],["5 °C","~70 psi"],["10 °C","~84 psi"],["20 °C","~121 psi"],["30 °C","~158 psi"],["40 °C","~203 psi"],["50 °C","~256 psi"]]
   },
 
   "R32":{
@@ -571,16 +590,28 @@ const gasData = {
     transferencia:"Alta eficiência, boa capacidade volumétrica e menor carga em muitos sistemas comparado ao R410A.",
     faixaEvaporacao:"Uso comum em evaporação próxima de -5 °C a +10 °C em ar-condicionado.",
     faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",
-    campo:"Por ser A2L, exige cuidado com ventilação, fonte de ignição, recolhimento e procedimentos específicos do fabricante.",
-    pt:[
-      ["0 °C","~92 psi"],
-      ["5 °C","~111 psi"],
-      ["10 °C","~132 psi"],
-      ["20 °C","~196 psi"],
-      ["30 °C","~269 psi"],
-      ["40 °C","~353 psi"],
-      ["50 °C","~451 psi"]
-    ]
+    campo:"Por ser A2L, exige cuidado com ventilação, fonte de ignição e procedimentos específicos do fabricante.",
+    pt:[["0 °C","~92 psi"],["5 °C","~111 psi"],["10 °C","~132 psi"],["20 °C","~196 psi"],["30 °C","~269 psi"],["40 °C","~353 psi"],["50 °C","~451 psi"]]
+  },
+
+  "R407C":{
+    nome:"R407C",
+    tipo:"HFC / mistura zeotrópica",
+    composicao:"R32 + R125 + R134a",
+    aplicacao:"Ar-condicionado residencial/comercial, chillers e retrofit em alguns sistemas originalmente R22.",
+    oleo:"POE",
+    seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",
+    gwp:"aprox. 1774",
+    odp:"0",
+    ebulição:"aprox. -43 °C",
+    critica:"Temperatura crítica aprox. 86 °C",
+    pressaoCritica:"aprox. 46 bar",
+    glide:"Alto, cerca de 5 °C a 7 °C. Atenção a bubble/dew point.",
+    transferencia:"Boa aplicação em ar-condicionado, mas exige atenção ao glide e ao carregamento em fase líquida.",
+    faixaEvaporacao:"Comum em evaporação de -10 °C a +10 °C.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",
+    campo:"Carregar sempre na fase líquida. Vazamentos podem alterar composição da mistura.",
+    pt:[["0 °C","~61 psi"],["5 °C","~74 psi"],["10 °C","~89 psi"],["20 °C","~129 psi"],["30 °C","~173 psi"],["40 °C","~226 psi"],["50 °C","~288 psi"]]
   },
 
   "R134A":{
@@ -594,21 +625,133 @@ const gasData = {
     odp:"0",
     ebulição:"aprox. -26,1 °C",
     critica:"Temperatura crítica aprox. 101,1 °C",
-    pressaoCritica:"aprox. 40,6 a 46,6 bar, conforme referência técnica",
+    pressaoCritica:"aprox. 40,6 bar",
     glide:"Fluido puro, sem glide.",
     transferencia:"Pressões mais baixas que R410A/R32; muito usado em aplicações de média temperatura.",
-    faixaEvaporacao:"Muito comum em evaporação de -10 °C a +10 °C para refrigeração leve.",
+    faixaEvaporacao:"Muito comum em evaporação de -10 °C a +10 °C.",
     faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",
-    campo:"Não confundir aplicação automotiva com sistemas residenciais. Conferir óleo, conexões e especificação do equipamento.",
-    pt:[
-      ["0 °C","~31 psi"],
-      ["5 °C","~38 psi"],
-      ["10 °C","~45 psi"],
-      ["20 °C","~68 psi"],
-      ["30 °C","~93 psi"],
-      ["40 °C","~123 psi"],
-      ["50 °C","~158 psi"]
-    ]
+    campo:"Conferir óleo, conexões e especificação do equipamento.",
+    pt:[["0 °C","~31 psi"],["5 °C","~38 psi"],["10 °C","~45 psi"],["20 °C","~68 psi"],["30 °C","~93 psi"],["40 °C","~123 psi"],["50 °C","~158 psi"]]
+  },
+
+  "R404A":{
+    nome:"R404A",
+    tipo:"HFC / mistura zeotrópica",
+    composicao:"R125 + R143a + R134a",
+    aplicacao:"Refrigeração comercial, câmaras frias, balcões, freezers e supermercados.",
+    oleo:"POE",
+    seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",
+    gwp:"aprox. 3922",
+    odp:"0",
+    ebulição:"aprox. -46,5 °C",
+    critica:"Temperatura crítica aprox. 72 °C",
+    pressaoCritica:"aprox. 37 bar",
+    glide:"Baixo, geralmente menor que 1 °C.",
+    transferencia:"Boa capacidade em baixa e média temperatura, porém alto GWP.",
+    faixaEvaporacao:"Muito usado em evaporação de -35 °C a -5 °C.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 50 °C.",
+    campo:"Muito comum em refrigeração comercial antiga. Carregar em fase líquida.",
+    pt:[["-30 °C","~19 psi"],["-20 °C","~40 psi"],["-10 °C","~67 psi"],["0 °C","~101 psi"],["10 °C","~144 psi"],["30 °C","~290 psi"],["40 °C","~374 psi"]]
+  },
+
+  "R507A":{
+    nome:"R507A",
+    tipo:"HFC / mistura azeotrópica",
+    composicao:"R125 + R143a",
+    aplicacao:"Freezers, câmaras frias, supermercados e refrigeração comercial de baixa temperatura.",
+    oleo:"POE",
+    seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",
+    gwp:"aprox. 3985",
+    odp:"0",
+    ebulição:"aprox. -46,7 °C",
+    critica:"Temperatura crítica aprox. 70,9 °C",
+    pressaoCritica:"aprox. 37 bar",
+    glide:"Praticamente zero.",
+    transferencia:"Semelhante ao R404A em várias aplicações de baixa temperatura.",
+    faixaEvaporacao:"Comum em evaporação de -35 °C a -5 °C.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 50 °C.",
+    campo:"Alternativa ao R404A em alguns sistemas, mas também possui GWP alto.",
+    pt:[["-30 °C","~20 psi"],["-20 °C","~42 psi"],["-10 °C","~70 psi"],["0 °C","~105 psi"],["10 °C","~150 psi"],["30 °C","~300 psi"],["40 °C","~386 psi"]]
+  },
+
+  "R448A":{
+    nome:"R448A",
+    tipo:"HFO/HFC / mistura zeotrópica",
+    composicao:"Mistura de R32, R125, R1234yf, R1234ze e R134a",
+    aplicacao:"Retrofit de R404A/R507A em refrigeração comercial, supermercados e câmaras frias.",
+    oleo:"POE",
+    seguranca:"ASHRAE A1 - não inflamável.",
+    gwp:"aprox. 1273",
+    odp:"0",
+    ebulição:"mistura com faixa de ebulição variável",
+    critica:"Temperatura crítica variável por composição",
+    pressaoCritica:"consultar tabela oficial do fabricante",
+    glide:"Médio/alto. Atenção a bubble/dew point.",
+    transferencia:"Projetado para reduzir GWP mantendo boa eficiência em média e baixa temperatura.",
+    faixaEvaporacao:"Comum em média/baixa temperatura comercial.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 50 °C.",
+    campo:"Carregar em fase líquida. Ajustes de válvula de expansão podem ser necessários em retrofit.",
+    pt:[["-30 °C","~15 psi"],["-20 °C","~34 psi"],["-10 °C","~60 psi"],["0 °C","~92 psi"],["10 °C","~132 psi"],["30 °C","~260 psi"],["40 °C","~336 psi"]]
+  },
+
+  "R449A":{
+    nome:"R449A",
+    tipo:"HFO/HFC / mistura zeotrópica",
+    composicao:"Mistura de R32, R125, R1234yf e R134a",
+    aplicacao:"Retrofit de R404A/R507A em refrigeração comercial e supermercados.",
+    oleo:"POE",
+    seguranca:"ASHRAE A1 - não inflamável.",
+    gwp:"aprox. 1397",
+    odp:"0",
+    ebulição:"mistura com faixa de ebulição variável",
+    critica:"Temperatura crítica variável por composição",
+    pressaoCritica:"consultar tabela oficial do fabricante",
+    glide:"Médio/alto. Atenção a bubble/dew point.",
+    transferencia:"Boa alternativa de menor GWP para sistemas comerciais originalmente com R404A/R507A.",
+    faixaEvaporacao:"Comum em média/baixa temperatura comercial.",
+    faixaCondensacao:"Condensação comum entre 35 °C e 50 °C.",
+    campo:"Carregar em fase líquida e conferir superaquecimento/sub-resfriamento após retrofit.",
+    pt:[["-30 °C","~16 psi"],["-20 °C","~35 psi"],["-10 °C","~61 psi"],["0 °C","~94 psi"],["10 °C","~135 psi"],["30 °C","~265 psi"],["40 °C","~342 psi"]]
+  },
+
+  "R600A":{
+    nome:"R600a",
+    tipo:"HC / hidrocarboneto",
+    composicao:"Isobutano",
+    aplicacao:"Geladeiras domésticas modernas, frigobares e refrigeração leve.",
+    oleo:"Mineral / compatível conforme compressor",
+    seguranca:"ASHRAE A3 - inflamável.",
+    gwp:"muito baixo, aprox. 3",
+    odp:"0",
+    ebulição:"aprox. -11,7 °C",
+    critica:"Temperatura crítica aprox. 134,7 °C",
+    pressaoCritica:"aprox. 36,5 bar",
+    glide:"Fluido puro, sem glide.",
+    transferencia:"Alta eficiência em pequenas cargas e equipamentos domésticos.",
+    faixaEvaporacao:"Comum em evaporação de -30 °C a -5 °C em geladeiras/freezers domésticos.",
+    faixaCondensacao:"Condensação comum entre 30 °C e 50 °C.",
+    campo:"Extremamente importante evitar faíscas, chama e procedimentos inseguros. Carga em gramas é pequena e crítica.",
+    pt:[["-30 °C","~0 psi"],["-20 °C","~4 psi"],["-10 °C","~10 psi"],["0 °C","~17 psi"],["10 °C","~27 psi"],["30 °C","~58 psi"],["40 °C","~78 psi"]]
+  },
+
+  "R290":{
+    nome:"R290",
+    tipo:"HC / hidrocarboneto",
+    composicao:"Propano",
+    aplicacao:"Freezers, balcões, cervejeiras, equipamentos comerciais leves e sistemas com baixa carga.",
+    oleo:"Mineral / POE conforme compressor",
+    seguranca:"ASHRAE A3 - inflamável.",
+    gwp:"muito baixo, aprox. 3",
+    odp:"0",
+    ebulição:"aprox. -42,1 °C",
+    critica:"Temperatura crítica aprox. 96,7 °C",
+    pressaoCritica:"aprox. 42,5 bar",
+    glide:"Fluido puro, sem glide.",
+    transferencia:"Boa eficiência térmica e baixa carga de fluido.",
+    faixaEvaporacao:"Comum em baixa e média temperatura comercial leve.",
+    faixaCondensacao:"Condensação comum entre 30 °C e 50 °C.",
+    campo:"Inflamável. Exige ventilação, controle de fontes de ignição e procedimento adequado.",
+    pt:[["-30 °C","~8 psi"],["-20 °C","~22 psi"],["-10 °C","~38 psi"],["0 °C","~59 psi"],["10 °C","~85 psi"],["30 °C","~158 psi"],["40 °C","~203 psi"]]
   }
 };
 
@@ -619,7 +762,7 @@ function renderGas(name){
   if(!gas){
     document.getElementById('gasInfo').innerHTML = `
       <h2>Não encontrado</h2>
-      <div class="info-row">Digite um gás válido, exemplo: R410A, R22, R32 ou R134a.</div>
+      <div class="info-row">Digite um gás válido, exemplo: R410A, R22, R407C, R404A, R600a ou R290.</div>
     `;
     return;
   }
