@@ -3,86 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RefriCore IA - Manifold Pro</title>
+<title>RefriCore IA Pro</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:#000;
+  font-family: Arial;
+  background:#070707;
   color:#fff;
 }
 
-/* ALERTA PULSANDO */
-@keyframes pulse {
-  0% { box-shadow:0 0 10px red; }
-  50% { box-shadow:0 0 25px red; }
-  100% { box-shadow:0 0 10px red; }
-}
-
-.container{
-  max-width:1000px;
-  margin:auto;
-  padding:20px;
-}
-
+/* topo profissional */
 .header{
-  font-size:28px;
+  padding:18px;
+  background:#0d0d0d;
+  border-bottom:1px solid #1f1f1f;
+}
+
+.title{
+  font-size:22px;
   font-weight:bold;
 }
 
-.sub{
+.subtitle{
+  font-size:12px;
   color:#888;
-  margin-bottom:15px;
 }
 
-/* GAUGE */
-.gauge-wrap{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.gauge{
-  width:200px;
-  height:200px;
-  border-radius:50%;
-  border:10px solid #222;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#111;
-}
-
-.pointer{
-  width:2px;
-  height:80px;
-  background:#00ff9d;
-  position:absolute;
-  bottom:50%;
-  transform-origin:bottom;
-  transform:rotate(0deg);
-}
-
-.center{
-  font-size:20px;
-  font-weight:bold;
-}
-
-/* CARDS */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:20px;
+/* layout */
+.container{
+  padding:15px;
+  max-width:900px;
+  margin:auto;
 }
 
 .card{
   background:#111;
+  border:1px solid #1f1f1f;
   padding:12px;
   border-radius:12px;
-  border:1px solid #222;
+  margin-bottom:10px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
 input, select{
@@ -92,207 +58,174 @@ input, select{
   color:#fff;
   border:1px solid #333;
   border-radius:8px;
+  font-size:14px;
 }
 
-/* ALERT */
+/* indicador estilo industrial */
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+  margin-top:5px;
+}
+
+.green{background:#0c2a1a;color:#00ff9d;}
+.yellow{background:#2a240c;color:#ffd000;}
+.red{background:#2a0c0c;color:#ff4d4d;}
+
+/* resultado forte */
+.big{
+  font-size:28px;
+  font-weight:bold;
+}
+
+/* alerta */
 .alert{
   padding:12px;
-  border-radius:12px;
-  margin-top:15px;
-  background:#220000;
-  border:1px solid red;
-}
-
-.alert.active{
-  animation:pulse 1s infinite;
-}
-
-/* HISTÓRICO */
-.history{
-  margin-top:20px;
+  border-radius:10px;
+  border:1px solid #333;
   background:#111;
-  padding:15px;
-  border-radius:12px;
-  border:1px solid #222;
-  max-height:150px;
-  overflow:auto;
 }
 
-button{
-  padding:10px;
-  background:#00ff9d;
-  border:none;
-  border-radius:8px;
-  margin-top:10px;
-  cursor:pointer;
-  font-weight:bold;
-  color:#000;
-}
 </style>
 </head>
 
 <body>
 
+<div class="header">
+  <div class="title">RefriCore IA Pro</div>
+  <div class="subtitle">Diagnóstico térmico inteligente HVAC</div>
+</div>
+
 <div class="container">
 
-<div class="header">RefriCore IA</div>
-<div class="sub">Manifold digital profissional em tempo real</div>
-
-<!-- GAS -->
+<!-- ENTRADA INTELIGENTE -->
 <div class="card">
-  <label>Selecionar Gás</label>
+  <label>Gás do sistema</label>
   <select id="gas">
-    <option>R410A</option>
-    <option>R32</option>
-    <option>R22</option>
-    <option>R134a</option>
-    <option>R407C</option>
+    <option value="R410A">R410A</option>
+    <option value="R32">R32</option>
+    <option value="R22">R22</option>
+    <option value="R134a">R134a</option>
   </select>
 </div>
 
-<!-- INPUTS -->
 <div class="grid">
 
   <div class="card">
-    Pressão Baixa
-    <input id="pb" type="number" value="118" oninput="calc()">
+    <label>Pressão Baixa (PSI)</label>
+    <input id="pb" type="number" value="65" oninput="calc()">
   </div>
 
   <div class="card">
-    Pressão Alta
-    <input id="pa" type="number" value="340" oninput="calc()">
-  </div>
-
-  <div class="card">
-    Temp Sucção
-    <input id="ts" type="number" value="12" oninput="calc()">
-  </div>
-
-  <div class="card">
-    Linha Líquido
-    <input id="tl" type="number" value="41" oninput="calc()">
+    <label>Temperatura Sucção (°C)</label>
+    <input id="ts" type="number" value="9" oninput="calc()">
   </div>
 
 </div>
 
-<!-- GAUGES -->
-<div class="gauge-wrap">
-
-  <div class="gauge">
-    <div class="pointer" id="g1"></div>
-    <div class="center" id="evap">0°C</div>
-  </div>
-
-  <div class="gauge">
-    <div class="pointer" id="g2"></div>
-    <div class="center" id="cond">0°C</div>
-  </div>
-
+<!-- RESULTADO INFERIDO -->
+<div class="card">
+  <div>Evaporação estimada</div>
+  <div class="big" id="evap">--</div>
+  <div id="rangeEvap"></div>
 </div>
 
-<!-- RESULTADOS -->
 <div class="grid">
 
   <div class="card">
-    Superaquecimento
-    <h2 id="sh">0K</h2>
+    <div>Pressão Alta estimada</div>
+    <div class="big" id="pa">--</div>
+    <div id="rangePA"></div>
   </div>
 
   <div class="card">
-    Sub-resfriamento
-    <h2 id="sc">0K</h2>
+    <div>Superaquecimento</div>
+    <div class="big" id="sh">--</div>
   </div>
 
 </div>
 
-<!-- ALERTA -->
-<div class="alert" id="alert">
-Diagnóstico aguardando leitura...
-</div>
-
-<!-- MODO RÁPIDO -->
-<button onclick="modoRapido()">⚡ MODO RÁPIDO (RESET CAMPO)</button>
-
-<!-- HISTÓRICO -->
-<div class="history" id="hist">
-Histórico vazio...
+<!-- DIAGNÓSTICO -->
+<div class="alert" id="diag">
+Aguardando leitura do sistema...
 </div>
 
 </div>
 
 <script>
 
-let historico = [];
+/* =========================
+   BASE INTELIGENTE SIMPLES
+========================= */
+
+function inferir(gas, pb, ts){
+
+  // EVAPORAÇÃO estimada por PSI (simplificado base HVAC)
+  let evap = pb / 10;
+
+  // PRESSÃO ALTA estimada por gás
+  let fatorAlta = {
+    R410A: 3.8,
+    R32: 3.6,
+    R22: 3.0,
+    R134a: 2.8
+  };
+
+  let pa = pb * (fatorAlta[gas] || 3.2);
+
+  // SUPERHEAT
+  let sh = ts - evap;
+
+  return {evap, pa, sh};
+}
+
+function faixa(valor, margem){
+  return (valor - margem) + " ~ " + (valor + margem);
+}
 
 function calc(){
 
-  let pb = +pbx.value;
-  let pa = +pax.value;
-  let ts = +tsx.value;
-  let tl = +tlx.value;
+  let gas = document.getElementById("gas").value;
+  let pb = Number(document.getElementById("pb").value);
+  let ts = Number(document.getElementById("ts").value);
 
-  let evap = Math.round(pb/20);
-  let cond = Math.round(pa/7);
+  let r = inferir(gas, pb, ts);
 
-  let sh = ts - evap;
-  let sc = cond - tl;
+  // saída
+  document.getElementById("evap").innerText = r.evap.toFixed(1) + "°C";
+  document.getElementById("pa").innerText = r.pa.toFixed(0) + " PSI";
+  document.getElementById("sh").innerText = r.sh.toFixed(1) + "K";
 
-  evapEl.innerText = evap+"°C";
-  condEl.innerText = cond+"°C";
-  shEl.innerText = sh.toFixed(1)+"K";
-  scEl.innerText = sc.toFixed(1)+"K";
+  document.getElementById("rangeEvap").innerText =
+    "Faixa: " + faixa(r.evap, 2) + " °C";
 
-  // GAUGES
-  g1.style.transform = "rotate(" + (evap*6) + "deg)";
-  g2.style.transform = "rotate(" + (cond*3) + "deg)";
+  document.getElementById("rangePA").innerText =
+    "Faixa: " + faixa(r.pa, 20) + " PSI";
 
+  // DIAGNÓSTICO INTELIGENTE
   let msg = "";
+  let cls = "";
 
-  if(sh > 10 && sc < 3){
-    msg = "⚠ POSSÍVEL BAIXA CARGA DE GÁS";
-    alertBox.classList.add("active");
+  if(r.sh > 10){
+    msg = "⚠ Possível baixa carga de gás ou restrição";
+    cls = "red";
   }
-  else if(sh < 5){
-    msg = "⚠ POSSÍVEL EXCESSO DE LÍQUIDO";
-    alertBox.classList.add("active");
+  else if(r.sh < 4){
+    msg = "⚠ Possível excesso de líquido no sistema";
+    cls = "yellow";
   }
   else{
-    msg = "✅ SISTEMA NORMAL";
-    alertBox.classList.remove("active");
+    msg = "✅ Sistema operando dentro da faixa normal";
+    cls = "green";
   }
 
-  alertBox.innerText = msg;
+  let d = document.getElementById("diag");
+  d.innerHTML = msg;
+  d.className = "alert " + cls;
 
-  // HISTÓRICO
-  historico.unshift(
-    `PB:${pb} PA:${pa} SH:${sh.toFixed(1)} SC:${sc.toFixed(1)}`
-  );
-
-  hist.innerHTML = historico.slice(0,5).join("<br>");
 }
-
-// MODO RÁPIDO
-function modoRapido(){
-  pbx.value = 120;
-  pax.value = 330;
-  tsx.value = 10;
-  tlx.value = 40;
-  calc();
-}
-
-// refs
-const pbx = document.getElementById("pb");
-const pax = document.getElementById("pa");
-const tsx = document.getElementById("ts");
-const tlx = document.getElementById("tl");
-
-const evapEl = document.getElementById("evap");
-const condEl = document.getElementById("cond");
-const shEl = document.getElementById("sh");
-const scEl = document.getElementById("sc");
-
-const alertBox = document.getElementById("alert");
-const hist = document.getElementById("hist");
 
 calc();
 
