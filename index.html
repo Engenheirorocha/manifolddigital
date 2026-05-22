@@ -7,264 +7,53 @@
 
 <style>
 *{box-sizing:border-box}
-
-html, body{
-  margin:0;
-  width:100%;
-  height:100%;
-  font-family:Arial,sans-serif;
-  background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);
-  color:#fff;
-  overflow:hidden;
-}
-
-.app{
-  max-width:430px;
-  margin:auto;
-  height:100dvh;
-  padding:22px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  animation:entry 1s ease forwards;
-  overflow:hidden;
-}
-
-@keyframes entry{
-  from{opacity:0;transform:scale(.94) translateY(20px)}
-  to{opacity:1;transform:scale(1) translateY(0)}
-}
-
-.logo{
-  text-align:center;
-  font-size:34px;
-  font-weight:900;
-  letter-spacing:4px;
-  margin-bottom:45px;
-  text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35);
-}
-
-.screen{display:none}
-.screen.active{display:block}
-
+html, body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);color:#fff;overflow:hidden}
+.app{max-width:430px;margin:auto;height:100dvh;padding:22px;display:flex;flex-direction:column;justify-content:center;animation:entry 1s ease forwards;overflow:hidden}
+@keyframes entry{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.logo{text-align:center;font-size:34px;font-weight:900;letter-spacing:4px;margin-bottom:45px;text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35)}
+.screen{display:none}.screen.active{display:block}
 .carousel-wrap{position:relative;height:365px;perspective:1100px}
 .carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
-
-.card{
-  position:absolute;
-  top:25px;
-  left:50%;
-  width:195px;
-  height:285px;
-  margin-left:-97.5px;
-  border-radius:32px;
-  background:linear-gradient(145deg,#1c1c1c,#050505);
-  border:1px solid #2d2d2d;
-  box-shadow:0 25px 55px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;
-  cursor:pointer;
-}
-
-.card.center{
-  transform:translateX(0) scale(1) rotateY(0);
-  opacity:1;
-  z-index:5;
-  border-color:#008cff;
-  box-shadow:0 0 34px rgba(0,140,255,.42),0 25px 60px rgba(0,0,0,.95);
-}
-
+.card{position:absolute;top:25px;left:50%;width:195px;height:285px;margin-left:-97.5px;border-radius:32px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 25px 55px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer}
+.card.center{transform:translateX(0) scale(1) rotateY(0);opacity:1;z-index:5;border-color:#008cff;box-shadow:0 0 34px rgba(0,140,255,.42),0 25px 60px rgba(0,0,0,.95)}
 .card.left{transform:translateX(-130px) scale(.74) rotateY(42deg);opacity:.45;z-index:3}
 .card.right{transform:translateX(130px) scale(.74) rotateY(-42deg);opacity:.45;z-index:3}
 .card.far-left{transform:translateX(-205px) scale(.48) rotateY(55deg);opacity:.16;z-index:2}
 .card.far-right{transform:translateX(205px) scale(.48) rotateY(-55deg);opacity:.16;z-index:2}
 .card.hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
-
-.icon{font-size:78px;margin-bottom:24px}
-.title{font-size:21px;font-weight:900;letter-spacing:1px}
-
-.blue{color:#009dff}
-.red{color:#ff3636}
-.orange{color:#ff8c1a}
-.green{color:#00d084}
-
+.icon{font-size:78px;margin-bottom:24px}.title{font-size:21px;font-weight:900;letter-spacing:1px}
+.blue{color:#009dff}.red{color:#ff3636}.orange{color:#ff8c1a}.green{color:#00d084}
 .nav{display:flex;justify-content:center;gap:18px;margin-top:8px}
-
-button{
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  border:1px solid #333;
-  background:linear-gradient(145deg,#181818,#050505);
-  color:#fff;
-  font-size:28px;
-  cursor:pointer;
-  box-shadow:0 12px 25px rgba(0,0,0,.7);
-}
-
+button{width:58px;height:58px;border-radius:50%;border:1px solid #333;background:linear-gradient(145deg,#181818,#050505);color:#fff;font-size:28px;cursor:pointer;box-shadow:0 12px 25px rgba(0,0,0,.7)}
 button:active{transform:scale(.92)}
-
 .manifold-icon,.gas-icon{width:86px;height:86px;margin-bottom:22px}
-
-.page{
-  max-width:430px;
-  margin:auto;
-  height:100dvh;
-  padding:22px 22px 80px;
-  animation:entry .45s ease forwards;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-}
-
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:24px;
-}
-
-.back{
-  padding:12px 15px;
-  border-radius:16px;
-  background:linear-gradient(145deg,#181818,#050505);
-  border:1px solid #333;
-  cursor:pointer;
-  color:#fff;
-  font-size:14px;
-}
-
-.page-title{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:3px;
-}
-
-.mode-box{
-  background:linear-gradient(145deg,#1c1c1c,#050505);
-  border:1px solid #2d2d2d;
-  border-radius:28px;
-  padding:18px;
-  box-shadow:0 22px 50px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-.mode-title{
-  font-size:13px;
-  color:#aaa;
-  margin-bottom:14px;
-}
-
-.gas-list,.brand-list{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding-bottom:14px;
-  margin-bottom:18px;
-}
-
-.gas-chip,.brand-chip{
-  min-width:110px;
-  height:120px;
-  border-radius:22px;
-  background:linear-gradient(145deg,#171717,#050505);
-  border:1px solid #292929;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  text-align:center;
-}
-
-.gas-chip.active-gas{
-  border-color:#00d084;
-  box-shadow:0 0 24px rgba(0,208,132,.28);
-}
-
-.brand-chip.active-brand{
-  border-color:#ff3636;
-  box-shadow:0 0 24px rgba(255,54,54,.28);
-}
-
-.gas-chip strong,.brand-chip strong{
-  font-size:20px;
-}
-
-.gas-chip strong{color:#00d084}
-.brand-chip strong{color:#ff3636}
-
-.gas-chip small,.brand-chip small{
-  margin-top:8px;
-  color:#888;
-}
-
+.page{max-width:430px;margin:auto;height:100dvh;padding:22px 22px 80px;animation:entry .45s ease forwards;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.back{padding:12px 15px;border-radius:16px;background:linear-gradient(145deg,#181818,#050505);border:1px solid #333;cursor:pointer;color:#fff;font-size:14px}
+.page-title{font-size:26px;font-weight:900;letter-spacing:3px}
+.mode-box{background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;border-radius:28px;padding:18px;box-shadow:0 22px 50px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06)}
+.mode-title{font-size:13px;color:#aaa;margin-bottom:14px}
+.gas-list,.brand-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;margin-bottom:18px}
+.gas-chip,.brand-chip{min-width:110px;height:120px;border-radius:22px;background:linear-gradient(145deg,#171717,#050505);border:1px solid #292929;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;text-align:center}
+.gas-chip.active-gas{border-color:#00d084;box-shadow:0 0 24px rgba(0,208,132,.28)}
+.brand-chip.active-brand{border-color:#ff3636;box-shadow:0 0 24px rgba(255,54,54,.28)}
+.gas-chip strong,.brand-chip strong{font-size:20px}.gas-chip strong{color:#00d084}.brand-chip strong{color:#ff3636}
+.gas-chip small,.brand-chip small{margin-top:8px;color:#888}
 .search-area{margin:18px 0}
-
-.search-area input{
-  width:100%;
-  padding:16px;
-  border-radius:18px;
-  border:1px solid #333;
-  background:#050505;
-  color:#fff;
-  font-size:16px;
-  outline:none;
-}
-
-.gas-info,.error-info{
-  background:#080808;
-  border:1px solid #252525;
-  border-radius:22px;
-  padding:18px;
-  line-height:1.7;
-}
-
+.search-area input{width:100%;padding:16px;border-radius:18px;border:1px solid #333;background:#050505;color:#fff;font-size:16px;outline:none}
+.gas-info,.error-info{background:#080808;border:1px solid #252525;border-radius:22px;padding:18px;line-height:1.7}
 .gas-info h2{margin:0 0 10px;color:#00d084;letter-spacing:1px}
 .error-info h2{margin:0 0 10px;color:#ff3636;letter-spacing:1px}
-
-.info-row{
-  border-bottom:1px solid #1c1c1c;
-  padding:8px 0;
-}
-
-.info-row:last-child{border-bottom:0}
-
-.info-row span{
-  color:#888;
-  font-size:13px;
-}
-
-.pt-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:13px;
-}
-
-.pt-table th,.pt-table td{
-  border-bottom:1px solid #1c1c1c;
-  padding:8px 4px;
-  text-align:left;
-}
-
-.pt-table th{color:#00d084;font-weight:bold}
-
-.note{
-  margin-top:12px;
-  font-size:12px;
-  color:#888;
-  line-height:1.5;
-}
+.info-row{border-bottom:1px solid #1c1c1c;padding:8px 0}.info-row:last-child{border-bottom:0}.info-row span{color:#888;font-size:13px}
+.pt-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.pt-table th,.pt-table td{border-bottom:1px solid #1c1c1c;padding:8px 4px;text-align:left}
+.pt-table th{color:#00d084;font-weight:bold}.note{margin-top:12px;font-size:12px;color:#888;line-height:1.5}
 </style>
 </head>
 
 <body>
 
 <div class="app screen active" id="home">
-
   <div class="logo">HVAC PRO</div>
 
   <div class="carousel-wrap">
@@ -318,11 +107,9 @@ button:active{transform:scale(.92)}
     <button onclick="prev()">‹</button>
     <button onclick="next()">›</button>
   </div>
-
 </div>
 
 <div class="screen page" id="gases">
-
   <div class="topbar">
     <div class="back" onclick="openScreen('home')">← Voltar</div>
     <div class="page-title green">GASES</div>
@@ -346,65 +133,54 @@ button:active{transform:scale(.92)}
     </div>
 
     <div class="mode-title">Modo manual</div>
-
     <div class="search-area">
       <input id="gasSearch" type="text" placeholder="Digite o gás: R410A, R22, R404A..." oninput="searchGas()">
     </div>
-
     <div class="gas-info" id="gasInfo"></div>
   </div>
 </div>
 
 <div class="screen page" id="erros">
-
   <div class="topbar">
     <div class="back" onclick="openScreen('home')">← Voltar</div>
     <div class="page-title red">ERROS</div>
   </div>
 
   <div class="mode-box">
-
     <div class="mode-title">Selecionar marca</div>
 
     <div class="brand-list">
-      <div class="brand-chip active-brand" onclick="selectBrand('MIDEA', this)">
-        <strong>MIDEA</strong><small>Springer/Carrier</small>
-      </div>
-
-      <div class="brand-chip" onclick="selectBrand('LG', this)">
-        <strong>LG</strong><small>Split/Inverter</small>
-      </div>
-
-      <div class="brand-chip" onclick="selectBrand('SAMSUNG', this)">
-        <strong>SAMSUNG</strong><small>Residencial</small>
-      </div>
-
-      <div class="brand-chip" onclick="selectBrand('ELGIN', this)">
-        <strong>ELGIN</strong><small>Split</small>
-      </div>
-
-      <div class="brand-chip" onclick="selectBrand('GREE', this)">
-        <strong>GREE</strong><small>Split</small>
-      </div>
+      <div class="brand-chip active-brand" onclick="selectBrand('MIDEA', this)"><strong>MIDEA</strong><small>Springer/Carrier</small></div>
+      <div class="brand-chip" onclick="selectBrand('LG', this)"><strong>LG</strong><small>Split/Inverter</small></div>
+      <div class="brand-chip" onclick="selectBrand('SAMSUNG', this)"><strong>SAMSUNG</strong><small>Residencial</small></div>
+      <div class="brand-chip" onclick="selectBrand('ELGIN', this)"><strong>ELGIN</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('GREE', this)"><strong>GREE</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('FUJITSU', this)"><strong>FUJITSU</strong><small>Inverter</small></div>
+      <div class="brand-chip" onclick="selectBrand('DAIKIN', this)"><strong>DAIKIN</strong><small>Inverter/VRV</small></div>
+      <div class="brand-chip" onclick="selectBrand('PHILCO', this)"><strong>PHILCO</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('CONSUL', this)"><strong>CONSUL</strong><small>Janela/Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('ELECTROLUX', this)"><strong>ELECTRO</strong><small>Electrolux</small></div>
+      <div class="brand-chip" onclick="selectBrand('AGRATTO', this)"><strong>AGRATTO</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('TCL', this)"><strong>TCL</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('HISENSE', this)"><strong>HISENSE</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('KOMECO', this)"><strong>KOMECO</strong><small>Split</small></div>
+      <div class="brand-chip" onclick="selectBrand('HITACHI', this)"><strong>HITACHI</strong><small>Split/VRF</small></div>
+      <div class="brand-chip" onclick="selectBrand('TRANE', this)"><strong>TRANE</strong><small>Chiller/Splitão</small></div>
+      <div class="brand-chip" onclick="selectBrand('YORK', this)"><strong>YORK</strong><small>Chiller/Splitão</small></div>
     </div>
 
     <div class="mode-title">Buscar código</div>
-
     <div class="search-area">
       <input id="errorSearch" type="text" placeholder="Digite: E1, P4, CH05, E101..." oninput="searchError()">
     </div>
 
     <div class="error-info" id="errorInfo"></div>
-
   </div>
 </div>
 
 <script>
 const cards=document.querySelectorAll('.card');
-let current=0;
-let startX=0;
-let endX=0;
-let activeBrand="MIDEA";
+let current=0,startX=0,endX=0,activeBrand="MIDEA";
 
 function updateCarousel(){
   cards.forEach((card,index)=>{
@@ -413,7 +189,6 @@ function updateCarousel(){
     const right=(current+1)%cards.length;
     const farLeft=(current-2+cards.length)%cards.length;
     const farRight=(current+2)%cards.length;
-
     if(index===current) card.classList.add('center');
     else if(index===left) card.classList.add('left');
     else if(index===right) card.classList.add('right');
@@ -427,7 +202,6 @@ function next(){current=(current+1)%cards.length;updateCarousel()}
 function prev(){current=(current-1+cards.length)%cards.length;updateCarousel()}
 
 const carousel=document.getElementById('carousel');
-
 carousel.addEventListener('touchstart',e=>{startX=e.touches[0].clientX});
 carousel.addEventListener('touchend',e=>{
   endX=e.changedTouches[0].clientX;
@@ -439,31 +213,34 @@ carousel.addEventListener('touchend',e=>{
 function openScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if(id === 'gases') document.getElementById('gases').scrollTop = 0;
-  if(id === 'erros') document.getElementById('erros').scrollTop = 0;
+  if(id==='gases') document.getElementById('gases').scrollTop=0;
+  if(id==='erros') document.getElementById('erros').scrollTop=0;
 }
 
+/* BASE GASES — mantida */
 const gasData = {
-  "R410A":{nome:"R410A",tipo:"HFC / mistura quase azeotrópica",composicao:"50% R32 + 50% R125",aplicacao:"Split, inverter, VRF/VRV e sistemas residenciais/comerciais de alta pressão.",oleo:"POE",seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",gwp:"2088",odp:"0",ebulição:"aprox. -51 °C a -48,5 °C",critica:"Temperatura crítica aprox. 72 °C a 72,8 °C",pressaoCritica:"aprox. 49 bar / 4,9 MPa",glide:"Muito baixo, cerca de 0,1 a 0,2 °C",transferencia:"Boa capacidade térmica, alta pressão de trabalho e boa troca térmica em sistemas projetados para R410A.",faixaEvaporacao:"Uso comum em evaporação próxima de -5 °C a +10 °C em ar-condicionado.",faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",campo:"Não usar em equipamento projetado para R22. Trabalha com pressões bem maiores; exige manifold, mangueiras e ferramentas compatíveis.",pt:[["0 °C","~100 psi"],["5 °C","~118 psi"],["10 °C","~138 psi"],["20 °C","~203 psi"],["30 °C","~275 psi"],["40 °C","~360 psi"],["50 °C","~459 psi"]]},
-  "R22":{nome:"R22",tipo:"HCFC",composicao:"Clorodifluorometano - CHClF₂",aplicacao:"Equipamentos antigos de ar-condicionado, self-contained, splits antigos e refrigeração comercial antiga.",oleo:"Óleo mineral / alquilbenzeno",seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",gwp:"aprox. 1810",odp:"aprox. 0,055",ebulição:"aprox. -40,8 °C",critica:"Temperatura crítica aprox. 96,1 °C",pressaoCritica:"aprox. 49 bar / 4,9 MPa",glide:"Fluido puro, sem glide relevante.",transferencia:"Boa troca térmica e pressões moderadas; muito conhecido por técnicos de campo.",faixaEvaporacao:"Uso comum em evaporação de -10 °C a +10 °C.",faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",campo:"Fluido antigo com restrições ambientais. Sempre verificar legislação, recolhimento e alternativas compatíveis.",pt:[["0 °C","~57 psi"],["5 °C","~70 psi"],["10 °C","~84 psi"],["20 °C","~121 psi"],["30 °C","~158 psi"],["40 °C","~203 psi"],["50 °C","~256 psi"]]},
-  "R32":{nome:"R32",tipo:"HFC puro / A2L",composicao:"Difluorometano - CH₂F₂",aplicacao:"Splits modernos, inverter e equipamentos novos projetados especificamente para R32.",oleo:"POE",seguranca:"ASHRAE A2L - baixa toxicidade e levemente inflamável.",gwp:"675",odp:"0",ebulição:"aprox. -51,7 °C",critica:"Temperatura crítica aprox. 78,1 °C",pressaoCritica:"aprox. 57,8 bar / 5,78 MPa",glide:"Fluido puro, sem glide.",transferencia:"Alta eficiência, boa capacidade volumétrica e menor carga em muitos sistemas comparado ao R410A.",faixaEvaporacao:"Uso comum em evaporação próxima de -5 °C a +10 °C em ar-condicionado.",faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",campo:"Por ser A2L, exige cuidado com ventilação, fonte de ignição e procedimentos específicos do fabricante.",pt:[["0 °C","~92 psi"],["5 °C","~111 psi"],["10 °C","~132 psi"],["20 °C","~196 psi"],["30 °C","~269 psi"],["40 °C","~353 psi"],["50 °C","~451 psi"]]},
-  "R407C":{nome:"R407C",tipo:"HFC / mistura zeotrópica",composicao:"R32 + R125 + R134a",aplicacao:"Ar-condicionado residencial/comercial, chillers e retrofit em alguns sistemas originalmente R22.",oleo:"POE",seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",gwp:"aprox. 1774",odp:"0",ebulição:"aprox. -43 °C",critica:"Temperatura crítica aprox. 86 °C",pressaoCritica:"aprox. 46 bar",glide:"Alto, cerca de 5 °C a 7 °C. Atenção a bubble/dew point.",transferencia:"Boa aplicação em ar-condicionado, mas exige atenção ao glide e ao carregamento em fase líquida.",faixaEvaporacao:"Comum em evaporação de -10 °C a +10 °C.",faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",campo:"Carregar sempre na fase líquida. Vazamentos podem alterar composição da mistura.",pt:[["0 °C","~61 psi"],["5 °C","~74 psi"],["10 °C","~89 psi"],["20 °C","~129 psi"],["30 °C","~173 psi"],["40 °C","~226 psi"],["50 °C","~288 psi"]]},
-  "R134A":{nome:"R134a",tipo:"HFC",composicao:"Tetrafluoroetano - C₂H₂F₄",aplicacao:"Refrigeração leve, bebedouros, expositores, automotivo antigo e sistemas de média/alta temperatura.",oleo:"POE / PAG em automotivo",seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",gwp:"aprox. 1430",odp:"0",ebulição:"aprox. -26,1 °C",critica:"Temperatura crítica aprox. 101,1 °C",pressaoCritica:"aprox. 40,6 bar",glide:"Fluido puro, sem glide.",transferencia:"Pressões mais baixas que R410A/R32; muito usado em aplicações de média temperatura.",faixaEvaporacao:"Muito comum em evaporação de -10 °C a +10 °C.",faixaCondensacao:"Condensação comum entre 35 °C e 55 °C.",campo:"Conferir óleo, conexões e especificação do equipamento.",pt:[["0 °C","~31 psi"],["5 °C","~38 psi"],["10 °C","~45 psi"],["20 °C","~68 psi"],["30 °C","~93 psi"],["40 °C","~123 psi"],["50 °C","~158 psi"]]},
-  "R404A":{nome:"R404A",tipo:"HFC / mistura zeotrópica",composicao:"R125 + R143a + R134a",aplicacao:"Refrigeração comercial, câmaras frias, balcões, freezers e supermercados.",oleo:"POE",seguranca:"ASHRAE A1 - baixa toxicidade e sem propagação de chama.",gwp:"aprox. 3922",odp:"0",ebulição:"aprox. -46,5 °C",critica:"Temperatura crítica aprox. 72 °C",pressaoCritica:"aprox. 37 bar",glide:"Baixo, geralmente menor que 1 °C.",transferencia:"Boa capacidade em baixa e média temperatura, porém alto GWP.",faixaEvaporacao:"Muito usado em evaporação de -35 °C a -5 °C.",faixaCondensacao:"Condensação comum entre 35 °C e 50 °C.",campo:"Muito comum em refrigeração comercial antiga. Carregar em fase líquida.",pt:[["-30 °C","~19 psi"],["-20 °C","~40 psi"],["-10 °C","~67 psi"],["0 °C","~101 psi"],["10 °C","~144 psi"],["30 °C","~290 psi"],["40 °C","~374 psi"]]}
+  "R410A":{nome:"R410A",tipo:"HFC / mistura quase azeotrópica",composicao:"50% R32 + 50% R125",aplicacao:"Split, inverter, VRF/VRV e sistemas residenciais/comerciais de alta pressão.",oleo:"POE",seguranca:"ASHRAE A1",gwp:"2088",odp:"0",ebulição:"aprox. -51 °C",critica:"aprox. 72 °C",pressaoCritica:"aprox. 49 bar",glide:"Baixo",transferencia:"Alta pressão e boa troca térmica.",faixaEvaporacao:"-5 °C a +10 °C",faixaCondensacao:"35 °C a 55 °C",campo:"Não usar em equipamento projetado para R22.",pt:[["0 °C","~100 psi"],["10 °C","~138 psi"],["30 °C","~275 psi"],["40 °C","~360 psi"]]},
+  "R22":{nome:"R22",tipo:"HCFC",composicao:"CHClF₂",aplicacao:"Equipamentos antigos.",oleo:"Mineral / AB",seguranca:"ASHRAE A1",gwp:"1810",odp:"0,055",ebulição:"-40,8 °C",critica:"96,1 °C",pressaoCritica:"49 bar",glide:"Sem glide",transferencia:"Boa troca térmica.",faixaEvaporacao:"-10 °C a +10 °C",faixaCondensacao:"35 °C a 55 °C",campo:"Fluido antigo com restrições ambientais.",pt:[["0 °C","~57 psi"],["10 °C","~84 psi"],["30 °C","~158 psi"],["40 °C","~203 psi"]]},
+  "R32":{nome:"R32",tipo:"HFC puro / A2L",composicao:"CH₂F₂",aplicacao:"Splits modernos.",oleo:"POE",seguranca:"A2L levemente inflamável",gwp:"675",odp:"0",ebulição:"-51,7 °C",critica:"78,1 °C",pressaoCritica:"57,8 bar",glide:"Sem glide",transferencia:"Alta eficiência.",faixaEvaporacao:"-5 °C a +10 °C",faixaCondensacao:"35 °C a 55 °C",campo:"Cuidado com ventilação e ignição.",pt:[["0 °C","~92 psi"],["10 °C","~132 psi"],["30 °C","~269 psi"],["40 °C","~353 psi"]]},
+  "R407C":{nome:"R407C",tipo:"HFC zeotrópico",composicao:"R32/R125/R134a",aplicacao:"Split, chiller e retrofit R22.",oleo:"POE",seguranca:"A1",gwp:"1774",odp:"0",ebulição:"~ -43 °C",critica:"~86 °C",pressaoCritica:"~46 bar",glide:"Alto 5 a 7 °C",transferencia:"Boa, mas exige atenção ao glide.",faixaEvaporacao:"-10 °C a +10 °C",faixaCondensacao:"35 °C a 55 °C",campo:"Carregar em fase líquida.",pt:[["0 °C","~61 psi"],["10 °C","~89 psi"],["30 °C","~173 psi"],["40 °C","~226 psi"]]},
+  "R134A":{nome:"R134a",tipo:"HFC",composicao:"C₂H₂F₄",aplicacao:"Refrigeração leve e automotivo.",oleo:"POE/PAG",seguranca:"A1",gwp:"1430",odp:"0",ebulição:"-26,1 °C",critica:"101,1 °C",pressaoCritica:"40,6 bar",glide:"Sem glide",transferencia:"Média temperatura.",faixaEvaporacao:"-10 °C a +10 °C",faixaCondensacao:"35 °C a 55 °C",campo:"Conferir óleo e aplicação.",pt:[["0 °C","~31 psi"],["10 °C","~45 psi"],["30 °C","~93 psi"],["40 °C","~123 psi"]]},
+  "R404A":{nome:"R404A",tipo:"HFC mistura",composicao:"R125/R143a/R134a",aplicacao:"Câmaras frias, balcões e freezers.",oleo:"POE",seguranca:"A1",gwp:"3922",odp:"0",ebulição:"-46,5 °C",critica:"72 °C",pressaoCritica:"37 bar",glide:"Baixo",transferencia:"Boa baixa/média temperatura.",faixaEvaporacao:"-35 °C a -5 °C",faixaCondensacao:"35 °C a 50 °C",campo:"Carregar em fase líquida.",pt:[["-30 °C","~19 psi"],["-10 °C","~67 psi"],["0 °C","~101 psi"],["40 °C","~374 psi"]]},
+  "R507A":{nome:"R507A",tipo:"HFC azeotrópico",composicao:"R125/R143a",aplicacao:"Freezer e comercial baixa temperatura.",oleo:"POE",seguranca:"A1",gwp:"3985",odp:"0",ebulição:"-46,7 °C",critica:"70,9 °C",pressaoCritica:"37 bar",glide:"Quase zero",transferencia:"Similar ao R404A.",faixaEvaporacao:"-35 °C a -5 °C",faixaCondensacao:"35 °C a 50 °C",campo:"GWP alto.",pt:[["-30 °C","~20 psi"],["-10 °C","~70 psi"],["0 °C","~105 psi"],["40 °C","~386 psi"]]},
+  "R448A":{nome:"R448A",tipo:"HFO/HFC",composicao:"Mistura HFO/HFC",aplicacao:"Retrofit R404A/R507A.",oleo:"POE",seguranca:"A1",gwp:"1273",odp:"0",ebulição:"Variável",critica:"Variável",pressaoCritica:"Consultar fabricante",glide:"Médio/alto",transferencia:"Menor GWP.",faixaEvaporacao:"Média/baixa comercial",faixaCondensacao:"35 °C a 50 °C",campo:"Carregar líquido e ajustar TXV.",pt:[["-30 °C","~15 psi"],["-10 °C","~60 psi"],["0 °C","~92 psi"],["40 °C","~336 psi"]]},
+  "R449A":{nome:"R449A",tipo:"HFO/HFC",composicao:"Mistura HFO/HFC",aplicacao:"Retrofit R404A/R507A.",oleo:"POE",seguranca:"A1",gwp:"1397",odp:"0",ebulição:"Variável",critica:"Variável",pressaoCritica:"Consultar fabricante",glide:"Médio/alto",transferencia:"Boa alternativa comercial.",faixaEvaporacao:"Média/baixa comercial",faixaCondensacao:"35 °C a 50 °C",campo:"Conferir SH/SC após retrofit.",pt:[["-30 °C","~16 psi"],["-10 °C","~61 psi"],["0 °C","~94 psi"],["40 °C","~342 psi"]]},
+  "R600A":{nome:"R600a",tipo:"HC inflamável",composicao:"Isobutano",aplicacao:"Geladeiras e frigobares.",oleo:"Mineral",seguranca:"A3 inflamável",gwp:"~3",odp:"0",ebulição:"-11,7 °C",critica:"134,7 °C",pressaoCritica:"36,5 bar",glide:"Sem glide",transferencia:"Alta eficiência em pequenas cargas.",faixaEvaporacao:"-30 °C a -5 °C",faixaCondensacao:"30 °C a 50 °C",campo:"Evitar ignição. Carga em gramas.",pt:[["-20 °C","~4 psi"],["0 °C","~17 psi"],["30 °C","~58 psi"],["40 °C","~78 psi"]]},
+  "R290":{nome:"R290",tipo:"HC inflamável",composicao:"Propano",aplicacao:"Freezers, cervejeiras e comercial leve.",oleo:"Mineral/POE",seguranca:"A3 inflamável",gwp:"~3",odp:"0",ebulição:"-42,1 °C",critica:"96,7 °C",pressaoCritica:"42,5 bar",glide:"Sem glide",transferencia:"Boa eficiência.",faixaEvaporacao:"Baixa/média temp.",faixaCondensacao:"30 °C a 50 °C",campo:"Exige ventilação e controle de ignição.",pt:[["-30 °C","~8 psi"],["0 °C","~59 psi"],["30 °C","~158 psi"],["40 °C","~203 psi"]]}
 };
 
 function renderGas(name){
-  const key = name.toUpperCase();
-  const gas = gasData[key];
-
+  const key=name.toUpperCase();
+  const gas=gasData[key];
   if(!gas){
-    document.getElementById('gasInfo').innerHTML = `<h2>Não encontrado</h2><div class="info-row">Digite um gás válido.</div>`;
+    document.getElementById('gasInfo').innerHTML=`<h2>Não encontrado</h2><div class="info-row">Digite um gás válido.</div>`;
     return;
   }
-
-  const ptRows = gas.pt.map(row => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("");
-
-  document.getElementById('gasInfo').innerHTML = `
+  const ptRows=gas.pt.map(row=>`<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("");
+  document.getElementById('gasInfo').innerHTML=`
     <h2>${gas.nome}</h2>
     <div class="info-row"><span>Tipo:</span><br>${gas.tipo}</div>
     <div class="info-row"><span>Composição:</span><br>${gas.composicao}</div>
@@ -480,83 +257,122 @@ function renderGas(name){
     <div class="info-row"><span>Faixa típica de evaporação:</span><br>${gas.faixaEvaporacao}</div>
     <div class="info-row"><span>Faixa típica de condensação:</span><br>${gas.faixaCondensacao}</div>
     <div class="info-row"><span>Observação de campo:</span><br>${gas.campo}</div>
-    <div class="info-row">
-      <span>Tabela PT resumida:</span>
-      <table class="pt-table"><thead><tr><th>Temp. Saturação</th><th>Pressão aprox.</th></tr></thead><tbody>${ptRows}</tbody></table>
-      <div class="note">Valores aproximados para referência rápida. Para ajuste fino, conferir tabela PT oficial.</div>
-    </div>
-  `;
+    <div class="info-row"><span>Tabela PT resumida:</span>
+      <table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão aprox.</th></tr></thead><tbody>${ptRows}</tbody></table>
+      <div class="note">Valores aproximados para referência rápida. Para ajuste fino, conferir tabela oficial.</div>
+    </div>`;
 }
 
-function selectGas(name, el){
+function selectGas(name,el){
   document.querySelectorAll('.gas-chip').forEach(chip=>chip.classList.remove('active-gas'));
   el.classList.add('active-gas');
-  document.getElementById('gasSearch').value = name;
+  document.getElementById('gasSearch').value=name;
   renderGas(name);
 }
 
 function searchGas(){
-  const value = document.getElementById('gasSearch').value.trim();
-  if(value.length >= 2) renderGas(value);
+  const value=document.getElementById('gasSearch').value.trim();
+  if(value.length>=2) renderGas(value);
 }
 
-const errorData = {
+const errorData={
   "MIDEA":{
-    "E1":{titulo:"Erro de comunicação",descricao:"Falha de comunicação entre unidade evaporadora e condensadora.",causa:"Cabo de comunicação rompido, borne oxidado, placa interna/externa com defeito ou falta de aterramento.",teste:"Conferir bornes L/N/S, continuidade do cabo, tensão de comunicação e aterramento.",solucao:"Reapertar conexões, limpar bornes, corrigir fiação e testar placas."},
-    "E3":{titulo:"Motor ventilador evaporadora",descricao:"Falha de rotação do ventilador interno.",causa:"Motor travado, capacitor ruim, sensor Hall ou placa.",teste:"Verificar giro livre, alimentação do motor e conector.",solucao:"Corrigir conector, substituir capacitor/motor ou placa."},
-    "P4":{titulo:"Proteção do compressor inverter",descricao:"Proteção por corrente, temperatura ou falha no módulo inverter.",causa:"Alta corrente, compressor travado, módulo IPM, falta de ventilação na condensadora.",teste:"Medir corrente, tensão DC bus, resistência do compressor e ventilação externa.",solucao:"Corrigir ventilação, verificar compressor/módulo e sensores."}
+    "E1":{titulo:"Erro de comunicação",descricao:"Falha de comunicação entre evaporadora e condensadora.",causa:"Cabo de comunicação rompido, borne oxidado, placa interna/externa ou aterramento.",teste:"Conferir bornes L/N/S, continuidade do cabo e tensão de comunicação.",solucao:"Reapertar conexões, limpar bornes, corrigir fiação e testar placas."},
+    "E3":{titulo:"Motor ventilador evaporadora",descricao:"Falha de rotação do ventilador interno.",causa:"Motor travado, capacitor, sensor Hall ou placa.",teste:"Verificar giro livre, alimentação e conector.",solucao:"Corrigir conector, substituir capacitor/motor ou placa."},
+    "P4":{titulo:"Proteção compressor inverter",descricao:"Proteção por corrente, temperatura ou módulo inverter.",causa:"Alta corrente, compressor travado, IPM, ventilação externa ruim.",teste:"Medir corrente, tensão DC bus, resistência do compressor e ventilação.",solucao:"Corrigir ventilação e avaliar compressor/módulo."}
   },
-
   "LG":{
-    "CH05":{titulo:"Comunicação interna/externa",descricao:"Falha de comunicação entre placas.",causa:"Cabo S rompido, polaridade, borne oxidado ou placa defeituosa.",teste:"Medir cabo de comunicação e verificar conectores.",solucao:"Corrigir fiação, aterramento e testar placas."},
-    "CH10":{titulo:"Motor ventilador interno",descricao:"Falha no motor da evaporadora.",causa:"Motor DC, sensor Hall, conector ou placa.",teste:"Verificar alimentação do motor e travamento.",solucao:"Substituir motor ou placa após teste."},
-    "CH21":{titulo:"Corrente do compressor",descricao:"Sobrecorrente no compressor inverter.",causa:"Compressor com esforço, módulo inverter, tensão incorreta ou fluido incorreto.",teste:"Medir corrente, tensão, bobinas e pressão.",solucao:"Corrigir causa de sobrecorrente e avaliar módulo/compressor."}
+    "CH05":{titulo:"Comunicação interna/externa",descricao:"Falha de comunicação entre placas.",causa:"Cabo S rompido, borne oxidado, ruído elétrico ou placa.",teste:"Medir comunicação e continuidade.",solucao:"Corrigir fiação, aterramento e testar placas."},
+    "CH10":{titulo:"Motor ventilador interno",descricao:"Falha no motor da evaporadora.",causa:"Motor DC, sensor Hall, conector ou placa.",teste:"Verificar alimentação e travamento.",solucao:"Substituir motor ou placa após teste."},
+    "CH21":{titulo:"Sobrecorrente compressor",descricao:"Corrente elevada no compressor inverter.",causa:"Compressor pesado, módulo inverter, tensão ou fluido incorreto.",teste:"Medir corrente, bobinas, tensão e pressões.",solucao:"Corrigir causa de sobrecorrente e avaliar módulo/compressor."}
   },
-
   "SAMSUNG":{
-    "E101":{titulo:"Erro de comunicação",descricao:"Falha de comunicação entre evaporadora e condensadora.",causa:"Cabo de comunicação, borne, placa ou ruído elétrico.",teste:"Verificar continuidade e tensão de comunicação.",solucao:"Corrigir fiação, aterramento e placas."},
-    "E202":{titulo:"Erro na unidade externa",descricao:"Falha detectada na condensadora.",causa:"Placa externa, compressor, sensor ou ventilador externo.",teste:"Verificar alimentação, sensores e códigos secundários.",solucao:"Diagnosticar componente externo e substituir se necessário."}
+    "E101":{titulo:"Erro de comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Cabo, borne, placa ou ruído elétrico.",teste:"Verificar continuidade e tensão de comunicação.",solucao:"Corrigir fiação, aterramento e placas."},
+    "E202":{titulo:"Falha unidade externa",descricao:"Falha detectada na condensadora.",causa:"Placa externa, compressor, sensor ou ventilador.",teste:"Verificar alimentação, sensores e códigos secundários.",solucao:"Diagnosticar componente externo."}
   },
-
   "ELGIN":{
-    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor de temperatura ambiente.",causa:"Sensor aberto, curto ou conector ruim.",teste:"Medir resistência do sensor NTC.",solucao:"Reconectar ou substituir sensor."},
-    "E4":{titulo:"Proteção de temperatura",descricao:"Proteção por temperatura alta ou falha de sensor.",causa:"Sensor de serpentina, sujeira, ventilação ruim.",teste:"Verificar sensores, limpeza e fluxo de ar.",solucao:"Limpar serpentina, corrigir ventilação ou trocar sensor."}
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor de temperatura ambiente.",causa:"Sensor aberto, curto ou conector ruim.",teste:"Medir resistência NTC.",solucao:"Reconectar ou substituir sensor."},
+    "E4":{titulo:"Proteção temperatura",descricao:"Proteção por temperatura alta ou sensor.",causa:"Sensor serpentina, sujeira ou ventilação ruim.",teste:"Verificar sensores, limpeza e fluxo de ar.",solucao:"Limpar serpentina ou trocar sensor."}
   },
-
   "GREE":{
     "E6":{titulo:"Erro de comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Cabo, borne, placa interna ou externa.",teste:"Conferir comunicação e continuidade.",solucao:"Corrigir cabeamento e testar placas."},
-    "F0":{titulo:"Proteção por falta de gás",descricao:"Sistema detecta baixa carga ou pressão anormal.",causa:"Vazamento, carga baixa ou sensor.",teste:"Verificar vazamento, pressão e temperatura.",solucao:"Corrigir vazamento, fazer vácuo e carga correta."}
+    "F0":{titulo:"Proteção falta de gás",descricao:"Baixa carga ou pressão anormal.",causa:"Vazamento, carga baixa ou sensor.",teste:"Verificar vazamento, pressão e temperatura.",solucao:"Corrigir vazamento, vácuo e carga correta."}
+  },
+  "FUJITSU":{
+    "11":{titulo:"Erro de comunicação serial",descricao:"Falha entre evaporadora e condensadora.",causa:"Interligação, borne, placa principal ou ruído.",teste:"Checar cabo, polaridade e alimentação das placas.",solucao:"Corrigir cabeamento e testar placas."},
+    "22":{titulo:"Sensor ambiente",descricao:"Falha no termistor de ar interno.",causa:"Sensor aberto, curto ou conector.",teste:"Medir resistência do sensor.",solucao:"Reconectar ou substituir termistor."},
+    "A1":{titulo:"Proteção inverter",descricao:"Falha de controle do compressor/inverter.",causa:"Módulo inverter, compressor, tensão ou superaquecimento.",teste:"Medir alimentação, corrente e bobinas.",solucao:"Corrigir alimentação/ventilação e avaliar módulo."}
+  },
+  "DAIKIN":{
+    "U4":{titulo:"Erro de comunicação",descricao:"Falha de comunicação interna/externa.",causa:"Cabo, placa, ruído elétrico ou endereço.",teste:"Verificar interligação, alimentação e aterramento.",solucao:"Corrigir fiação e testar placas."},
+    "A5":{titulo:"Proteção anticongelamento",descricao:"Evaporadora com temperatura anormal.",causa:"Filtro sujo, baixa vazão, sensor ou falta de fluido.",teste:"Verificar filtro, serpentina, sensor e pressão.",solucao:"Limpeza, correção de carga e sensor."},
+    "L5":{titulo:"Sobrecorrente inverter",descricao:"Corrente anormal no compressor.",causa:"Compressor, módulo inverter ou tensão.",teste:"Medir corrente, bobinas e alimentação.",solucao:"Avaliar compressor/módulo e rede elétrica."}
+  },
+  "PHILCO":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor de temperatura ambiente.",causa:"NTC aberto/curto ou conector.",teste:"Medir sensor e conferir chicote.",solucao:"Reconectar ou substituir sensor."},
+    "E2":{titulo:"Sensor evaporadora",descricao:"Falha no sensor de serpentina.",causa:"Sensor deslocado, aberto ou curto.",teste:"Medir resistência NTC.",solucao:"Reposicionar ou trocar sensor."},
+    "E6":{titulo:"Erro de comunicação",descricao:"Falha entre placas.",causa:"Cabo, placa interna/externa ou ruído.",teste:"Conferir comunicação e continuidade.",solucao:"Corrigir interligação e testar placas."}
+  },
+  "CONSUL":{
+    "E1":{titulo:"Sensor temperatura",descricao:"Falha no sensor de temperatura.",causa:"Sensor NTC ou chicote.",teste:"Medir resistência e conexão.",solucao:"Trocar sensor ou reparar chicote."},
+    "E4":{titulo:"Proteção de evaporadora",descricao:"Congelamento ou temperatura anormal.",causa:"Filtro sujo, baixa ventilação ou carga baixa.",teste:"Verificar fluxo de ar, serpentina e pressão.",solucao:"Limpeza, correção de vazamento/carga."}
+  },
+  "ELECTROLUX":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha de sensor de ar.",causa:"NTC, chicote ou placa.",teste:"Medir sensor e verificar conector.",solucao:"Trocar sensor ou reparar chicote."},
+    "E5":{titulo:"Proteção condensadora",descricao:"Temperatura/pressão anormal na unidade externa.",causa:"Sujeira, ventilador externo, carga alta ou sensor.",teste:"Verificar serpentina, motor ventilador e pressão.",solucao:"Limpeza, correção de ventilação/carga."}
+  },
+  "AGRATTO":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor da evaporadora.",causa:"Sensor NTC ou conexão.",teste:"Medir resistência.",solucao:"Reconectar ou trocar sensor."},
+    "E6":{titulo:"Comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Cabo, borne ou placa.",teste:"Verificar continuidade e tensão de comunicação.",solucao:"Corrigir cabo/borne e testar placas."}
+  },
+  "TCL":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor interno.",causa:"NTC aberto/curto ou chicote.",teste:"Medir sensor.",solucao:"Substituir sensor."},
+    "E6":{titulo:"Comunicação",descricao:"Falha entre evaporadora e condensadora.",causa:"Cabo de sinal, placa ou alimentação.",teste:"Verificar cabos e tensão.",solucao:"Corrigir interligação."}
+  },
+  "HISENSE":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor de temperatura interna.",causa:"Sensor, conector ou placa.",teste:"Medir NTC.",solucao:"Reconectar ou substituir."},
+    "E5":{titulo:"Proteção externa",descricao:"Falha de temperatura/pressão na condensadora.",causa:"Ventilador, serpentina suja ou sensor.",teste:"Verificar ventilação e sensores.",solucao:"Limpeza e correção do componente."}
+  },
+  "KOMECO":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha de sensor interno.",causa:"NTC ou chicote.",teste:"Medir resistência.",solucao:"Substituir sensor."},
+    "E6":{titulo:"Comunicação",descricao:"Falha na comunicação entre unidades.",causa:"Cabo, borne, placa.",teste:"Conferir sinal e continuidade.",solucao:"Corrigir fiação e placa."}
+  },
+  "HITACHI":{
+    "01":{titulo:"Proteção geral",descricao:"Falha geral detectada no sistema.",causa:"Pode envolver sensor, pressão, placa ou comunicação.",teste:"Verificar código secundário, sensores e alimentação.",solucao:"Diagnóstico por sequência do manual."},
+    "03":{titulo:"Comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Rede, cabo, endereço ou placa.",teste:"Checar endereçamento, comunicação e tensão.",solucao:"Corrigir rede/cabeamento e placa."}
+  },
+  "TRANE":{
+    "E1":{titulo:"Sensor temperatura",descricao:"Falha de sensor de ar/serpentina.",causa:"Sensor NTC, chicote ou módulo.",teste:"Medir sensor e conexão.",solucao:"Trocar sensor/reparar chicote."},
+    "E3":{titulo:"Proteção de pressão",descricao:"Pressão fora da faixa normal.",causa:"Falta/excesso de fluido, fluxo de ar, pressostato.",teste:"Verificar pressões, filtro, serpentina e pressostato.",solucao:"Corrigir carga, vazamento ou ventilação."}
+  },
+  "YORK":{
+    "E1":{titulo:"Sensor ambiente",descricao:"Falha no sensor interno.",causa:"NTC, conector ou placa.",teste:"Medir resistência e conexão.",solucao:"Trocar sensor ou reparar conector."},
+    "E4":{titulo:"Proteção sistema",descricao:"Proteção por temperatura/pressão.",causa:"Serpentina suja, ventilação ruim, sensor ou carga.",teste:"Verificar fluxo de ar, pressão e sensores.",solucao:"Limpeza, carga correta e sensor."}
   }
 };
 
-function renderError(brand, code){
-  const key = code.toUpperCase();
-  const item = errorData[brand] && errorData[brand][key];
-
+function renderError(brand,code){
+  const key=code.toUpperCase();
+  const item=errorData[brand]&&errorData[brand][key];
   if(!item){
-    document.getElementById('errorInfo').innerHTML = `
-      <h2>${brand}</h2>
-      <div class="info-row">Digite um código válido para essa marca. Ex: E1, P4, CH05, E101.</div>
-    `;
+    document.getElementById('errorInfo').innerHTML=`<h2>${brand}</h2><div class="info-row">Digite um código válido para essa marca.</div>`;
     return;
   }
-
-  document.getElementById('errorInfo').innerHTML = `
+  document.getElementById('errorInfo').innerHTML=`
     <h2>${brand} ${key}</h2>
     <div class="info-row"><span>Falha:</span><br>${item.titulo}</div>
     <div class="info-row"><span>Descrição:</span><br>${item.descricao}</div>
     <div class="info-row"><span>Causa provável:</span><br>${item.causa}</div>
     <div class="info-row"><span>Teste em campo:</span><br>${item.teste}</div>
-    <div class="info-row"><span>Solução sugerida:</span><br>${item.solucao}</div>
-  `;
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solucao}</div>`;
 }
 
-function selectBrand(brand, el){
+function selectBrand(brand,el){
   activeBrand=brand;
   document.querySelectorAll('.brand-chip').forEach(chip=>chip.classList.remove('active-brand'));
   el.classList.add('active-brand');
-  document.getElementById('errorSearch').value = "";
-  renderError(activeBrand, Object.keys(errorData[activeBrand])[0]);
+  document.getElementById('errorSearch').value="";
+  renderError(activeBrand,Object.keys(errorData[activeBrand])[0]);
 }
 
 function searchError(){
