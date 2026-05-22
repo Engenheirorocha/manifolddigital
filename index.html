@@ -3,71 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RefriCore IA - Manifold</title>
+<title>RefriCore IA - Manifold Pro</title>
 
 <style>
 body{
   margin:0;
-  font-family: Arial;
+  font-family:Arial;
   background:#000;
   color:#fff;
 }
 
+/* ALERTA PULSANDO */
+@keyframes pulse {
+  0% { box-shadow:0 0 10px red; }
+  50% { box-shadow:0 0 25px red; }
+  100% { box-shadow:0 0 10px red; }
+}
+
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:auto;
   padding:20px;
 }
 
 .header{
-  font-size:26px;
+  font-size:28px;
   font-weight:bold;
 }
 
 .sub{
   color:#888;
-  margin-bottom:20px;
+  margin-bottom:15px;
 }
 
+/* GAUGE */
+.gauge-wrap{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.gauge{
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  border:10px solid #222;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#111;
+}
+
+.pointer{
+  width:2px;
+  height:80px;
+  background:#00ff9d;
+  position:absolute;
+  bottom:50%;
+  transform-origin:bottom;
+  transform:rotate(0deg);
+}
+
+.center{
+  font-size:20px;
+  font-weight:bold;
+}
+
+/* CARDS */
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
+  margin-top:20px;
 }
 
 .card{
   background:#111;
-  padding:15px;
+  padding:12px;
   border-radius:12px;
   border:1px solid #222;
 }
 
-input{
+input, select{
   width:100%;
   padding:10px;
   background:#000;
-  border:1px solid #333;
   color:#fff;
+  border:1px solid #333;
   border-radius:8px;
-  font-size:16px;
 }
 
-.result{
-  font-size:22px;
-  font-weight:bold;
-  margin-top:5px;
-}
-
-.ok{color:#00ff9d;}
-.warn{color:#ffcc00;}
-.red{color:#ff4d4d;}
-
-.diag{
+/* ALERT */
+.alert{
+  padding:12px;
+  border-radius:12px;
   margin-top:15px;
+  background:#220000;
+  border:1px solid red;
+}
+
+.alert.active{
+  animation:pulse 1s infinite;
+}
+
+/* HISTÓRICO */
+.history{
+  margin-top:20px;
   background:#111;
   padding:15px;
   border-radius:12px;
   border:1px solid #222;
+  max-height:150px;
+  overflow:auto;
+}
+
+button{
+  padding:10px;
+  background:#00ff9d;
+  border:none;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+  font-weight:bold;
+  color:#000;
 }
 </style>
 </head>
@@ -77,97 +136,163 @@ input{
 <div class="container">
 
 <div class="header">RefriCore IA</div>
-<div class="sub">Manifold digital em tempo real</div>
+<div class="sub">Manifold digital profissional em tempo real</div>
 
+<!-- GAS -->
+<div class="card">
+  <label>Selecionar Gás</label>
+  <select id="gas">
+    <option>R410A</option>
+    <option>R32</option>
+    <option>R22</option>
+    <option>R134a</option>
+    <option>R407C</option>
+  </select>
+</div>
+
+<!-- INPUTS -->
 <div class="grid">
 
   <div class="card">
-    <div>Pressão Baixa (PSI)</div>
+    Pressão Baixa
     <input id="pb" type="number" value="118" oninput="calc()">
   </div>
 
   <div class="card">
-    <div>Pressão Alta (PSI)</div>
+    Pressão Alta
     <input id="pa" type="number" value="340" oninput="calc()">
   </div>
 
   <div class="card">
-    <div>Temperatura Sucção (°C)</div>
+    Temp Sucção
     <input id="ts" type="number" value="12" oninput="calc()">
   </div>
 
   <div class="card">
-    <div>Temperatura Linha Líquido (°C)</div>
+    Linha Líquido
     <input id="tl" type="number" value="41" oninput="calc()">
   </div>
 
 </div>
 
-<div class="grid" style="margin-top:15px;">
+<!-- GAUGES -->
+<div class="gauge-wrap">
 
-  <div class="card">
-    <div>Evaporação</div>
-    <div class="result ok" id="evap">--</div>
+  <div class="gauge">
+    <div class="pointer" id="g1"></div>
+    <div class="center" id="evap">0°C</div>
   </div>
 
-  <div class="card">
-    <div>Condensação</div>
-    <div class="result ok" id="cond">--</div>
-  </div>
-
-  <div class="card">
-    <div>Superaquecimento</div>
-    <div class="result" id="sh">--</div>
-  </div>
-
-  <div class="card">
-    <div>Sub-resfriamento</div>
-    <div class="result" id="sc">--</div>
+  <div class="gauge">
+    <div class="pointer" id="g2"></div>
+    <div class="center" id="cond">0°C</div>
   </div>
 
 </div>
 
-<div class="diag" id="diag">
-Diagnóstico: aguardando leitura...
+<!-- RESULTADOS -->
+<div class="grid">
+
+  <div class="card">
+    Superaquecimento
+    <h2 id="sh">0K</h2>
+  </div>
+
+  <div class="card">
+    Sub-resfriamento
+    <h2 id="sc">0K</h2>
+  </div>
+
+</div>
+
+<!-- ALERTA -->
+<div class="alert" id="alert">
+Diagnóstico aguardando leitura...
+</div>
+
+<!-- MODO RÁPIDO -->
+<button onclick="modoRapido()">⚡ MODO RÁPIDO (RESET CAMPO)</button>
+
+<!-- HISTÓRICO -->
+<div class="history" id="hist">
+Histórico vazio...
 </div>
 
 </div>
 
 <script>
 
+let historico = [];
+
 function calc(){
 
-  let pb = Number(document.getElementById("pb").value);
-  let pa = Number(document.getElementById("pa").value);
-  let ts = Number(document.getElementById("ts").value);
-  let tl = Number(document.getElementById("tl").value);
+  let pb = +pbx.value;
+  let pa = +pax.value;
+  let ts = +tsx.value;
+  let tl = +tlx.value;
 
-  // conversões simples (base MVP)
-  let evap = Math.round(pb / 20);
-  let cond = Math.round(pa / 7);
+  let evap = Math.round(pb/20);
+  let cond = Math.round(pa/7);
 
   let sh = ts - evap;
   let sc = cond - tl;
 
-  document.getElementById("evap").innerText = evap + "°C";
-  document.getElementById("cond").innerText = cond + "°C";
-  document.getElementById("sh").innerText = sh.toFixed(1) + "K";
-  document.getElementById("sc").innerText = sc.toFixed(1) + "K";
+  evapEl.innerText = evap+"°C";
+  condEl.innerText = cond+"°C";
+  shEl.innerText = sh.toFixed(1)+"K";
+  scEl.innerText = sc.toFixed(1)+"K";
 
-  let diag = "";
+  // GAUGES
+  g1.style.transform = "rotate(" + (evap*6) + "deg)";
+  g2.style.transform = "rotate(" + (cond*3) + "deg)";
+
+  let msg = "";
 
   if(sh > 10 && sc < 3){
-    diag = "⚠ Possível baixa carga de gás";
+    msg = "⚠ POSSÍVEL BAIXA CARGA DE GÁS";
+    alertBox.classList.add("active");
   }
   else if(sh < 5){
-    diag = "⚠ Possível excesso de líquido";
+    msg = "⚠ POSSÍVEL EXCESSO DE LÍQUIDO";
+    alertBox.classList.add("active");
   }
   else{
-    diag = "✅ Sistema dentro dos parâmetros";
+    msg = "✅ SISTEMA NORMAL";
+    alertBox.classList.remove("active");
   }
 
-  document.getElementById("diag").innerText = "Diagnóstico: " + diag;
+  alertBox.innerText = msg;
+
+  // HISTÓRICO
+  historico.unshift(
+    `PB:${pb} PA:${pa} SH:${sh.toFixed(1)} SC:${sc.toFixed(1)}`
+  );
+
+  hist.innerHTML = historico.slice(0,5).join("<br>");
 }
+
+// MODO RÁPIDO
+function modoRapido(){
+  pbx.value = 120;
+  pax.value = 330;
+  tsx.value = 10;
+  tlx.value = 40;
+  calc();
+}
+
+// refs
+const pbx = document.getElementById("pb");
+const pax = document.getElementById("pa");
+const tsx = document.getElementById("ts");
+const tlx = document.getElementById("tl");
+
+const evapEl = document.getElementById("evap");
+const condEl = document.getElementById("cond");
+const shEl = document.getElementById("sh");
+const scEl = document.getElementById("sc");
+
+const alertBox = document.getElementById("alert");
+const hist = document.getElementById("hist");
 
 calc();
 
