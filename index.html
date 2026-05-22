@@ -1,133 +1,177 @@
-<!-- RefriCore IA - VERSÃO INDEX.HTML (SEM REACT) -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RefriCore IA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RefriCore IA - Manifold</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-    }
+<style>
+body{
+  margin:0;
+  font-family: Arial;
+  background:#000;
+  color:#fff;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 32px;
-    }
+.header{
+  font-size:26px;
+  font-weight:bold;
+}
 
-    .sub {
-      color: #888;
-      margin-bottom: 20px;
-    }
+.sub{
+  color:#888;
+  margin-bottom:20px;
+}
 
-    .card {
-      background: #111;
-      border: 1px solid #222;
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
+.card{
+  background:#111;
+  padding:15px;
+  border-radius:12px;
+  border:1px solid #222;
+}
 
-    .value {
-      font-size: 22px;
-      font-weight: bold;
-    }
+input{
+  width:100%;
+  padding:10px;
+  background:#000;
+  border:1px solid #333;
+  color:#fff;
+  border-radius:8px;
+  font-size:16px;
+}
 
-    .ok {
-      color: #00ff9d;
-    }
+.result{
+  font-size:22px;
+  font-weight:bold;
+  margin-top:5px;
+}
 
-    .warn {
-      color: #ffcc00;
-    }
+.ok{color:#00ff9d;}
+.warn{color:#ffcc00;}
+.red{color:#ff4d4d;}
 
-    .diag {
-      background: #111;
-      border: 1px solid #222;
-      padding: 15px;
-      border-radius: 12px;
-    }
-  </style>
+.diag{
+  margin-top:15px;
+  background:#111;
+  padding:15px;
+  border-radius:12px;
+  border:1px solid #222;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>RefriCore IA</h1>
-  <div class="sub">Calculadora térmica HVAC em campo</div>
+<div class="header">RefriCore IA</div>
+<div class="sub">Manifold digital em tempo real</div>
+
+<div class="grid">
 
   <div class="card">
-    <b>Gás:</b> R410A
+    <div>Pressão Baixa (PSI)</div>
+    <input id="pb" type="number" value="118" oninput="calc()">
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div>Baixa Pressão</div>
-      <div class="value">118 PSI</div>
-    </div>
-
-    <div class="card">
-      <div>Alta Pressão</div>
-      <div class="value">340 PSI</div>
-    </div>
-
-    <div class="card">
-      <div>Sucção</div>
-      <div class="value">12°C</div>
-    </div>
-
-    <div class="card">
-      <div>Linha Líquido</div>
-      <div class="value">41°C</div>
-    </div>
+  <div class="card">
+    <div>Pressão Alta (PSI)</div>
+    <input id="pa" type="number" value="340" oninput="calc()">
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div>Evaporação</div>
-      <div class="value ok">6°C</div>
-    </div>
-
-    <div class="card">
-      <div>Condensação</div>
-      <div class="value ok">48°C</div>
-    </div>
-
-    <div class="card">
-      <div>Superaquecimento</div>
-      <div class="value">7K</div>
-    </div>
-
-    <div class="card">
-      <div>Sub-resfriamento</div>
-      <div class="value warn">3K</div>
-    </div>
+  <div class="card">
+    <div>Temperatura Sucção (°C)</div>
+    <input id="ts" type="number" value="12" oninput="calc()">
   </div>
 
-  <div class="diag">
-    <h3>Diagnóstico</h3>
-    <p><b>Atenção:</b> Possível baixa carga de gás</p>
-    <p>Verificar sistema de refrigeração e possíveis vazamentos.</p>
+  <div class="card">
+    <div>Temperatura Linha Líquido (°C)</div>
+    <input id="tl" type="number" value="41" oninput="calc()">
   </div>
 
 </div>
+
+<div class="grid" style="margin-top:15px;">
+
+  <div class="card">
+    <div>Evaporação</div>
+    <div class="result ok" id="evap">--</div>
+  </div>
+
+  <div class="card">
+    <div>Condensação</div>
+    <div class="result ok" id="cond">--</div>
+  </div>
+
+  <div class="card">
+    <div>Superaquecimento</div>
+    <div class="result" id="sh">--</div>
+  </div>
+
+  <div class="card">
+    <div>Sub-resfriamento</div>
+    <div class="result" id="sc">--</div>
+  </div>
+
+</div>
+
+<div class="diag" id="diag">
+Diagnóstico: aguardando leitura...
+</div>
+
+</div>
+
+<script>
+
+function calc(){
+
+  let pb = Number(document.getElementById("pb").value);
+  let pa = Number(document.getElementById("pa").value);
+  let ts = Number(document.getElementById("ts").value);
+  let tl = Number(document.getElementById("tl").value);
+
+  // conversões simples (base MVP)
+  let evap = Math.round(pb / 20);
+  let cond = Math.round(pa / 7);
+
+  let sh = ts - evap;
+  let sc = cond - tl;
+
+  document.getElementById("evap").innerText = evap + "°C";
+  document.getElementById("cond").innerText = cond + "°C";
+  document.getElementById("sh").innerText = sh.toFixed(1) + "K";
+  document.getElementById("sc").innerText = sc.toFixed(1) + "K";
+
+  let diag = "";
+
+  if(sh > 10 && sc < 3){
+    diag = "⚠ Possível baixa carga de gás";
+  }
+  else if(sh < 5){
+    diag = "⚠ Possível excesso de líquido";
+  }
+  else{
+    diag = "✅ Sistema dentro dos parâmetros";
+  }
+
+  document.getElementById("diag").innerText = "Diagnóstico: " + diag;
+}
+
+calc();
+
+</script>
 
 </body>
 </html>
