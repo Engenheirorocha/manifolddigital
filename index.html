@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
 
-<!-- ÍCONES -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
@@ -31,16 +30,14 @@ header {
   letter-spacing: 2px;
 }
 
-/* TELA (SPA) */
+/* SCREENS */
 .screen {
   display: none;
   padding: 15px;
   animation: fade 0.25s ease-in-out;
 }
 
-.active {
-  display: block;
-}
+.active { display: block; }
 
 @keyframes fade {
   from {opacity: 0; transform: translateY(6px);}
@@ -70,43 +67,35 @@ header {
   border-color: #00b7ff;
 }
 
-.card h3 {
-  font-size: 13px;
-  margin-top: 10px;
-  color: #ddd;
-}
-
-/* BOTÃO VOLTAR */
+/* BACK */
 .back {
   background: #222;
   padding: 10px;
   border-radius: 10px;
   display: inline-block;
   cursor: pointer;
-  font-size: 12px;
   margin-bottom: 15px;
-  transition: 0.2s;
+  font-size: 12px;
 }
 
-.back:hover {
-  background: #333;
-}
-
-/* TÍTULOS */
-h2 {
-  margin-top: 10px;
-  color: #00b7ff;
-}
-
-/* PLACEHOLDER BOX */
 .box {
   background: #121212;
   border: 1px solid #222;
-  padding: 15px;
+  padding: 12px;
   border-radius: 12px;
   margin-top: 10px;
-  color: #aaa;
-  font-size: 13px;
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background: #000;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 8px;
 }
 </style>
 </head>
@@ -119,7 +108,6 @@ h2 {
 
 <!-- HOME -->
 <div id="home" class="screen active">
-
   <div class="menu">
 
     <div class="card" onclick="openScreen('hvac')">
@@ -129,7 +117,7 @@ h2 {
 
     <div class="card" onclick="openScreen('erros')">
       <i data-lucide="alert-triangle"></i>
-      <h3>Códigos de Erro</h3>
+      <h3>Erros</h3>
     </div>
 
     <div class="card" onclick="openScreen('testes')">
@@ -143,63 +131,192 @@ h2 {
     </div>
 
   </div>
-
 </div>
 
 <!-- HVAC -->
 <div id="hvac" class="screen">
   <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
   <h2>HVAC</h2>
-
-  <div class="box">
-    🔧 Área futura para cálculo de pressão, SH, SC e diagnóstico automático do sistema.
-  </div>
+  <div class="box">Base técnica do sistema</div>
 </div>
 
 <!-- ERROS -->
 <div id="erros" class="screen">
   <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-  <h2>Códigos de Erro</h2>
-
-  <div class="box">
-    ⚠ Base de dados por marca (LG, Midea, Samsung, Springer...)<br>
-    Futuro: busca por código + solução automática.
-  </div>
+  <h2>Erros</h2>
+  <div class="box">Sistema de códigos de falha</div>
 </div>
 
 <!-- TESTES -->
 <div id="testes" class="screen">
   <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
   <h2>Testes</h2>
-
-  <div class="box">
-    🧪 Testes de compressor, ventilador, sensores e leitura do sistema HVAC.
-  </div>
+  <div class="box">Testes de componentes HVAC</div>
 </div>
 
-<!-- MANIFOLD -->
+<!-- MANIFOLD ULTRA REAL -->
 <div id="manifold" class="screen">
   <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-  <h2>Manifold</h2>
+
+  <h2>Manifold ULTRA REAL</h2>
 
   <div class="box">
-    📊 Área principal do sistema.<br><br>
-    Futuro:
-    - Pressão baixa/alta em tempo real<br>
-    - SH e SC automáticos<br>
-    - Diagnóstico inteligente<br>
-    - Cores por faixa de operação
+
+    <label>Gás</label>
+    <select id="gas" onchange="calc()">
+      <option value="R410A">R410A</option>
+      <option value="R32">R32</option>
+      <option value="R22">R22</option>
+      <option value="R134a">R134a</option>
+    </select>
+
+    <label>Pressão Baixa</label>
+    <input id="pb" type="number" value="120" oninput="calc()">
+
+    <label>Pressão Alta</label>
+    <input id="pa" type="number" value="340" oninput="calc()">
+
+    <label>Temp Sucção</label>
+    <input id="tsuc" type="number" value="12" oninput="calc()">
+
+    <label>Temp Líquido</label>
+    <input id="tliq" type="number" value="38" oninput="calc()">
+
+    <hr style="border:1px solid #222;margin:10px 0;">
+
+    <canvas id="gauge" width="220" height="220"></canvas>
+
+    <div id="diag" class="box">Aguardando...</div>
+
+    <button onclick="exportReport()" style="
+      margin-top:10px;
+      width:100%;
+      padding:10px;
+      background:#111;
+      border:1px solid #333;
+      color:#fff;
+      border-radius:10px;
+      cursor:pointer;">
+      Exportar Relatório
+    </button>
+
+    <div id="history" class="box">Histórico vazio</div>
+
   </div>
 </div>
 
 <script>
-function openScreen(id) {
+lucide.createIcons();
+
+function openScreen(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ativa ícones
-lucide.createIcons();
+const canvas = document.getElementById("gauge");
+const ctx = canvas.getContext("2d");
+
+let history = [];
+
+const gases = {
+  R410A:{evap:p=>0.0001*(p*p)+0.178*p-32.5, cond:p=>0.00007*(p*p)+0.145*p-22.1},
+  R32:{evap:p=>0.0001*(p*p)+0.172*p-33.2, cond:p=>0.00007*(p*p)+0.141*p-23.5},
+  R22:{evap:p=>-0.0004*(p*p)+0.412*p-42.1, cond:p=>-0.0001*(p*p)+0.232*p-17.8},
+  R134a:{evap:p=>-0.0012*(p*p)+0.655*p-41.5, cond:p=>-0.0002*(p*p)+0.321*p-12.2}
+};
+
+function drawGauge(value,color,label){
+  ctx.clearRect(0,0,220,220);
+  const c=110,r=80;
+
+  ctx.beginPath();
+  ctx.arc(c,c,r,0,Math.PI*2);
+  ctx.strokeStyle="#222";
+  ctx.lineWidth=12;
+  ctx.stroke();
+
+  const angle=(value/100)*1.5*Math.PI;
+
+  ctx.beginPath();
+  ctx.arc(c,c,r,0.75*Math.PI,0.75*Math.PI+angle);
+  ctx.strokeStyle=color;
+  ctx.lineWidth=12;
+  ctx.stroke();
+
+  const p=0.75*Math.PI+angle;
+
+  ctx.beginPath();
+  ctx.moveTo(c,c);
+  ctx.lineTo(c+Math.cos(p)*r,c+Math.sin(p)*r);
+  ctx.strokeStyle="#fff";
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  ctx.fillStyle="#fff";
+  ctx.textAlign="center";
+  ctx.fillText(label,c,c+5);
+}
+
+function calc(){
+  const gas=document.getElementById("gas").value;
+  const pb=+document.getElementById("pb").value;
+  const pa=+document.getElementById("pa").value;
+  const tsuc=+document.getElementById("tsuc").value;
+  const tliq=+document.getElementById("tliq").value;
+
+  const f=gases[gas];
+
+  const tevap=f.evap(pb);
+  const tcond=f.cond(pa);
+
+  const sh=tsuc-tevap;
+  const sc=tcond-tliq;
+
+  const visual=Math.min(100,pb/2);
+
+  let color="#00ff9d";
+  let status="Sistema OK";
+
+  if(sh>15){color="#ff4d4d";status="Falta de gás / restrição";}
+  else if(sh<3){color="#ff4d4d";status="Risco de retorno líquido";}
+  else if(sh>12||sc>12){color="#ff7a18";status="Fora da faixa ideal";}
+
+  drawGauge(visual,color,pb+" PSI");
+
+  document.getElementById("diag").innerHTML=`
+    Evap: ${tevap.toFixed(1)}°C<br>
+    Cond: ${tcond.toFixed(1)}°C<br>
+    SH: ${sh.toFixed(1)}K<br>
+    SC: ${sc.toFixed(1)}K<br><br>
+    <b>${status}</b>
+  `;
+
+  history.push({time:new Date().toLocaleTimeString(),pb,pa,sh,sc,status});
+  updateHistory();
+}
+
+function updateHistory(){
+  document.getElementById("history").innerHTML =
+    "<b>Histórico:</b><br>" +
+    history.slice(-5).map(h =>
+      `${h.time} | PB:${h.pb} | SH:${h.sh.toFixed(1)} | ${h.status}`
+    ).join("<br>");
+}
+
+function exportReport(){
+  let txt="HVAC PRO RELATÓRIO\n\n";
+  history.forEach(h=>{
+    txt+=`${h.time} PB:${h.pb} PA:${h.pa} SH:${h.sh.toFixed(1)} SC:${h.sc.toFixed(1)} ${h.status}\n`;
+  });
+
+  const blob=new Blob([txt],{type:"text/plain"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="hvac_pro.txt";
+  a.click();
+}
+
+setInterval(calc,1000);
 </script>
 
 </body>
