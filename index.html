@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
 
+<!-- ÍCONES -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
 <style>
 body {
   margin: 0;
@@ -16,7 +19,7 @@ body {
 /* HEADER */
 header {
   background: #111;
-  padding: 14px;
+  padding: 16px;
   text-align: center;
   border-bottom: 1px solid #222;
 }
@@ -28,14 +31,20 @@ header {
   letter-spacing: 2px;
 }
 
-.sub {
-  font-size: 11px;
-  color: #777;
+/* TELA (SPA) */
+.screen {
+  display: none;
+  padding: 15px;
+  animation: fade 0.25s ease-in-out;
 }
 
-/* CONTAINER */
-.container {
-  padding: 15px;
+.active {
+  display: block;
+}
+
+@keyframes fade {
+  from {opacity: 0; transform: translateY(6px);}
+  to {opacity: 1; transform: translateY(0);}
 }
 
 /* MENU */
@@ -43,41 +52,28 @@ header {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .card {
   background: #121212;
   border: 1px solid #222;
   border-radius: 14px;
-  padding: 20px;
+  padding: 22px;
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .card:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
   border-color: #00b7ff;
 }
 
 .card h3 {
-  margin: 10px 0 0 0;
-  font-size: 14px;
-}
-
-.icon {
-  font-size: 26px;
-}
-
-/* TELAS */
-.screen {
-  display: none;
-  margin-top: 15px;
-}
-
-.active {
-  display: block;
+  font-size: 13px;
+  margin-top: 10px;
+  color: #ddd;
 }
 
 /* BOTÃO VOLTAR */
@@ -87,19 +83,31 @@ header {
   border-radius: 10px;
   display: inline-block;
   cursor: pointer;
-  margin-bottom: 15px;
   font-size: 12px;
+  margin-bottom: 15px;
+  transition: 0.2s;
 }
 
 .back:hover {
   background: #333;
 }
 
-/* CORES */
-.blue { color: #00b7ff; }
-.green { color: #00ff9d; }
-.red { color: #ff4d4d; }
-.orange { color: #ff7a18; }
+/* TÍTULOS */
+h2 {
+  margin-top: 10px;
+  color: #00b7ff;
+}
+
+/* PLACEHOLDER BOX */
+.box {
+  background: #121212;
+  border: 1px solid #222;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 10px;
+  color: #aaa;
+  font-size: 13px;
+}
 </style>
 </head>
 
@@ -107,76 +115,91 @@ header {
 
 <header>
   <div class="logo">HVAC PRO</div>
-  <div class="sub">Sistema técnico de diagnóstico HVAC</div>
 </header>
 
-<div class="container">
+<!-- HOME -->
+<div id="home" class="screen active">
 
-  <!-- MENU PRINCIPAL -->
-  <div id="home" class="screen active">
+  <div class="menu">
 
-    <div class="menu">
+    <div class="card" onclick="openScreen('hvac')">
+      <i data-lucide="snowflake"></i>
+      <h3>HVAC</h3>
+    </div>
 
-      <div class="card" onclick="openScreen('hvac')">
-        <div class="icon">❄️</div>
-        <h3>HVAC</h3>
-      </div>
+    <div class="card" onclick="openScreen('erros')">
+      <i data-lucide="alert-triangle"></i>
+      <h3>Códigos de Erro</h3>
+    </div>
 
-      <div class="card" onclick="openScreen('erros')">
-        <div class="icon">⚠️</div>
-        <h3>Códigos de Erro</h3>
-      </div>
+    <div class="card" onclick="openScreen('testes')">
+      <i data-lucide="activity"></i>
+      <h3>Testes</h3>
+    </div>
 
-      <div class="card" onclick="openScreen('testes')">
-        <div class="icon">🧪</div>
-        <h3>Testes</h3>
-      </div>
-
-      <div class="card" onclick="openScreen('manifold')">
-        <div class="icon">📊</div>
-        <h3>Manifold</h3>
-      </div>
-
+    <div class="card" onclick="openScreen('manifold')">
+      <i data-lucide="gauge"></i>
+      <h3>Manifold</h3>
     </div>
 
   </div>
 
-  <!-- HVAC -->
-  <div id="hvac" class="screen">
-    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-    <h2 class="blue">HVAC</h2>
-    <p>Área de diagnósticos gerais do sistema.</p>
-  </div>
+</div>
 
-  <!-- ERROS -->
-  <div id="erros" class="screen">
-    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-    <h2 class="orange">Códigos de Erro</h2>
-    <p>Base de dados de falhas por marca.</p>
-  </div>
+<!-- HVAC -->
+<div id="hvac" class="screen">
+  <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+  <h2>HVAC</h2>
 
-  <!-- TESTES -->
-  <div id="testes" class="screen">
-    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-    <h2 class="green">Testes</h2>
-    <p>Ferramentas de diagnóstico técnico.</p>
+  <div class="box">
+    🔧 Área futura para cálculo de pressão, SH, SC e diagnóstico automático do sistema.
   </div>
+</div>
 
-  <!-- MANIFOLD -->
-  <div id="manifold" class="screen">
-    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
-    <h2 class="red">Manifold</h2>
-    <p>Leitura de pressão e análise do sistema.</p>
+<!-- ERROS -->
+<div id="erros" class="screen">
+  <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+  <h2>Códigos de Erro</h2>
+
+  <div class="box">
+    ⚠ Base de dados por marca (LG, Midea, Samsung, Springer...)<br>
+    Futuro: busca por código + solução automática.
   </div>
+</div>
 
+<!-- TESTES -->
+<div id="testes" class="screen">
+  <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+  <h2>Testes</h2>
+
+  <div class="box">
+    🧪 Testes de compressor, ventilador, sensores e leitura do sistema HVAC.
+  </div>
+</div>
+
+<!-- MANIFOLD -->
+<div id="manifold" class="screen">
+  <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+  <h2>Manifold</h2>
+
+  <div class="box">
+    📊 Área principal do sistema.<br><br>
+    Futuro:
+    - Pressão baixa/alta em tempo real<br>
+    - SH e SC automáticos<br>
+    - Diagnóstico inteligente<br>
+    - Cores por faixa de operação
+  </div>
 </div>
 
 <script>
 function openScreen(id) {
-  let screens = document.querySelectorAll('.screen');
-  screens.forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+// ativa ícones
+lucide.createIcons();
 </script>
 
 </body>
