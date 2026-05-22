@@ -7,7 +7,7 @@
 
 <style>
 *{box-sizing:border-box}
-html, body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);color:#fff;overflow:hidden}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);color:#fff;overflow:hidden}
 .app{max-width:430px;margin:auto;height:100dvh;padding:22px;display:flex;flex-direction:column;justify-content:center;animation:entry 1s ease forwards;overflow:hidden}
 @keyframes entry{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .logo{text-align:center;font-size:34px;font-weight:900;letter-spacing:4px;margin-bottom:45px;text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35)}
@@ -35,22 +35,32 @@ button:active{transform:scale(.92)}
 .page-title{font-size:26px;font-weight:900;letter-spacing:3px}
 .mode-box{background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;border-radius:28px;padding:18px;box-shadow:0 22px 50px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06)}
 .mode-title{font-size:13px;color:#aaa;margin-bottom:14px}
-.gas-list,.category-list,.brand-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;margin-bottom:18px}
-.gas-chip,.error-chip{min-width:110px;height:120px;border-radius:22px;background:linear-gradient(145deg,#171717,#050505);border:1px solid #292929;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;text-align:center}
+.gas-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;margin-bottom:18px}
+.gas-chip{min-width:110px;height:120px;border-radius:22px;background:linear-gradient(145deg,#171717,#050505);border:1px solid #292929;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;text-align:center}
 .gas-chip.active-gas{border-color:#00d084;box-shadow:0 0 24px rgba(0,208,132,.28)}
-.error-chip.active-error{border-color:#ff3636;box-shadow:0 0 24px rgba(255,54,54,.28)}
-.gas-chip strong,.error-chip strong{font-size:20px}
-.gas-chip strong{color:#00d084}.error-chip strong{color:#ff3636}
-.gas-chip small,.error-chip small{margin-top:8px;color:#888}
+.gas-chip strong{font-size:20px;color:#00d084}
+.gas-chip small{margin-top:8px;color:#888}
 .search-area{margin:18px 0}
 .search-area input{width:100%;padding:16px;border-radius:18px;border:1px solid #333;background:#050505;color:#fff;font-size:16px;outline:none}
-.gas-info,.error-info{background:#080808;border:1px solid #252525;border-radius:22px;padding:18px;line-height:1.7}
+.gas-info{background:#080808;border:1px solid #252525;border-radius:22px;padding:18px;line-height:1.7}
 .gas-info h2{margin:0 0 10px;color:#00d084;letter-spacing:1px}
-.error-info h2{margin:0 0 10px;color:#ff3636;letter-spacing:1px}
 .info-row{border-bottom:1px solid #1c1c1c;padding:8px 0}.info-row:last-child{border-bottom:0}.info-row span{color:#888;font-size:13px}
 .pt-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
 .pt-table th,.pt-table td{border-bottom:1px solid #1c1c1c;padding:8px 4px;text-align:left}
 .pt-table th{color:#00d084;font-weight:bold}.note{margin-top:12px;font-size:12px;color:#888;line-height:1.5}
+
+.error-category-wrap{position:relative;height:300px;perspective:1000px;margin-top:15px}
+.error-category-carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
+.category-card{position:absolute;top:25px;left:50%;width:165px;height:225px;margin-left:-82.5px;border-radius:30px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 18px 45px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer}
+.category-card.cat-center{transform:translateX(0) scale(1);opacity:1;z-index:5;border-color:#ff3636;box-shadow:0 0 28px rgba(255,54,54,.35),0 20px 50px rgba(0,0,0,.95)}
+.category-card.cat-left{transform:translateX(-105px) scale(.72) rotateY(38deg);opacity:.42;z-index:3}
+.category-card.cat-right{transform:translateX(105px) scale(.72) rotateY(-38deg);opacity:.42;z-index:3}
+.category-card.cat-hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
+.cat-icon{width:76px;height:76px;margin-bottom:18px}
+.cat-icon svg{width:100%;height:100%}
+.cat-title{font-size:18px;font-weight:900;color:#ff3636;text-align:center}
+.small-nav{display:flex;justify-content:center;gap:12px;margin-top:10px}
+.small-nav button{width:46px;height:46px;font-size:22px}
 </style>
 </head>
 
@@ -151,28 +161,23 @@ button:active{transform:scale(.92)}
   </div>
 
   <div class="mode-box">
+    <div class="mode-title">Escolha o tipo de equipamento</div>
 
-    <div class="mode-title">1. Categoria</div>
-    <div class="category-list" id="categoryList"></div>
-
-    <div class="mode-title">2. Marca</div>
-    <div class="brand-list" id="brandList"></div>
-
-    <div class="mode-title">3. Código / Defeito</div>
-    <div class="search-area">
-      <input id="errorSearch" type="text" placeholder="Digite: E1, CH05, U4..." oninput="searchError()">
+    <div class="error-category-wrap">
+      <div class="error-category-carousel" id="categoryCarousel"></div>
     </div>
 
-    <div class="error-info" id="errorInfo"></div>
-
+    <div class="small-nav">
+      <button onclick="prevCategory()">‹</button>
+      <button onclick="nextCategory()">›</button>
+    </div>
   </div>
 </div>
 
 <script>
 const cards=document.querySelectorAll('.card');
 let current=0,startX=0,endX=0;
-let activeCategory="Split";
-let activeBrand="Midea";
+let catCurrent=0,catStartX=0,catEndX=0;
 
 function updateCarousel(){
   cards.forEach((card,index)=>{
@@ -181,7 +186,6 @@ function updateCarousel(){
     const right=(current+1)%cards.length;
     const farLeft=(current-2+cards.length)%cards.length;
     const farRight=(current+2)%cards.length;
-
     if(index===current) card.classList.add('center');
     else if(index===left) card.classList.add('left');
     else if(index===right) card.classList.add('right');
@@ -206,14 +210,10 @@ carousel.addEventListener('touchend',e=>{
 function openScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-
   if(id==='gases') document.getElementById('gases').scrollTop=0;
-
   if(id==='erros'){
     document.getElementById('erros').scrollTop=0;
-    renderCategories();
-    renderBrands();
-    renderFirstError();
+    renderCategoryCarousel();
   }
 }
 
@@ -277,134 +277,94 @@ function searchGas(){
   if(value.length>=2) renderGas(value);
 }
 
-const errorData={
-  "Split":{
-    "Midea":{
-      "E1":{falha:"Erro de comunicação",descricao:"Falha entre evaporadora e condensadora.",causa:"Cabo S, borne, placa ou aterramento.",teste:"Verificar L/N/S, continuidade e sinal serial.",solucao:"Corrigir cabeamento, limpar bornes e testar placas."},
-      "P4":{falha:"Proteção inverter",descricao:"Proteção por corrente ou temperatura do compressor.",causa:"Compressor pesado, IPM, tensão ou ventilação ruim.",teste:"Medir corrente, bobinas, DC bus e pressão.",solucao:"Corrigir ventilação e avaliar módulo/compressor."}
-    },
-    "Carrier":{
-      "E1":{falha:"Comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Cabo, borne, placa interna/externa.",teste:"Verificar continuidade e sinal.",solucao:"Corrigir interligação e testar placas."},
-      "E3":{falha:"Ventilador evaporadora",descricao:"Falha na rotação do motor interno.",causa:"Motor, sensor Hall, capacitor ou placa.",teste:"Verificar alimentação e travamento.",solucao:"Trocar motor/capacitor ou placa."}
-    },
-    "Samsung":{
-      "E101":{falha:"Comunicação interna/externa",descricao:"Falha entre evaporadora e condensadora.",causa:"Cabo de comunicação, borne oxidado, placa ou ruído elétrico.",teste:"Verificar interligação, continuidade, aterramento e tensão de comunicação.",solucao:"Corrigir cabos, reapertar bornes e testar placas."},
-      "E202":{falha:"Falha unidade externa",descricao:"Falha detectada na condensadora.",causa:"Sensor, placa externa, ventilador ou compressor.",teste:"Verificar alimentação, sensores e funcionamento da condensadora.",solucao:"Corrigir componente externo e resetar equipamento."}
-    },
-    "LG":{
-      "CH05":{falha:"Comunicação",descricao:"Falha de comunicação entre unidades.",causa:"Cabo S, borne, placa ou ruído.",teste:"Medir sinal e continuidade.",solucao:"Corrigir fiação, aterramento ou placa."},
-      "CH21":{falha:"Sobrecorrente compressor",descricao:"Corrente elevada no compressor inverter.",causa:"Compressor, módulo inverter, tensão ou fluido.",teste:"Medir corrente, bobinas e pressões.",solucao:"Corrigir causa e avaliar módulo/compressor."}
-    },
-    "Gree":{
-      "E6":{falha:"Comunicação",descricao:"Falha entre unidades.",causa:"Cabo, borne ou placa.",teste:"Verificar continuidade e sinal.",solucao:"Corrigir cabeamento e testar placas."},
-      "F0":{falha:"Falta de gás",descricao:"Baixa carga ou pressão anormal.",causa:"Vazamento, sensor ou carga baixa.",teste:"Verificar vazamento, pressão e temperatura.",solucao:"Corrigir vazamento e carga."}
-    }
-  },
+function svgSplit(){
+  return `<svg viewBox="0 0 100 100" fill="none">
+    <rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/>
+    <path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    <path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+}
 
-  "Janela":{
-    "Consul":{
-      "E1":{falha:"Sensor de temperatura",descricao:"Falha no sensor ambiente.",causa:"NTC aberto, curto ou conector oxidado.",teste:"Medir resistência do sensor.",solucao:"Substituir sensor ou reparar chicote."},
-      "E4":{falha:"Proteção térmica",descricao:"Temperatura anormal no sistema.",causa:"Serpentina suja, ventilação baixa ou sensor.",teste:"Verificar limpeza, motor e sensor.",solucao:"Limpar sistema e corrigir componente."}
-    },
-    "Electrolux":{
-      "E1":{falha:"Sensor ambiente",descricao:"Falha no sensor de ar.",causa:"NTC, chicote ou placa.",teste:"Medir sensor e verificar conector.",solucao:"Trocar sensor ou reparar chicote."}
-    }
-  },
+function svgCassete(){
+  return `<svg viewBox="0 0 100 100" fill="none">
+    <rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/>
+    <rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/>
+    <path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+}
 
-  "Chiller":{
-    "Trane":{
-      "E3":{falha:"Proteção de pressão",descricao:"Pressão fora da faixa normal.",causa:"Falta/excesso de fluido, fluxo de ar, pressostato.",teste:"Verificar pressões, filtro, serpentina e pressostato.",solucao:"Corrigir carga, vazamento ou ventilação."}
-    },
-    "York":{
-      "E4":{falha:"Proteção sistema",descricao:"Proteção por temperatura/pressão.",causa:"Serpentina suja, ventilação ruim, sensor ou carga.",teste:"Verificar fluxo de ar, pressão e sensores.",solucao:"Limpeza, carga correta e sensor."}
-    }
-  },
+function svgJanela(){
+  return `<svg viewBox="0 0 100 100" fill="none">
+    <rect x="22" y="20" width="56" height="60" rx="8" stroke="#ff3636" stroke-width="6"/>
+    <path d="M30 38H70" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    <path d="M34 52H66M34 63H66" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="67" cy="70" r="4" fill="#ff3636"/>
+  </svg>`;
+}
 
-  "Cassete":{
-    "Samsung":{
-      "E201":{falha:"Erro de comunicação externa",descricao:"Falha entre unidade interna e externa.",causa:"Cabo, placa ou endereçamento.",teste:"Verificar comunicação e alimentação.",solucao:"Corrigir endereçamento/cabeamento."}
-    },
-    "LG":{
-      "CH05":{falha:"Comunicação",descricao:"Erro de comunicação unidade interna/externa.",causa:"Interligação, borne ou placa.",teste:"Verificar cabo e placas.",solucao:"Corrigir conexão e testar placas."}
-    },
-    "Midea":{
-      "P6":{falha:"Proteção módulo",descricao:"Proteção do módulo inverter.",causa:"Sobrecorrente, superaquecimento ou módulo IPM.",teste:"Medir corrente, temperatura e compressor.",solucao:"Corrigir causa e avaliar módulo."}
-    }
-  }
-};
+function svgPisoTeto(){
+  return `<svg viewBox="0 0 100 100" fill="none">
+    <rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/>
+    <path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    <path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+}
 
-function renderCategories(){
-  const box=document.getElementById('categoryList');
-  box.innerHTML=Object.keys(errorData).map(cat=>`
-    <div class="error-chip ${cat===activeCategory?'active-error':''}" onclick="selectCategory('${cat}')">
-      <strong>${cat}</strong>
-      <small>categoria</small>
+const errorCategories=[
+  {name:"Split",icon:svgSplit()},
+  {name:"Cassete",icon:svgCassete()},
+  {name:"Janela",icon:svgJanela()},
+  {name:"Piso Teto",icon:svgPisoTeto()}
+];
+
+function renderCategoryCarousel(){
+  const box=document.getElementById("categoryCarousel");
+  box.innerHTML=errorCategories.map(cat=>`
+    <div class="category-card">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-title">${cat.name}</div>
     </div>
   `).join("");
+  updateCategoryCarousel();
 }
 
-function renderBrands(){
-  const box=document.getElementById('brandList');
-  box.innerHTML=Object.keys(errorData[activeCategory]).map(brand=>`
-    <div class="error-chip ${brand===activeBrand?'active-error':''}" onclick="selectBrand('${brand}')">
-      <strong>${brand}</strong>
-      <small>marca</small>
-    </div>
-  `).join("");
+function updateCategoryCarousel(){
+  const catCards=document.querySelectorAll('.category-card');
+
+  catCards.forEach((card,index)=>{
+    card.className='category-card';
+    const left=(catCurrent-1+catCards.length)%catCards.length;
+    const right=(catCurrent+1)%catCards.length;
+
+    if(index===catCurrent) card.classList.add('cat-center');
+    else if(index===left) card.classList.add('cat-left');
+    else if(index===right) card.classList.add('cat-right');
+    else card.classList.add('cat-hidden');
+  });
 }
 
-function selectCategory(cat){
-  activeCategory=cat;
-  activeBrand=Object.keys(errorData[cat])[0];
-  renderCategories();
-  renderBrands();
-  renderFirstError();
+function nextCategory(){
+  catCurrent=(catCurrent+1)%errorCategories.length;
+  updateCategoryCarousel();
 }
 
-function selectBrand(brand){
-  activeBrand=brand;
-  renderBrands();
-  renderFirstError();
+function prevCategory(){
+  catCurrent=(catCurrent-1+errorCategories.length)%errorCategories.length;
+  updateCategoryCarousel();
 }
 
-function renderFirstError(){
-  const first=Object.keys(errorData[activeCategory][activeBrand])[0];
-  renderError(first);
-}
-
-function searchError(){
-  const value=document.getElementById('errorSearch').value.trim().toUpperCase();
-  if(value.length>=1) renderError(value);
-}
-
-function renderError(code){
-  const data=errorData[activeCategory][activeBrand][code];
-
-  if(!data){
-    document.getElementById('errorInfo').innerHTML=`
-      <h2>Código não encontrado</h2>
-      <div class="info-row">Esse código não está cadastrado nessa categoria e marca.</div>
-    `;
-    return;
-  }
-
-  document.getElementById('errorInfo').innerHTML=`
-    <h2>${activeBrand} ${code}</h2>
-    <div class="info-row"><span>Categoria:</span><br>${activeCategory}</div>
-    <div class="info-row"><span>Marca:</span><br>${activeBrand}</div>
-    <div class="info-row"><span>Falha:</span><br>${data.falha}</div>
-    <div class="info-row"><span>Descrição:</span><br>${data.descricao}</div>
-    <div class="info-row"><span>Causa provável:</span><br>${data.causa}</div>
-    <div class="info-row"><span>Teste em campo:</span><br>${data.teste}</div>
-    <div class="info-row"><span>Solução sugerida:</span><br>${data.solucao}</div>
-  `;
-}
+const catCarousel=document.getElementById('categoryCarousel');
+catCarousel.addEventListener('touchstart',e=>{catStartX=e.touches[0].clientX});
+catCarousel.addEventListener('touchend',e=>{
+  catEndX=e.changedTouches[0].clientX;
+  const diff=catEndX-catStartX;
+  if(diff>45) prevCategory();
+  if(diff<-45) nextCategory();
+});
 
 updateCarousel();
 renderGas("R410A");
-renderCategories();
-renderBrands();
-renderFirstError();
+renderCategoryCarousel();
 </script>
 
 </body>
