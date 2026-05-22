@@ -53,17 +53,17 @@ button:active{transform:scale(.92)}
 .pt-table th,.pt-table td{border-bottom:1px solid #1c1c1c;padding:8px 4px;text-align:left}
 .pt-table th{color:#00d084;font-weight:bold}.note{margin-top:12px;font-size:12px;color:#888;line-height:1.5}
 
-.error-category-wrap,.brand-category-wrap,.model-category-wrap{position:relative;height:300px;perspective:1000px;margin-top:15px}
-.error-category-carousel,.brand-category-carousel,.model-category-carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
-.category-card,.brand-card,.model-card{position:absolute;top:25px;left:50%;width:165px;height:225px;margin-left:-82.5px;border-radius:30px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 18px 45px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer;text-align:center}
-.category-card.cat-center,.brand-card.brand-center,.model-card.model-center{transform:translateX(0) scale(1);opacity:1;z-index:5;border-color:#ff3636;box-shadow:0 0 28px rgba(255,54,54,.35),0 20px 50px rgba(0,0,0,.95)}
-.category-card.cat-left,.brand-card.brand-left,.model-card.model-left{transform:translateX(-105px) scale(.72) rotateY(38deg);opacity:.42;z-index:3}
-.category-card.cat-right,.brand-card.brand-right,.model-card.model-right{transform:translateX(105px) scale(.72) rotateY(-38deg);opacity:.42;z-index:3}
-.category-card.cat-hidden,.brand-card.brand-hidden,.model-card.model-hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
+.error-category-wrap,.brand-category-wrap,.model-category-wrap,.code-category-wrap{position:relative;height:300px;perspective:1000px;margin-top:15px}
+.error-category-carousel,.brand-category-carousel,.model-category-carousel,.code-category-carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
+.category-card,.brand-card,.model-card,.code-card{position:absolute;top:25px;left:50%;width:165px;height:225px;margin-left:-82.5px;border-radius:30px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 18px 45px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer;text-align:center}
+.category-card.cat-center,.brand-card.brand-center,.model-card.model-center,.code-card.code-center{transform:translateX(0) scale(1);opacity:1;z-index:5;border-color:#ff3636;box-shadow:0 0 28px rgba(255,54,54,.35),0 20px 50px rgba(0,0,0,.95)}
+.category-card.cat-left,.brand-card.brand-left,.model-card.model-left,.code-card.code-left{transform:translateX(-105px) scale(.72) rotateY(38deg);opacity:.42;z-index:3}
+.category-card.cat-right,.brand-card.brand-right,.model-card.model-right,.code-card.code-right{transform:translateX(105px) scale(.72) rotateY(-38deg);opacity:.42;z-index:3}
+.category-card.cat-hidden,.brand-card.brand-hidden,.model-card.model-hidden,.code-card.code-hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
 .cat-icon{width:76px;height:76px;margin-bottom:18px}
 .cat-icon svg{width:100%;height:100%}
-.cat-title,.brand-title,.model-title{font-size:18px;font-weight:900;color:#ff3636;text-align:center}
-.brand-sub,.model-sub{font-size:11px;color:#888;margin-top:8px}
+.cat-title,.brand-title,.model-title,.code-title{font-size:18px;font-weight:900;color:#ff3636;text-align:center}
+.brand-sub,.model-sub,.code-sub{font-size:11px;color:#888;margin-top:8px}
 .small-nav{display:flex;justify-content:center;gap:12px;margin-top:10px;margin-bottom:18px}
 .small-nav button{width:46px;height:46px;font-size:22px}
 </style>
@@ -228,15 +228,37 @@ button:active{transform:scale(.92)}
       <div class="model-info" id="modelInfo"></div>
     </div>
 
+    <div id="codeStep" style="display:none;">
+      <div class="back" onclick="backToModel()" style="margin-bottom:18px;">← Voltar modelo</div>
+
+      <div class="mode-title">Buscar código de erro</div>
+      <div class="search-area">
+        <input id="codeSearch" type="text" placeholder="Ex: E1, E3, P4, CH05, E101..." oninput="searchCode()">
+      </div>
+
+      <div class="mode-title">Códigos disponíveis</div>
+      <div class="code-category-wrap">
+        <div class="code-category-carousel" id="codeCarousel"></div>
+      </div>
+
+      <div class="small-nav">
+        <button onclick="prevCode()">‹</button>
+        <button onclick="nextCode()">›</button>
+      </div>
+
+      <div class="model-info" id="codeInfo"></div>
+    </div>
+
   </div>
 </div>
 
 <script>
 const cards=document.querySelectorAll('.card');
 let current=0,startX=0,endX=0;
-let catCurrent=0,catStartX=0,catEndX=0;
-let brandCurrent=0,brandStartX=0,brandEndX=0;
-let modelCurrent=0,modelStartX=0,modelEndX=0;
+let catCurrent=0;
+let brandCurrent=0;
+let modelCurrent=0;
+let codeCurrent=0;
 
 function updateCarousel(){
   cards.forEach((card,index)=>{
@@ -285,12 +307,15 @@ carousel.addEventListener('touchend',e=>{
 function openScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+
   if(id==='gases') document.getElementById('gases').scrollTop=0;
+
   if(id==='erros'){
     document.getElementById('erros').scrollTop=0;
     document.getElementById("typeStep").style.display="block";
     document.getElementById("brandStep").style.display="none";
     document.getElementById("modelStep").style.display="none";
+    document.getElementById("codeStep").style.display="none";
     renderCategoryCarousel();
   }
 }
@@ -382,8 +407,37 @@ const modelsByBrand={
   "York":["Cassete York","Piso Teto York"]
 };
 
+const errorCodesByModel={
+  "Midea|Xtreme Save":[
+    {code:"E1",title:"Comunicação",cause:"Falha de comunicação entre evaporadora e condensadora.",test:"Verificar cabo S, bornes, alimentação e aterramento.",solution:"Corrigir interligação, reapertar bornes e testar placas."},
+    {code:"P4",title:"Proteção inverter",cause:"Proteção do compressor ou módulo IPM.",test:"Medir corrente, pressão, tensão DC e bobinas do compressor.",solution:"Corrigir ventilação, alimentação ou avaliar módulo/compressor."}
+  ],
+  "LG|Dual Inverter":[
+    {code:"CH05",title:"Comunicação",cause:"Falha de comunicação entre unidades.",test:"Verificar cabo de comunicação, tensão e aterramento.",solution:"Corrigir cabeamento ou substituir placa com defeito."}
+  ],
+  "Samsung|WindFree":[
+    {code:"E101",title:"Comunicação",cause:"Falha entre unidade interna e externa.",test:"Conferir interligação, bornes e sinal de comunicação.",solution:"Corrigir cabo, conexão ou placa."},
+    {code:"E464",title:"Proteção compressor",cause:"Sobrecorrente ou falha no compressor inverter.",test:"Medir bobinas, corrente e barramento DC.",solution:"Avaliar compressor, módulo inverter e alimentação."}
+  ],
+  "Consul|Facilite":[
+    {code:"E1",title:"Sensor ambiente",cause:"Sensor NTC aberto, em curto ou desconectado.",test:"Medir resistência do sensor e verificar conector.",solution:"Reconectar ou substituir sensor."}
+  ],
+  "Carrier|XPower":[
+    {code:"E3",title:"Ventilador evaporadora",cause:"Falha de rotação do motor interno.",test:"Verificar motor, capacitor, sensor Hall e placa.",solution:"Corrigir motor, capacitor ou placa."}
+  ]
+};
+
 function activeCategory(){return errorCategories[catCurrent].name}
 function activeBrand(){return (brandsByCategory[activeCategory()]||[])[brandCurrent]}
+function activeModel(){return (modelsByBrand[activeBrand()]||[])[modelCurrent]||""}
+
+function getCodes(){
+  const key=activeBrand()+"|"+activeModel();
+  return errorCodesByModel[key] || [
+    {code:"E1",title:"Falha genérica",cause:"Código ainda não refinado para este modelo.",test:"Verificar alimentação, sensores, comunicação e placas.",solution:"Cadastrar diagnóstico específico na próxima etapa."},
+    {code:"E3",title:"Ventilador / sensor",cause:"Possível falha no motor, sensor ou rotação.",test:"Verificar motor, capacitor, sensor Hall e placa.",solution:"Corrigir componente defeituoso."}
+  ];
+}
 
 function renderCategoryCarousel(){
   const box=document.getElementById("categoryCarousel");
@@ -426,12 +480,14 @@ function selectTypeAndOpenBrand(index){
   document.getElementById("typeStep").style.display="none";
   document.getElementById("brandStep").style.display="block";
   document.getElementById("modelStep").style.display="none";
+  document.getElementById("codeStep").style.display="none";
   renderBrandCarousel();
 }
 
 function backToType(){
   document.getElementById("brandStep").style.display="none";
   document.getElementById("modelStep").style.display="none";
+  document.getElementById("codeStep").style.display="none";
   document.getElementById("typeStep").style.display="block";
 }
 
@@ -490,6 +546,7 @@ function selectBrandAndOpenModel(index){
   brandCurrent=index;
   document.getElementById("brandStep").style.display="none";
   document.getElementById("modelStep").style.display="block";
+  document.getElementById("codeStep").style.display="none";
   modelCurrent=0;
   document.getElementById("modelSearch").value="";
   renderModelCarousel();
@@ -497,6 +554,7 @@ function selectBrandAndOpenModel(index){
 
 function backToBrand(){
   document.getElementById("modelStep").style.display="none";
+  document.getElementById("codeStep").style.display="none";
   document.getElementById("brandStep").style.display="block";
 }
 
@@ -504,8 +562,8 @@ function renderModelCarousel(){
   const brand=activeBrand();
   const models=modelsByBrand[brand]||["Modelo não cadastrado"];
   const box=document.getElementById("modelCarousel");
-  box.innerHTML=models.map(model=>`
-    <div class="model-card">
+  box.innerHTML=models.map((model,index)=>`
+    <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
       <div class="model-title">${model}</div>
       <div class="model-sub">${brand}</div>
     </div>
@@ -563,32 +621,115 @@ function searchModel(){
 
 function renderModelInfo(){
   const brand=activeBrand();
-  const models=modelsByBrand[brand]||[];
-  const model=models[modelCurrent]||"";
+  const model=activeModel();
   document.getElementById("modelInfo").innerHTML=`
     <h2>${brand}</h2>
     <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
     <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${model}</div>
-    <div class="info-row"><span>Próxima etapa:</span><br>Depois vamos ligar esse modelo aos códigos de erro.</div>
+    <div class="info-row"><span>Toque no card do modelo para ver os códigos de erro.</span></div>
   `;
 }
 
-function setupSwipe(id,startRef,endRef,prevFn,nextFn){
+function selectModelAndOpenCodes(index){
+  modelCurrent=index;
+  document.getElementById("modelStep").style.display="none";
+  document.getElementById("codeStep").style.display="block";
+  codeCurrent=0;
+  document.getElementById("codeSearch").value="";
+  renderCodeCarousel();
+}
+
+function backToModel(){
+  document.getElementById("codeStep").style.display="none";
+  document.getElementById("modelStep").style.display="block";
+}
+
+function renderCodeCarousel(){
+  const codes=getCodes();
+  const box=document.getElementById("codeCarousel");
+  box.innerHTML=codes.map(item=>`
+    <div class="code-card">
+      <div class="code-title">${item.code}</div>
+      <div class="code-sub">${item.title}</div>
+    </div>
+  `).join("");
+  updateCodeCarousel();
+  renderCodeInfo();
+}
+
+function updateCodeCarousel(){
+  const codeCards=document.querySelectorAll('.code-card');
+  if(!codeCards.length)return;
+  codeCards.forEach((card,index)=>{
+    card.className='code-card';
+    const left=(codeCurrent-1+codeCards.length)%codeCards.length;
+    const right=(codeCurrent+1)%codeCards.length;
+    if(index===codeCurrent) card.classList.add('code-center');
+    else if(index===left) card.classList.add('code-left');
+    else if(index===right) card.classList.add('code-right');
+    else card.classList.add('code-hidden');
+  });
+  renderCodeInfo();
+}
+
+function nextCode(){
+  const codes=getCodes();
+  if(!codes.length)return;
+  codeCurrent=(codeCurrent+1)%codes.length;
+  updateCodeCarousel();
+}
+
+function prevCode(){
+  const codes=getCodes();
+  if(!codes.length)return;
+  codeCurrent=(codeCurrent-1+codes.length)%codes.length;
+  updateCodeCarousel();
+}
+
+function searchCode(){
+  const value=document.getElementById("codeSearch").value.trim().toLowerCase();
+  const codes=getCodes();
+  if(value.length<1){renderCodeInfo();return;}
+  const index=codes.findIndex(item=>{
+    const c=item.code.toLowerCase();
+    return c.includes(value) || value.includes(c);
+  });
+  if(index>=0){codeCurrent=index;updateCodeCarousel()}
+}
+
+function renderCodeInfo(){
+  const codes=getCodes();
+  const item=codes[codeCurrent];
+  if(!item)return;
+  document.getElementById("codeInfo").innerHTML=`
+    <h2>${item.code} - ${item.title}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+    <div class="info-row"><span>Modelo/Linha:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Causa provável:</span><br>${item.cause}</div>
+    <div class="info-row"><span>Teste em campo:</span><br>${item.test}</div>
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution}</div>
+  `;
+}
+
+function setupSwipe(id,prevFn,nextFn){
   const el=document.getElementById(id);
   if(!el)return;
-  el.addEventListener('touchstart',e=>{window[startRef]=e.touches[0].clientX});
+  let sx=0,ex=0;
+  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX});
   el.addEventListener('touchend',e=>{
-    window[endRef]=e.changedTouches[0].clientX;
-    const diff=window[endRef]-window[startRef];
+    ex=e.changedTouches[0].clientX;
+    const diff=ex-sx;
     if(diff>45) prevFn();
     if(diff<-45) nextFn();
   });
 }
 
 setTimeout(()=>{
-  setupSwipe('categoryCarousel','catStartX','catEndX',prevCategory,nextCategory);
-  setupSwipe('brandCarousel','brandStartX','brandEndX',prevBrand,nextBrand);
-  setupSwipe('modelCarousel','modelStartX','modelEndX',prevModel,nextModel);
+  setupSwipe('categoryCarousel',prevCategory,nextCategory);
+  setupSwipe('brandCarousel',prevBrand,nextBrand);
+  setupSwipe('modelCarousel',prevModel,nextModel);
+  setupSwipe('codeCarousel',prevCode,nextCode);
 },300);
 
 updateCarousel();
