@@ -3,257 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RefriCore IA Ultra Pro</title>
+<title>HVAC PRO</title>
 
 <style>
-body{
-  margin:0;
-  font-family: Arial;
-  background:#050505;
-  color:#fff;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
 }
 
-.header{
-  padding:14px;
-  background:#0b0b0b;
-  border-bottom:1px solid #222;
+/* HEADER */
+header {
+  background: #111;
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #222;
 }
 
-.title{
-  font-size:20px;
-  font-weight:bold;
-  letter-spacing:1px;
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00b7ff;
+  letter-spacing: 2px;
 }
 
-.subtitle{
-  font-size:11px;
-  color:#777;
+.sub {
+  font-size: 11px;
+  color: #777;
 }
 
-.container{
-  padding:12px;
-  max-width:900px;
-  margin:auto;
+/* CONTAINER */
+.container {
+  padding: 15px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+/* MENU */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 15px;
 }
 
-.card{
-  background:#0f0f0f;
-  border:1px solid #1c1c1c;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:10px;
+.card {
+  background: #121212;
+  border: 1px solid #222;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.panel{
-  background:#0a0a0a;
-  border:1px solid #222;
-  padding:12px;
-  border-radius:14px;
-  margin-bottom:10px;
+.card:hover {
+  transform: scale(1.03);
+  border-color: #00b7ff;
 }
 
-input, select{
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-  background:#000;
-  border:1px solid #2a2a2a;
-  color:#fff;
-  border-radius:8px;
+.card h3 {
+  margin: 10px 0 0 0;
+  font-size: 14px;
 }
 
-.big{
-  font-size:30px;
-  font-weight:bold;
+.icon {
+  font-size: 26px;
 }
 
-.status{
-  font-size:12px;
-  padding:6px 10px;
-  border-radius:20px;
-  display:inline-block;
-  margin-top:6px;
+/* TELAS */
+.screen {
+  display: none;
+  margin-top: 15px;
 }
 
-.green{background:#0c2a1a;color:#00ff9d;}
-.yellow{background:#2a240c;color:#ffd000;}
-.red{background:#2a0c0c;color:#ff4d4d;}
-
-canvas{
-  width:100%;
-  height:180px;
-  background:#000;
-  border-radius:10px;
-  border:1px solid #222;
+.active {
+  display: block;
 }
+
+/* BOTÃO VOLTAR */
+.back {
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  display: inline-block;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.back:hover {
+  background: #333;
+}
+
+/* CORES */
+.blue { color: #00b7ff; }
+.green { color: #00ff9d; }
+.red { color: #ff4d4d; }
+.orange { color: #ff7a18; }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="title">REFRICORE IA ULTRA PRO</div>
-  <div class="subtitle">Manifold digital com IA de diagnóstico</div>
-</div>
+<header>
+  <div class="logo">HVAC PRO</div>
+  <div class="sub">Sistema técnico de diagnóstico HVAC</div>
+</header>
 
 <div class="container">
 
-<div class="card">
-<label>Gás</label>
-<select id="gas" onchange="resetGraph()">
-  <option value="R410A">R410A</option>
-  <option value="R32">R32</option>
-  <option value="R22">R22</option>
-  <option value="R134a">R134a</option>
-</select>
-</div>
+  <!-- MENU PRINCIPAL -->
+  <div id="home" class="screen active">
 
-<div class="grid">
+    <div class="menu">
 
-  <div class="card">
-    <label>Pressão Baixa</label>
-    <input id="pb" type="number" value="65" oninput="update()">
+      <div class="card" onclick="openScreen('hvac')">
+        <div class="icon">❄️</div>
+        <h3>HVAC</h3>
+      </div>
+
+      <div class="card" onclick="openScreen('erros')">
+        <div class="icon">⚠️</div>
+        <h3>Códigos de Erro</h3>
+      </div>
+
+      <div class="card" onclick="openScreen('testes')">
+        <div class="icon">🧪</div>
+        <h3>Testes</h3>
+      </div>
+
+      <div class="card" onclick="openScreen('manifold')">
+        <div class="icon">📊</div>
+        <h3>Manifold</h3>
+      </div>
+
+    </div>
+
   </div>
 
-  <div class="card">
-    <label>Temperatura Sucção</label>
-    <input id="ts" type="number" value="9" oninput="update()">
+  <!-- HVAC -->
+  <div id="hvac" class="screen">
+    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+    <h2 class="blue">HVAC</h2>
+    <p>Área de diagnósticos gerais do sistema.</p>
   </div>
 
-</div>
+  <!-- ERROS -->
+  <div id="erros" class="screen">
+    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+    <h2 class="orange">Códigos de Erro</h2>
+    <p>Base de dados de falhas por marca.</p>
+  </div>
 
-<div class="panel">
+  <!-- TESTES -->
+  <div id="testes" class="screen">
+    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+    <h2 class="green">Testes</h2>
+    <p>Ferramentas de diagnóstico técnico.</p>
+  </div>
 
-  <div>Evaporação</div>
-  <div class="big" id="evap">--</div>
-
-  <div>Superaquecimento</div>
-  <div class="big" id="sh">--</div>
-
-  <div id="zone" class="status green">Zona: --</div>
-
-</div>
-
-<div class="panel">
-<canvas id="graph"></canvas>
-</div>
-
-<div class="panel" id="diag">
-Aguardando análise...
-</div>
+  <!-- MANIFOLD -->
+  <div id="manifold" class="screen">
+    <div class="back" onclick="openScreen('home')">⬅ Voltar</div>
+    <h2 class="red">Manifold</h2>
+    <p>Leitura de pressão e análise do sistema.</p>
+  </div>
 
 </div>
 
 <script>
-
-/* =========================
-   BASE HVAC
-========================= */
-
-const gases = {
-  R410A:[{psi:50,evap:0},{psi:60,evap:2},{psi:70,evap:4},{psi:80,evap:6},{psi:90,evap:8},{psi:100,evap:10}],
-  R32:[{psi:50,evap:1},{psi:60,evap:3},{psi:70,evap:5},{psi:80,evap:7},{psi:90,evap:9},{psi:100,evap:11}],
-  R22:[{psi:40,evap:0},{psi:50,evap:3},{psi:60,evap:5},{psi:70,evap:7},{psi:80,evap:9},{psi:90,evap:11}],
-  R134a:[{psi:20,evap:0},{psi:30,evap:2},{psi:40,evap:4},{psi:50,evap:6},{psi:60,evap:8},{psi:70,evap:10}]
-};
-
-function evapCalc(gas, psi){
-  let t = gases[gas];
-  for(let i=0;i<t.length-1;i++){
-    let a=t[i],b=t[i+1];
-    if(psi>=a.psi && psi<=b.psi){
-      let r=(psi-a.psi)/(b.psi-a.psi);
-      return a.evap+r*(b.evap-a.evap);
-    }
-  }
-  return t[t.length-1].evap;
+function openScreen(id) {
+  let screens = document.querySelectorAll('.screen');
+  screens.forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
-
-/* =========================
-   GRÁFICO REAL TIME
-========================= */
-
-let data = [];
-
-function drawGraph(){
-
-  let c = document.getElementById("graph");
-  let ctx = c.getContext("2d");
-
-  c.width = c.clientWidth;
-  c.height = 180;
-
-  ctx.clearRect(0,0,c.width,c.height);
-
-  ctx.strokeStyle = "#00ff99";
-  ctx.beginPath();
-
-  for(let i=0;i<data.length;i++){
-    let x = (i/data.length)*c.width;
-    let y = c.height - (data[i]*10);
-    if(i==0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
-  }
-
-  ctx.stroke();
-}
-
-/* =========================
-   IA DIAGNÓSTICO
-========================= */
-
-function ia(sh){
-
-  if(sh > 12) return {msg:"🔴 Subcarga provável / restrição", cls:"red"};
-  if(sh < 3) return {msg:"🟡 Excesso de líquido", cls:"yellow"};
-  if(sh >=5 && sh<=8) return {msg:"🟢 Operação ideal", cls:"green"};
-
-  return {msg:"🟡 Fora da zona ideal", cls:"yellow"};
-}
-
-/* =========================
-   UPDATE CONTÍNUO
-========================= */
-
-function update(){
-
-  let gas=document.getElementById("gas").value;
-  let pb=Number(document.getElementById("pb").value);
-  let ts=Number(document.getElementById("ts").value);
-
-  let evap=evapCalc(gas,pb);
-  let sh=ts-evap;
-
-  document.getElementById("evap").innerText=evap.toFixed(1)+" °C";
-  document.getElementById("sh").innerText=sh.toFixed(1)+" K";
-
-  let r=ia(sh);
-
-  let zone=document.getElementById("zone");
-  zone.innerText="Zona: "+r.msg;
-  zone.className="status "+r.cls;
-
-  document.getElementById("diag").innerText=r.msg;
-
-  data.push(sh);
-  if(data.length>30) data.shift();
-
-  drawGraph();
-}
-
-function resetGraph(){
-  data=[];
-}
-
-setInterval(update,800);
-update();
-
 </script>
 
 </body>
