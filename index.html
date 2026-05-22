@@ -10,8 +10,12 @@
 html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);color:#fff;overflow:hidden}
 .app{max-width:430px;margin:auto;height:100dvh;padding:22px;display:flex;flex-direction:column;justify-content:center;animation:entry 1s ease forwards;overflow:hidden}
 @keyframes entry{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.logo{text-align:center;font-size:34px;font-weight:900;letter-spacing:4px;margin-bottom:45px;text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35)}
+.logo{text-align:center;font-size:34px;font-weight:900;letter-spacing:4px;margin-bottom:25px;text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35)}
 .screen{display:none}.screen.active{display:block}
+
+.home-search{margin-bottom:20px}
+.home-search input{width:100%;padding:15px;border-radius:18px;border:1px solid #333;background:#050505;color:#fff;font-size:15px;outline:none}
+
 .carousel-wrap{position:relative;height:365px;perspective:1100px}
 .carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
 .card{position:absolute;top:25px;left:50%;width:195px;height:285px;margin-left:-97.5px;border-radius:32px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 25px 55px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer}
@@ -68,6 +72,10 @@ button:active{transform:scale(.92)}
 
 <div class="app screen active" id="home">
   <div class="logo">HVAC PRO</div>
+
+  <div class="home-search">
+    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos" oninput="searchHome()">
+  </div>
 
   <div class="carousel-wrap">
     <div class="carousel" id="carousel">
@@ -204,6 +212,25 @@ function updateCarousel(){
 function next(){current=(current+1)%cards.length;updateCarousel()}
 function prev(){current=(current-1+cards.length)%cards.length;updateCarousel()}
 
+function searchHome(){
+  const value=document.getElementById("homeSearch").value.trim().toLowerCase();
+  if(value.length<2)return;
+
+  const map=[
+    {keys:["manifold","pressao","pressão"],index:0},
+    {keys:["erros","erro","defeito","defeitos"],index:1},
+    {keys:["testes","teste","multimetro","multímetro"],index:2},
+    {keys:["gases","gas","gás","refrigerante"],index:3},
+    {keys:["modelos","modelo","equipamento"],index:4}
+  ];
+
+  const found=map.find(item=>item.keys.some(k=>k.includes(value)||value.includes(k)));
+  if(found){
+    current=found.index;
+    updateCarousel();
+  }
+}
+
 const carousel=document.getElementById('carousel');
 carousel.addEventListener('touchstart',e=>{startX=e.touches[0].clientX});
 carousel.addEventListener('touchend',e=>{
@@ -240,14 +267,8 @@ const gasData={
 function renderGas(name){
   const key=name.toUpperCase();
   const gas=gasData[key];
-
-  if(!gas){
-    document.getElementById('gasInfo').innerHTML=`<h2>Não encontrado</h2><div class="info-row">Digite um gás válido.</div>`;
-    return;
-  }
-
+  if(!gas){document.getElementById('gasInfo').innerHTML=`<h2>Não encontrado</h2><div class="info-row">Digite um gás válido.</div>`;return;}
   const ptRows=gas.pt.map(row=>`<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("");
-
   document.getElementById('gasInfo').innerHTML=`
     <h2>${gas.nome}</h2>
     <div class="info-row"><span>Tipo:</span><br>${gas.tipo}</div>
@@ -271,17 +292,8 @@ function renderGas(name){
     </div>`;
 }
 
-function selectGas(name,el){
-  document.querySelectorAll('.gas-chip').forEach(chip=>chip.classList.remove('active-gas'));
-  el.classList.add('active-gas');
-  document.getElementById('gasSearch').value=name;
-  renderGas(name);
-}
-
-function searchGas(){
-  const value=document.getElementById('gasSearch').value.trim();
-  if(value.length>=2) renderGas(value);
-}
+function selectGas(name,el){document.querySelectorAll('.gas-chip').forEach(chip=>chip.classList.remove('active-gas'));el.classList.add('active-gas');document.getElementById('gasSearch').value=name;renderGas(name)}
+function searchGas(){const value=document.getElementById('gasSearch').value.trim();if(value.length>=2) renderGas(value)}
 
 function svgSplit(){return `<svg viewBox="0 0 100 100" fill="none"><rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;}
 function svgCassete(){return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/><rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/><path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;}
@@ -308,12 +320,10 @@ function renderCategoryCarousel(){
 
 function updateCategoryCarousel(){
   const catCards=document.querySelectorAll('.category-card');
-
   catCards.forEach((card,index)=>{
     card.className='category-card';
     const left=(catCurrent-1+catCards.length)%catCards.length;
     const right=(catCurrent+1)%catCards.length;
-
     if(index===catCurrent) card.classList.add('cat-center');
     else if(index===left) card.classList.add('cat-left');
     else if(index===right) card.classList.add('cat-right');
@@ -321,28 +331,14 @@ function updateCategoryCarousel(){
   });
 }
 
-function nextCategory(){
-  catCurrent=(catCurrent+1)%errorCategories.length;
-  updateCategoryCarousel();
-}
-
-function prevCategory(){
-  catCurrent=(catCurrent-1+errorCategories.length)%errorCategories.length;
-  updateCategoryCarousel();
-}
+function nextCategory(){catCurrent=(catCurrent+1)%errorCategories.length;updateCategoryCarousel()}
+function prevCategory(){catCurrent=(catCurrent-1+errorCategories.length)%errorCategories.length;updateCategoryCarousel()}
 
 function searchErrorType(){
   const value=document.getElementById("errorTypeSearch").value.trim().toLowerCase();
   if(value.length<2)return;
-
-  const index=errorCategories.findIndex(cat=>
-    cat.search.some(term=>term.includes(value) || value.includes(term))
-  );
-
-  if(index>=0){
-    catCurrent=index;
-    updateCategoryCarousel();
-  }
+  const index=errorCategories.findIndex(cat=>cat.search.some(term=>term.includes(value)||value.includes(term)));
+  if(index>=0){catCurrent=index;updateCategoryCarousel()}
 }
 
 const catCarousel=document.getElementById('categoryCarousel');
