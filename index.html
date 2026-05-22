@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RefriCore Manifold Pro</title>
+<title>RefriCore IA Ultra Pro</title>
 
 <style>
 body{
@@ -13,11 +13,10 @@ body{
   color:#fff;
 }
 
-/* HEADER INDUSTRIAL */
 .header{
   padding:14px;
   background:#0b0b0b;
-  border-bottom:1px solid #1e1e1e;
+  border-bottom:1px solid #222;
 }
 
 .title{
@@ -31,14 +30,18 @@ body{
   color:#777;
 }
 
-/* LAYOUT MANIFOLD */
 .container{
   padding:12px;
   max-width:900px;
   margin:auto;
 }
 
-/* INPUTS */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
 .card{
   background:#0f0f0f;
   border:1px solid #1c1c1c;
@@ -47,9 +50,12 @@ body{
   margin-bottom:10px;
 }
 
-label{
-  font-size:12px;
-  color:#aaa;
+.panel{
+  background:#0a0a0a;
+  border:1px solid #222;
+  padding:12px;
+  border-radius:14px;
+  margin-bottom:10px;
 }
 
 input, select{
@@ -62,35 +68,15 @@ input, select{
   border-radius:8px;
 }
 
-/* PAINEL PRINCIPAL (MANIFOLD DISPLAY) */
-.panel{
-  background:linear-gradient(180deg,#0a0a0a,#000);
-  border:1px solid #222;
-  border-radius:16px;
-  padding:15px;
-  margin-bottom:10px;
-  box-shadow:0 0 20px rgba(0,255,120,0.05);
-}
-
-/* VALORES GRANDES */
 .big{
-  font-size:34px;
+  font-size:30px;
   font-weight:bold;
-  letter-spacing:1px;
 }
 
-/* GRID DISPLAY */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-/* STATUS COLORS */
 .status{
+  font-size:12px;
   padding:6px 10px;
   border-radius:20px;
-  font-size:12px;
   display:inline-block;
   margin-top:6px;
 }
@@ -99,20 +85,12 @@ input, select{
 .yellow{background:#2a240c;color:#ffd000;}
 .red{background:#2a0c0c;color:#ff4d4d;}
 
-/* LABELS DE PAINEL */
-.tag{
-  font-size:11px;
-  color:#888;
-  margin-bottom:4px;
-}
-
-/* ALERTA */
-.alert{
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #2a2a2a;
-  background:#0d0d0d;
-  font-size:13px;
+canvas{
+  width:100%;
+  height:180px;
+  background:#000;
+  border-radius:10px;
+  border:1px solid #222;
 }
 </style>
 </head>
@@ -120,60 +98,54 @@ input, select{
 <body>
 
 <div class="header">
-  <div class="title">REFRICORE MANIFOLD PRO</div>
-  <div class="subtitle">Sistema inteligente de diagnóstico HVAC</div>
+  <div class="title">REFRICORE IA ULTRA PRO</div>
+  <div class="subtitle">Manifold digital com IA de diagnóstico</div>
 </div>
 
 <div class="container">
 
-<!-- INPUTS -->
 <div class="card">
-  <label>Gás Refrigerante</label>
-  <select id="gas" onchange="calc()">
-    <option value="R410A">R410A</option>
-    <option value="R32">R32</option>
-    <option value="R22">R22</option>
-    <option value="R134a">R134a</option>
-  </select>
+<label>Gás</label>
+<select id="gas" onchange="resetGraph()">
+  <option value="R410A">R410A</option>
+  <option value="R32">R32</option>
+  <option value="R22">R22</option>
+  <option value="R134a">R134a</option>
+</select>
 </div>
 
 <div class="grid">
 
   <div class="card">
-    <label>Pressão Baixa (PSI)</label>
-    <input id="pb" type="number" value="65" oninput="calc()">
+    <label>Pressão Baixa</label>
+    <input id="pb" type="number" value="65" oninput="update()">
   </div>
 
   <div class="card">
-    <label>Temp. Sucção (°C)</label>
-    <input id="ts" type="number" value="9" oninput="calc()">
+    <label>Temperatura Sucção</label>
+    <input id="ts" type="number" value="9" oninput="update()">
   </div>
 
 </div>
 
-<!-- PAINEL MANIFOLD -->
 <div class="panel">
 
-  <div class="tag">EVAPORAÇÃO</div>
+  <div>Evaporação</div>
   <div class="big" id="evap">--</div>
 
-  <div class="status green" id="zoneEvap">Zona: --</div>
+  <div>Superaquecimento</div>
+  <div class="big" id="sh">--</div>
+
+  <div id="zone" class="status green">Zona: --</div>
 
 </div>
 
 <div class="panel">
-
-  <div class="tag">PRESSÃO ALTA</div>
-  <div class="big" id="pa">--</div>
-
-  <div class="tag">SUPERAQUECIMENTO</div>
-  <div class="big" id="sh">--</div>
-
+<canvas id="graph"></canvas>
 </div>
 
-<!-- DIAGNÓSTICO -->
-<div class="alert" id="diag">
-Aguardando leitura do sistema...
+<div class="panel" id="diag">
+Aguardando análise...
 </div>
 
 </div>
@@ -181,120 +153,106 @@ Aguardando leitura do sistema...
 <script>
 
 /* =========================
-   TABELA HVAC PRO
+   BASE HVAC
 ========================= */
 
 const gases = {
-
-  R410A: [
-    {psi: 50, evap: 0},
-    {psi: 60, evap: 2},
-    {psi: 70, evap: 4},
-    {psi: 80, evap: 6},
-    {psi: 90, evap: 8},
-    {psi: 100, evap: 10}
-  ],
-
-  R32: [
-    {psi: 50, evap: 1},
-    {psi: 60, evap: 3},
-    {psi: 70, evap: 5},
-    {psi: 80, evap: 7},
-    {psi: 90, evap: 9},
-    {psi: 100, evap: 11}
-  ],
-
-  R22: [
-    {psi: 40, evap: 0},
-    {psi: 50, evap: 3},
-    {psi: 60, evap: 5},
-    {psi: 70, evap: 7},
-    {psi: 80, evap: 9},
-    {psi: 90, evap: 11}
-  ],
-
-  R134a: [
-    {psi: 20, evap: 0},
-    {psi: 30, evap: 2},
-    {psi: 40, evap: 4},
-    {psi: 50, evap: 6},
-    {psi: 60, evap: 8},
-    {psi: 70, evap: 10}
-  ]
+  R410A:[{psi:50,evap:0},{psi:60,evap:2},{psi:70,evap:4},{psi:80,evap:6},{psi:90,evap:8},{psi:100,evap:10}],
+  R32:[{psi:50,evap:1},{psi:60,evap:3},{psi:70,evap:5},{psi:80,evap:7},{psi:90,evap:9},{psi:100,evap:11}],
+  R22:[{psi:40,evap:0},{psi:50,evap:3},{psi:60,evap:5},{psi:70,evap:7},{psi:80,evap:9},{psi:90,evap:11}],
+  R134a:[{psi:20,evap:0},{psi:30,evap:2},{psi:40,evap:4},{psi:50,evap:6},{psi:60,evap:8},{psi:70,evap:10}]
 };
 
 function evapCalc(gas, psi){
-
   let t = gases[gas];
-
   for(let i=0;i<t.length-1;i++){
-
-    let a = t[i];
-    let b = t[i+1];
-
-    if(psi >= a.psi && psi <= b.psi){
-
-      let r = (psi - a.psi) / (b.psi - a.psi);
-      return a.evap + r * (b.evap - a.evap);
+    let a=t[i],b=t[i+1];
+    if(psi>=a.psi && psi<=b.psi){
+      let r=(psi-a.psi)/(b.psi-a.psi);
+      return a.evap+r*(b.evap-a.evap);
     }
   }
-
   return t[t.length-1].evap;
 }
 
-function calc(){
+/* =========================
+   GRÁFICO REAL TIME
+========================= */
 
-  let gas = document.getElementById("gas").value;
-  let pb = Number(document.getElementById("pb").value);
-  let ts = Number(document.getElementById("ts").value);
+let data = [];
 
-  let evap = evapCalc(gas, pb);
+function drawGraph(){
 
-  let coefAlta = {
-    R410A: 3.6,
-    R32: 3.4,
-    R22: 2.8,
-    R134a: 2.5
-  };
+  let c = document.getElementById("graph");
+  let ctx = c.getContext("2d");
 
-  let pa = pb * (coefAlta[gas] || 3);
-  let sh = ts - evap;
+  c.width = c.clientWidth;
+  c.height = 180;
 
-  document.getElementById("evap").innerText = evap.toFixed(1) + " °C";
-  document.getElementById("pa").innerText = pa.toFixed(0) + " PSI";
-  document.getElementById("sh").innerText = sh.toFixed(1) + " K";
+  ctx.clearRect(0,0,c.width,c.height);
 
-  /* ZONA DE OPERAÇÃO */
-  let zone = document.getElementById("zoneEvap");
+  ctx.strokeStyle = "#00ff99";
+  ctx.beginPath();
 
-  if(sh >= 5 && sh <= 8){
-    zone.innerText = "Zona: OPERANDO NORMAL";
-    zone.className = "status green";
-  }
-  else if(sh > 10){
-    zone.innerText = "Zona: SUBCARGA POSSÍVEL";
-    zone.className = "status red";
-  }
-  else{
-    zone.innerText = "Zona: ATENÇÃO NO SISTEMA";
-    zone.className = "status yellow";
+  for(let i=0;i<data.length;i++){
+    let x = (i/data.length)*c.width;
+    let y = c.height - (data[i]*10);
+    if(i==0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
   }
 
-  /* DIAGNÓSTICO */
-  let diag = document.getElementById("diag");
-
-  if(sh > 12){
-    diag.innerHTML = "🔴 Diagnóstico: possível falta de gás ou restrição no sistema";
-  }
-  else if(sh < 3){
-    diag.innerHTML = "🟡 Diagnóstico: excesso de líquido ou retorno incorreto";
-  }
-  else{
-    diag.innerHTML = "🟢 Sistema operando dentro da faixa ideal";
-  }
+  ctx.stroke();
 }
 
-calc();
+/* =========================
+   IA DIAGNÓSTICO
+========================= */
+
+function ia(sh){
+
+  if(sh > 12) return {msg:"🔴 Subcarga provável / restrição", cls:"red"};
+  if(sh < 3) return {msg:"🟡 Excesso de líquido", cls:"yellow"};
+  if(sh >=5 && sh<=8) return {msg:"🟢 Operação ideal", cls:"green"};
+
+  return {msg:"🟡 Fora da zona ideal", cls:"yellow"};
+}
+
+/* =========================
+   UPDATE CONTÍNUO
+========================= */
+
+function update(){
+
+  let gas=document.getElementById("gas").value;
+  let pb=Number(document.getElementById("pb").value);
+  let ts=Number(document.getElementById("ts").value);
+
+  let evap=evapCalc(gas,pb);
+  let sh=ts-evap;
+
+  document.getElementById("evap").innerText=evap.toFixed(1)+" °C";
+  document.getElementById("sh").innerText=sh.toFixed(1)+" K";
+
+  let r=ia(sh);
+
+  let zone=document.getElementById("zone");
+  zone.innerText="Zona: "+r.msg;
+  zone.className="status "+r.cls;
+
+  document.getElementById("diag").innerText=r.msg;
+
+  data.push(sh);
+  if(data.length>30) data.shift();
+
+  drawGraph();
+}
+
+function resetGraph(){
+  data=[];
+}
+
+setInterval(update,800);
+update();
 
 </script>
 
