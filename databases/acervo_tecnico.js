@@ -1,23 +1,110 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   Acervo Técnico Oficial - Restauração Estável
-
-   Base enviada pelo usuário.
+   TESTE DE LÓGICA DE CORES DO ACERVO TÉCNICO
 
    Objetivo:
-   - Restaurar o carregamento do Acervo Técnico.
-   - Garantir que window.acervoTecnico exista.
-   - Voltar a busca a funcionar antes de enriquecer novamente.
+   - Testar se o app está exibindo corretamente:
+     AZUL  = OFICIAL
+     VERDE = CONFIAVEL_NAO_OFICIAL
+     BRANCO = INFORMACAO_SUGERIDA
 
-   Regra deste arquivo:
-   - Usar somente fonte oficial do fabricante.
-   - Não inventar dados técnicos.
-   - Quando o manual oficial não informar, usar:
-     "Não informado no manual oficial"
-     ou
-     "Validar etiqueta/manual".
+   Instrução:
+   - Este arquivo mantém a base oficial estável e adiciona 3 registros de teste no início.
+   - Depois do teste, a gente remove esses registros de teste e continua enriquecendo o banco real.
 */
 
 window.acervoTecnico = [
+
+  /* =========================
+     TESTES DE COR - NÃO SÃO EQUIPAMENTOS REAIS
+     ========================= */
+
+  {
+    marca: "HVAC PRO",
+    modelo: "TESTE OFICIAL AZUL",
+    codigoBusca: [
+      "TESTE-AZUL",
+      "TESTE AZUL",
+      "AZUL",
+      "OFICIAL"
+    ],
+    linha: "Teste de lógica de cores",
+    tipo: "Registro de teste",
+    capacidade: "12.000 BTU/h",
+    tensao: "220V",
+    fluidoRefrigerante: "R32",
+    cargaGas: "500 g",
+    correnteNominal: "6 A",
+    disjuntor: "10 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    manualInstalacao: "https://example.com/teste-oficial",
+    manualManutencao: "https://example.com/teste-oficial",
+    fonte: "Teste oficial - simulação de site oficial/fabricante/manual oficial",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
+  },
+
+  {
+    marca: "HVAC PRO",
+    modelo: "TESTE CONFIÁVEL VERDE",
+    codigoBusca: [
+      "TESTE-VERDE",
+      "TESTE VERDE",
+      "VERDE",
+      "CONFIAVEL_NAO_OFICIAL",
+      "CONFIÁVEL NÃO OFICIAL"
+    ],
+    linha: "Teste de lógica de cores",
+    tipo: "Registro de teste",
+    capacidade: "18.000 BTU/h",
+    tensao: "220V",
+    fluidoRefrigerante: "R410A",
+    cargaGas: "900 g",
+    correnteNominal: "9 A",
+    disjuntor: "16 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "1/2 pol.",
+    manualInstalacao: "https://example.com/teste-verde",
+    manualManutencao: "https://example.com/teste-verde",
+    fonte: "Teste confiável não oficial - simulação de distribuidor técnico autorizado/catálogo técnico",
+    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
+    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
+    status: "CONFIAVEL_NAO_OFICIAL"
+  },
+
+  {
+    marca: "HVAC PRO",
+    modelo: "TESTE SUGERIDO BRANCO",
+    codigoBusca: [
+      "TESTE-BRANCO",
+      "TESTE BRANCO",
+      "BRANCO",
+      "INFORMACAO_SUGERIDA",
+      "INFORMAÇÃO SUGERIDA"
+    ],
+    linha: "Teste de lógica de cores",
+    tipo: "Registro de teste",
+    capacidade: "9.000 BTU/h",
+    tensao: "127V",
+    fluidoRefrigerante: "R22",
+    cargaGas: "Informação sugerida: 450 g",
+    correnteNominal: "Informação sugerida: 5 A",
+    disjuntor: "Informação sugerida: 10 A",
+    tubulacaoAlta: "Informação sugerida: 1/4 pol.",
+    tubulacaoBaixa: "Informação sugerida: 3/8 pol.",
+    manualInstalacao: "https://example.com/teste-branco",
+    manualManutencao: "https://example.com/teste-branco",
+    fonte: "Informação sugerida por usuário/internet/campo - teste branco",
+    fonteTipo: "INFORMACAO_SUGERIDA",
+    nivelConfianca: "INFORMACAO_SUGERIDA",
+    status: "INFORMACAO_SUGERIDA"
+  },
+
+  /* =========================
+     BASE OFICIAL ESTÁVEL RESTAURADA
+     ========================= */
+
   {
     marca: "Midea",
     modelo: "Xtreme Save AI Connect R32",
@@ -46,8 +133,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     fonte: "Midea oficial - conteúdo/manual do fabricante",
-    status: "Cadastro inicial oficial. Dados variam conforme código exato da evaporadora/condensadora; validar etiqueta/manual."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Midea",
     modelo: "Multi Inverter / FreeMatch",
@@ -78,8 +168,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
     fonte: "Midea oficial - Manual de Instalação, Operação e Manutenção",
-    status: "Fonte oficial destinada a técnicos qualificados. Validar combinação exata das unidades antes do serviço."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Gree",
     modelo: "G-Diamond Auto Inverter",
@@ -107,8 +200,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     fonte: "Gree oficial - Manual G-Diamond Auto Inverter",
-    status: "Cadastro inicial oficial. Manual reúne operação/instalação/manutenção; validar etiqueta do equipamento."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Gree",
     modelo: "G-Diamond Top",
@@ -133,8 +229,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-DIAMOND-TOP-Rev-000-full.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-DIAMOND-TOP-Rev-000-full.pdf",
     fonte: "Gree oficial - Manual G-Diamond Top",
-    status: "Cadastro inicial oficial. Validar código exato da máquina antes de usar dados técnicos."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Gree",
     modelo: "Materiais Técnicos Gree",
@@ -166,8 +265,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://gree.com.br/manuais/",
     manualManutencao: "https://gree.com.br/manuais/",
     fonte: "Gree oficial - página de materiais técnicos",
-    status: "Portal oficial usado como índice quando o técnico pesquisar uma linha Gree ainda não detalhada no banco."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "LG",
     modelo: "Portal oficial de manuais LG Ar-Condicionado",
@@ -195,8 +297,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
     manualManutencao: "https://www.lg.com/br/business/manual/",
     fonte: "LG oficial - suporte/manuais e LG Business manual download",
-    status: "Portal oficial. Próxima etapa: cadastrar códigos LG específicos com links e dados por modelo."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Samsung",
     modelo: "WindFree 12000 BTU Frio AR12MVPXAWKNAZ",
@@ -223,8 +328,11 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     fonte: "Samsung oficial - página de suporte do modelo com baixar manual",
-    status: "Link oficial do modelo. Usar página oficial para baixar o manual mais atual disponível."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   },
+
   {
     marca: "Samsung",
     modelo: "WindFree AI 12000 BTU Frio Wi-Fi AR12DYFABWKNAZ",
@@ -251,6 +359,8 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     fonte: "Samsung oficial - página de suporte do modelo com baixar manual",
-    status: "Link oficial do modelo. Usar página oficial para baixar o manual mais atual disponível."
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL"
   }
 ];
