@@ -1,5 +1,6 @@
 /* HVAC PRO - databases/acervo_tecnico.js
    TESTE DE CORES POR CAMPO - ACERVO TÉCNICO
+   VERSÃO CORRIGIDA
 
    Objetivo:
    Validar a lógica correta:
@@ -10,7 +11,10 @@
    - CONFIAVEL_NAO_OFICIAL = verde
    - INFORMACAO_SUGERIDA = branco
 
-   Depois do teste, este arquivo será substituído pelo acervo real enriquecido.
+   Correção desta versão:
+   - Removi palavras como "informação sugerida" do campo global fonte/status.
+   - Antes, como o app lia o campo fonte geral para todos os campos, ele jogava tudo para branco.
+   - Agora cada cor fica somente no confiancaCampos/fontesCampos de cada campo.
 */
 
 window.acervoTecnico = [
@@ -32,9 +36,9 @@ window.acervoTecnico = [
     capacidade: "12.000 BTU/h",
     tensao: "220V",
     fluidoRefrigerante: "R410A",
-    cargaGas: "Informação sugerida: 720 g",
+    cargaGas: "720 g",
     correnteNominal: "6,2 A",
-    disjuntor: "Informação sugerida: 10 A",
+    disjuntor: "10 A",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "15 m",
@@ -42,10 +46,9 @@ window.acervoTecnico = [
 
     manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "Ficha teste: mistura de fonte oficial, confiável não oficial e informação sugerida",
 
-    /* Status geral fica OFICIAL só para compatibilidade.
-       A cor correta deve ser definida pelo confiancaCampos de cada campo. */
+    /* Campo global limpo, sem palavras de cor/confiança. */
+    fonte: "Ficha de teste LG S4-Q12JA315 para validar cor por campo",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
@@ -57,15 +60,17 @@ window.acervoTecnico = [
       linha: "FABRICANTE_OFICIAL",
       tipo: "FABRICANTE_OFICIAL",
       capacidade: "FABRICANTE_OFICIAL",
+
       tensao: "CONFIAVEL_NAO_OFICIAL",
-      fluidoRefrigerante: "INFORMACAO_SUGERIDA",
-      cargaGas: "INFORMACAO_SUGERIDA",
       correnteNominal: "CONFIAVEL_NAO_OFICIAL",
-      disjuntor: "INFORMACAO_SUGERIDA",
       tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
       tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
       comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL",
+
+      fluidoRefrigerante: "INFORMACAO_SUGERIDA",
+      cargaGas: "INFORMACAO_SUGERIDA",
+      disjuntor: "INFORMACAO_SUGERIDA"
     },
 
     /* Confiança por campo */
@@ -75,15 +80,17 @@ window.acervoTecnico = [
       linha: "OFICIAL",
       tipo: "OFICIAL",
       capacidade: "OFICIAL",
+
       tensao: "CONFIAVEL_NAO_OFICIAL",
-      fluidoRefrigerante: "INFORMACAO_SUGERIDA",
-      cargaGas: "INFORMACAO_SUGERIDA",
       correnteNominal: "CONFIAVEL_NAO_OFICIAL",
-      disjuntor: "INFORMACAO_SUGERIDA",
       tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
       tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
       comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL",
+
+      fluidoRefrigerante: "INFORMACAO_SUGERIDA",
+      cargaGas: "INFORMACAO_SUGERIDA",
+      disjuntor: "INFORMACAO_SUGERIDA"
     }
   }
 ];
