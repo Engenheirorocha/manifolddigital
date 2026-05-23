@@ -1,5 +1,5 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   ACERVO TÉCNICO - ETAPA 2 DE 4 - REFEITO
+   ACERVO TÉCNICO - ETAPA 3 DE 4 - REFEITO E ENRIQUECIDO
 
    NÃO MEXER NO app.js.
    NÃO MEXER NO index.html.
@@ -15,8 +15,15 @@
    - Fonte geral deve ficar neutra para não contaminar as cores.
    - Campo sem dado útil deve ficar vazio ou não existir.
 
-   ETAPA 2:
-   Mantém as 10 marcas da Etapa 1 e adiciona mais 10 marcas.
+   ETAPA 3:
+   Mantém as 20 marcas anteriores e adiciona complementos importantes:
+   - York / Johnson Controls
+   - Mitsubishi Electric
+   - Rheem
+   - Comfee
+   - Fontaine
+   - Carrier/Springer legado
+   - Complementos: janela, portátil, cassete, piso-teto, multi split, VRF e comercial leve.
 */
 
 window.acervoTecnico = [
@@ -426,5 +433,307 @@ window.acervoTecnico = [
     status: "OFICIAL",
     fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  /* =========================================================
+     ETAPA 3 - MARCAS COMPLEMENTARES E CATEGORIAS IMPORTANTES
+     ========================================================= */
+
+  {
+    marca: "York / Johnson Controls",
+    modelo: "York Split Hi Wall Everest RAEA RADA RAKA RAJA",
+    codigoBusca: ["YORK", "YORK EVEREST", "EVEREST", "RAEA", "RADA", "RAKA", "RAJA", "YORK HI WALL", "YORK SPLIT", "YORK 9000", "YORK 12000", "YORK 18000", "YORK 24000"],
+    linha: "Everest / Split Hi Wall legado",
+    tipo: "Split Hi Wall",
+    manualInstalacao: "https://pdf.webarcondicionado.com.br/york/manual/usuario/mdu-split-hi-wall-raea-rada-raka-raja-everest.pdf",
+    manualManutencao: "https://digital.johnsoncontrols.com/yorkbr",
+    fonte: "Base tecnica HVAC PRO - York Everest",
+    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
+    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
+    status: "CONFIAVEL_NAO_OFICIAL",
+    fontesCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL"
+    }
+  },
+
+  {
+    marca: "York / Johnson Controls",
+    modelo: "York Split Cassete Supreme YKE YKKA 18000 48000 BTU",
+    codigoBusca: ["YORK CASSETE", "YORK CASSETTE", "YORK SUPREME", "YKE", "YKKA", "YKE18", "YKE24", "YKE36", "YKE48", "YORK 18000 CASSETE", "YORK 48000 CASSETE"],
+    linha: "Supreme Cassete",
+    tipo: "Split Cassete",
+    capacidade: "18.000 / 24.000 / 36.000 / 48.000 BTU/h conforme modelo",
+    manualInstalacao: "https://pdf.webarcondicionado.com.br/york/manual/usuario/mdu-split-cassete-yke%28k%29a18-48fs-ad-supreme.pdf",
+    manualManutencao: "https://digital.johnsoncontrols.com/yorkbr",
+    fonte: "Base tecnica HVAC PRO - York Cassete Supreme",
+    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
+    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
+    status: "CONFIAVEL_NAO_OFICIAL",
+    fontesCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL",
+      capacidade: "CONFIAVEL_NAO_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL",
+      capacidade: "CONFIAVEL_NAO_OFICIAL"
+    }
+  },
+
+  {
+    marca: "Mitsubishi Electric",
+    modelo: "Mitsubishi Electric Ar Condicionado e Sistemas de Climatizacao",
+    codigoBusca: ["MITSUBISHI", "MITSUBISHI ELECTRIC", "MITSUBISHI AR CONDICIONADO", "MITSUBISHI SPLIT", "MITSUBISHI VRF", "MITSUBISHI CITY MULTI", "MITSUBISHI MR SLIM"],
+    linha: "Climatização Mitsubishi Electric",
+    tipo: "Split / Multi Split / VRF conforme linha",
+    manualInstalacao: "https://mitsubishielectric.com.br/",
+    manualManutencao: "https://mitsubishielectric.com.br/",
+    fonte: "Base tecnica HVAC PRO - Mitsubishi Electric",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Rheem",
+    modelo: "Rheem Multi Split Inverter e Split Hi Wall",
+    codigoBusca: ["RHEEM", "RHEEM SPLIT", "RHEEM MULTI SPLIT", "RHEEM INVERTER", "RHEEM HI WALL", "RHEEM 9000", "RHEEM 12000", "RHEEM 18000", "RHEEM 24000"],
+    linha: "Split / Multi Split",
+    tipo: "Split Hi Wall / Multi Split conforme modelo",
+    manualInstalacao: "https://www.rheem.com.br/manuais/",
+    manualManutencao: "https://www.rheem.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Rheem Manuais",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Comfee",
+    modelo: "Comfee Split Hi Wall 12000 BTU Frio",
+    codigoBusca: ["COMFEE", "COMFEE SPLIT", "COMFEE HI WALL", "COMFEE 12000", "COMFEE FRIO", "COMFEE MIDEA", "42AFVC", "38AFVC"],
+    linha: "Split Hi Wall Comfee",
+    tipo: "Split Hi Wall",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.midea.com/content/dam/midea-aem/br/climatizacao/hiwall/split-high-wall-comfee-12000-btu-h-frio/Manual-do-Propriet-rio-Split-Hi-Wall-Comfee.pdf",
+    manualManutencao: "https://www.midea.com/content/dam/midea-aem/br/climatizacao/hiwall/split-high-wall-comfee-12000-btu-h-frio/Manual-do-Propriet-rio-Split-Hi-Wall-Comfee.pdf",
+    fonte: "Base tecnica HVAC PRO - Comfee Split Hi Wall",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL",
+      capacidade: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL",
+      capacidade: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Fontaine",
+    modelo: "Fontaine Split Hi Wall 127V 220V",
+    codigoBusca: ["FONTAINE", "FONTAINE BRASIL", "FONTAINE SPLIT", "FONTAINE HI WALL", "FONTAINE 127V", "FONTAINE 220V", "FONTAINE 9000", "FONTAINE 12000", "FONTAINE 18000", "FONTAINE 24000"],
+    linha: "Split Hi Wall Fontaine",
+    tipo: "Split Hi Wall",
+    tensao: "127V / 220V conforme modelo",
+    manualInstalacao: "https://fontainebrasil.com.br/",
+    manualManutencao: "https://fontainebrasil.com.br/",
+    fonte: "Base tecnica HVAC PRO - Fontaine Brasil",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL",
+      tensao: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL",
+      tensao: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Carrier / Springer Carrier",
+    modelo: "Carrier Springer Split Hi Wall e Piso Teto Legado",
+    codigoBusca: ["CARRIER", "SPRINGER CARRIER", "SPRINGER", "CARRIER SPLIT", "CARRIER HI WALL", "CARRIER PISO TETO", "CARRIER CASSETE", "CARRIER 42", "CARRIER 38"],
+    linha: "Split / Piso Teto / Cassete legado",
+    tipo: "Split Hi Wall / Piso Teto / Cassete conforme modelo",
+    manualInstalacao: "https://www.carrierdobrasil.com.br/",
+    manualManutencao: "https://www.carrierdobrasil.com.br/",
+    fonte: "Base tecnica HVAC PRO - Carrier Springer legado",
+    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
+    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
+    status: "CONFIAVEL_NAO_OFICIAL",
+    fontesCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "CONFIAVEL_NAO_OFICIAL",
+      modelo: "CONFIAVEL_NAO_OFICIAL",
+      linha: "CONFIAVEL_NAO_OFICIAL",
+      tipo: "CONFIAVEL_NAO_OFICIAL"
+    }
+  },
+
+  {
+    marca: "Midea",
+    modelo: "Midea Piso Teto Inverter 36000 48000 60000 BTU",
+    codigoBusca: ["MIDEA PISO TETO", "PISO TETO MIDEA", "MIDEA PISO TETO INVERTER", "MIDEA 36000", "MIDEA 48000", "MIDEA 60000", "42ZQ", "38ZQ", "42Q"],
+    linha: "Piso Teto Inverter",
+    tipo: "Split Piso Teto",
+    capacidade: "36.000 / 48.000 / 60.000 BTU/h conforme modelo",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Midea Piso Teto",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL",
+      capacidade: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL",
+      capacidade: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Gree",
+    modelo: "Gree Piso Teto Cassete e MultiSplit G-Max",
+    codigoBusca: ["GREE PISO TETO", "GREE CASSETE", "GREE CASSETTE", "GREE MULTISPLIT", "GREE G-MAX", "G-MAX MULTISPLIT", "PISO TETO GREE", "CASSETE GREE", "MULTI SPLIT GREE"],
+    linha: "Piso Teto / Cassete / G-Max Multisplit",
+    tipo: "Comercial leve / Multi Split conforme linha",
+    manualInstalacao: "https://gree.com.br/manuais/",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Gree Comercial Leve",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Consul",
+    modelo: "Consul Janela Inverter e Janela Convencional",
+    codigoBusca: ["CONSUL JANELA", "JANELA CONSUL", "CONSUL JANELA INVERTER", "CONSUL JANELA 7500", "CONSUL JANELA 10000", "CONSUL JANELA 12000", "CCB07", "CCK07", "CCN10"],
+    linha: "Janela / Janela Inverter",
+    tipo: "Ar-condicionado de janela",
+    manualInstalacao: "https://www.consul.com.br/eletrodomesticos/ar-condicionado/ar-condicionado-janela",
+    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    fonte: "Base tecnica HVAC PRO - Consul Janela",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL"
+    }
+  },
+
+  {
+    marca: "Philco",
+    modelo: "Philco Portatil PAC12000F5 e Linha Portatil",
+    codigoBusca: ["PHILCO PORTATIL", "PHILCO PORTÁTIL", "PORTATIL PHILCO", "PORTÁTIL PHILCO", "PAC12000F5", "PAC11000F5", "PHILCO 12000 PORTATIL", "PHILCO 11000 PORTATIL"],
+    linha: "Portátil",
+    tipo: "Ar-condicionado portátil",
+    manualInstalacao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    manualManutencao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    fonte: "Base tecnica HVAC PRO - Philco Portatil",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    fontesCampos: {
+      marca: "FABRICANTE_OFICIAL",
+      modelo: "FABRICANTE_OFICIAL",
+      linha: "FABRICANTE_OFICIAL",
+      tipo: "FABRICANTE_OFICIAL"
+    },
+    confiancaCampos: {
+      marca: "OFICIAL",
+      modelo: "OFICIAL",
+      linha: "OFICIAL",
+      tipo: "OFICIAL"
+    }
   }
 ];
