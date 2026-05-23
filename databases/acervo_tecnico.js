@@ -1343,5 +1343,171 @@ window.acervoTecnico = [
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "LG oficial - suporte instalação AC e central de manuais",
     status: "BLOCO_1_VALIDADO: página de apoio oficial para instalação; não substitui manual específico do modelo."
+  }),
+
+  /* BLOCO 2 FINAL - FECHAMENTO DO ACERVO TÉCNICO V1.0
+     Objetivo:
+     - Fechar a primeira versão robusta do Acervo Técnico.
+     - Adicionar marcas/linhas que faltavam com fonte oficial disponível.
+     - Não cadastrar marca sem fonte oficial confiável de HVAC/manual técnico.
+     - Tudo que não for código exato fica marcado para validar etiqueta/manual.
+  */
+
+  /* PANASONIC - manuais oficiais globais */
+  acervoItem({
+    marca: "Panasonic",
+    modelo: "CS-S9PKR / CU-S9PKR - Série PKR",
+    codigoBusca: ["CS-S9PKR", "CU-S9PKR", "CS S9PKR", "CU S9PKR", "PANASONIC S9PKR", "S9PKR"],
+    linha: "Série PKR",
+    tipo: "Split Hi Wall",
+    capacidade: "Validar etiqueta/manual conforme unidade interna/externa",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/CS_CU-S9PKR_S12PKR_S18PKR_S24PKR_S28PKR_Operating_Instructions.pdf",
+    manualManutencao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/CS_CU-S9PKR_S12PKR_S18PKR_S24PKR_S28PKR_Operating_Instructions.pdf",
+    fonte: "Panasonic oficial - Operating Instructions CS/CU-S9PKR-S28PKR",
+    status: "BLOCO_2_FINAL: manual oficial global Panasonic. Validar aplicação no Brasil e etiqueta do equipamento antes do serviço."
+  }),
+  acervoItem({
+    marca: "Panasonic",
+    modelo: "CS-S12PKR / CU-S12PKR - Série PKR",
+    codigoBusca: ["CS-S12PKR", "CU-S12PKR", "CS S12PKR", "CU S12PKR", "PANASONIC S12PKR", "S12PKR"],
+    linha: "Série PKR",
+    tipo: "Split Hi Wall",
+    capacidade: "Validar etiqueta/manual conforme unidade interna/externa",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/CS_CU-S9PKR_S12PKR_S18PKR_S24PKR_S28PKR_Operating_Instructions.pdf",
+    manualManutencao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/CS_CU-S9PKR_S12PKR_S18PKR_S24PKR_S28PKR_Operating_Instructions.pdf",
+    fonte: "Panasonic oficial - Operating Instructions CS/CU-S9PKR-S28PKR",
+    status: "BLOCO_2_FINAL: manual oficial global Panasonic. Validar aplicação no Brasil e etiqueta do equipamento antes do serviço."
+  }),
+  acervoItem({
+    marca: "Panasonic",
+    modelo: "CS-E9PKR / CU-E9PKR - Série E PKR",
+    codigoBusca: ["CS-E9PKR", "CU-E9PKR", "CS E9PKR", "CU E9PKR", "PANASONIC E9PKR", "E9PKR"],
+    linha: "Série E PKR",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar etiqueta/manual conforme unidade interna/externa",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/E7_E9_E12_E15_E18_E21_E24_E28PKR_Series_Operating_instructions.pdf",
+    manualManutencao: "https://www.panasonic.com/content/dam/Panasonic/support_manual/Air_Conditioner/English_03-F568-F569_other/E7_E9_E12_E15_E18_E21_E24_E28PKR_Series_Operating_instructions.pdf",
+    fonte: "Panasonic oficial - Operating Instructions E7/E9/E12/E15/E18/E21/E24/E28PKR Series",
+    status: "BLOCO_2_FINAL: manual oficial global Panasonic. Validar aplicação no Brasil e etiqueta do equipamento antes do serviço."
+  }),
+  acervoItem({
+    marca: "Panasonic",
+    modelo: "CS-C18HKD / CU-C18HKD - Série HKD",
+    codigoBusca: ["CS-C18HKD", "CU-C18HKD", "CS C18HKD", "CU C18HKD", "PANASONIC C18HKD", "C18HKD"],
+    linha: "Série HKD",
+    tipo: "Split Hi Wall",
+    capacidade: "Validar etiqueta/manual conforme unidade interna/externa",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://aircon.cis.panasonic.com/wp-content/uploads/cs-c18hkd_cu-c18hkd_cs-c24hkd_cu-c24hkd.pdf",
+    manualManutencao: "https://aircon.cis.panasonic.com/wp-content/uploads/cs-c18hkd_cu-c18hkd_cs-c24hkd_cu-c24hkd.pdf",
+    fonte: "Panasonic oficial - Operating Instructions CS/CU-C18HKD/C24HKD",
+    status: "BLOCO_2_FINAL: manual oficial Panasonic. Validar aplicação no Brasil e etiqueta do equipamento antes do serviço."
+  }),
+
+  /* YORK / JOHNSON CONTROLS - linha comercial oficial */
+  acervoItem({
+    marca: "York",
+    modelo: "YC090 / YC120 / YC180 / YC240 / YC300 - York Sun Pro R-410A",
+    codigoBusca: ["YC090", "YC120", "YC180", "YC240", "YC300", "YORK SUN PRO", "YORK YC090", "YORK YC300"],
+    linha: "York Sun Pro",
+    tipo: "Split-System Air Conditioner / Condensing Unit",
+    capacidade: "Comercial - validar toneladas/capacidade no manual técnico conforme código",
+    fluidoRefrigerante: "R410A conforme documentação York Sun Pro",
+    manualInstalacao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Installation-Manual-YC090-to-YC300-YD180-to-YD240-YE090-York-SunTM-Pro-R-410A-Split-Condensing-Units/D",
+    manualManutencao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Technical-Guide-YC/YD/YE/PC/PD/PE/NC/ND/NL/NM090-to-300-York-SunTM-ProTM-R-410A-Split-System-Units/HH",
+    fonte: "Johnson Controls/YORK oficial - Installation Manual e Technical Guide York Sun Pro",
+    status: "BLOCO_2_FINAL: documentação oficial York/Johnson Controls. Linha comercial; validar aplicação no Brasil e etiqueta do equipamento."
+  }),
+  acervoItem({
+    marca: "York",
+    modelo: "PC090 / PD180 / PE090 - York Sun Pro Heat Pump",
+    codigoBusca: ["PC090", "PD180", "PD240", "PE090", "YORK PC090", "YORK PD180", "YORK PE090", "YORK SUN PRO HEAT PUMP"],
+    linha: "York Sun Pro Heat Pump",
+    tipo: "Split-System Heat Pump",
+    capacidade: "Comercial - validar toneladas/capacidade no manual técnico conforme código",
+    fluidoRefrigerante: "R410A conforme documentação York Sun Pro",
+    manualInstalacao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Installation-Manual-PC090-to-240-PD180-to-240-PE090-York-SunTM-ProTM-R-410A-Split-System-Heat-Pumps/E",
+    manualManutencao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Technical-Guide-YC/YD/YE/PC/PD/PE/NC/ND/NL/NM090-to-300-York-SunTM-ProTM-R-410A-Split-System-Units/HH",
+    fonte: "Johnson Controls/YORK oficial - Installation Manual e Technical Guide York Sun Pro Heat Pump",
+    status: "BLOCO_2_FINAL: documentação oficial York/Johnson Controls. Linha comercial; validar aplicação no Brasil e etiqueta do equipamento."
+  }),
+  acervoItem({
+    marca: "York",
+    modelo: "NC090 / ND090 / NC240 / ND240 - Split System Air Handler",
+    codigoBusca: ["NC090", "ND090", "NC120", "ND120", "NC240", "ND240", "YORK AIR HANDLER", "YORK NC090", "YORK ND240"],
+    linha: "York Split System Air Handler",
+    tipo: "Air Handler Split-System Unit",
+    capacidade: "Comercial - validar capacidade no manual técnico conforme código",
+    fluidoRefrigerante: "Validar sistema/combinação no manual técnico",
+    manualInstalacao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Installation-Manual-NC/ND090-to-NC/ND240-Split-System-Air-Handler-Units/D",
+    manualManutencao: "https://docs.johnsoncontrols.com/ductedsystems/v/u/YORK/en-US/Technical-Guide-YC/YD/YE/PC/PD/PE/NC/ND/NL/NM090-to-300-York-SunTM-ProTM-R-410A-Split-System-Units/HH",
+    fonte: "Johnson Controls/YORK oficial - Installation Manual NC/ND Air Handler e Technical Guide",
+    status: "BLOCO_2_FINAL: documentação oficial York/Johnson Controls. Validar combinação com condensadora correspondente."
+  }),
+
+  /* TOSHIBA / TOSHIBA CARRIER - manuais oficiais globais */
+  acervoItem({
+    marca: "Toshiba",
+    modelo: "RAS-2M10G3AVG-E / RAS-2M14G3AVG-E - Multi Split R32 G3",
+    codigoBusca: ["RAS-2M10G3AVG-E", "RAS-2M14G3AVG-E", "RAS2M10G3AVG", "RAS2M14G3AVG", "TOSHIBA RAS G3", "TOSHIBA MULTI SPLIT G3"],
+    linha: "RAS Multi-Split R32 G3",
+    tipo: "Multi Split Outdoor Unit",
+    capacidade: "Validar combinações no manual/databook oficial",
+    fluidoRefrigerante: "R32 conforme linha RAS Multi-Split G3",
+    manualInstalacao: "https://www.toshiba-aircon.co.uk/en/products/r32-split-systems/residential/multi-split/ras-outdoor-2-5-rooms-g3.html",
+    manualManutencao: "https://www.toshiba-aircon.co.uk/en/products/r32-split-systems/residential/multi-split/ras-outdoor-2-5-rooms-g3.html",
+    fonte: "Toshiba oficial - página técnica Multi-Split RAS G3 com installation/service manuals",
+    status: "BLOCO_2_FINAL: documentação oficial Toshiba global. Validar aplicação no Brasil e etiqueta do equipamento."
+  }),
+  acervoItem({
+    marca: "Toshiba",
+    modelo: "RAS-3M26G3AVG-E / RAS-4M27G3AVG-E / RAS-5M34G3AVG-E - Multi Split R32 G3",
+    codigoBusca: ["RAS-3M26G3AVG-E", "RAS-4M27G3AVG-E", "RAS-5M34G3AVG-E", "RAS3M26G3AVG", "RAS4M27G3AVG", "RAS5M34G3AVG", "TOSHIBA MULTI G3 5 ROOMS"],
+    linha: "RAS Multi-Split R32 G3",
+    tipo: "Multi Split Outdoor Unit",
+    capacidade: "Validar combinações no manual/databook oficial",
+    fluidoRefrigerante: "R32 conforme linha RAS Multi-Split G3",
+    manualInstalacao: "https://www.toshiba-aircon.co.uk/en/products/r32-split-systems/residential/multi-split/ras-outdoor-2-5-rooms-g3.html",
+    manualManutencao: "https://www.toshiba-aircon.co.uk/en/products/r32-split-systems/residential/multi-split/ras-outdoor-2-5-rooms-g3.html",
+    fonte: "Toshiba oficial - página técnica Multi-Split RAS G3 com installation/service manuals",
+    status: "BLOCO_2_FINAL: documentação oficial Toshiba global. Validar aplicação no Brasil e etiqueta do equipamento."
+  }),
+  acervoItem({
+    marca: "Toshiba",
+    modelo: "RBC-AMTU31-E - Controle Remoto Cabeado Toshiba Carrier",
+    codigoBusca: ["RBC-AMTU31-E", "RBC AMTU31 E", "TOSHIBA RBC-AMTU31-E", "CONTROLE REMOTO TOSHIBA CARRIER"],
+    linha: "Toshiba Carrier Controls",
+    tipo: "Controle remoto cabeado / acessório de sistema",
+    capacidade: "Não aplicável - acessório",
+    fluidoRefrigerante: "Não aplicável - acessório",
+    manualInstalacao: "https://www.toshiba-carrier.co.jp/global/manual/rbc-amtu31-e.htm",
+    manualManutencao: "https://www.toshiba-carrier.co.jp/global/manual/rbc-amtu31-e.htm",
+    fonte: "Toshiba Carrier oficial - página de manual RBC-AMTU31-E com português disponível",
+    status: "BLOCO_2_FINAL: acessório oficial Toshiba Carrier. Útil para técnico identificar controle/instalação."
+  }),
+
+  /* STATUS FINAL DO ACERVO */
+  acervoItem({
+    marca: "HVAC PRO",
+    modelo: "STATUS-ACERVO-V1",
+    codigoBusca: ["STATUS-ACERVO-V1", "ACERVO V1", "ACERVO FINAL", "VERSAO 1 ACERVO", "VERSÃO 1 ACERVO"],
+    linha: "Controle interno do Acervo Técnico",
+    tipo: "Status do banco",
+    capacidade: "Não aplicável",
+    fluidoRefrigerante: "Não aplicável",
+    correnteNominal: "Não aplicável",
+    superaquecimento: "Não aplicável",
+    subresfriamento: "Não aplicável",
+    capacitor: "Não aplicável",
+    placaEletronica: "Não aplicável",
+    tubulacaoAlta: "Não aplicável",
+    tubulacaoBaixa: "Não aplicável",
+    manualInstalacao: "Não aplicável",
+    manualManutencao: "Não aplicável",
+    fonte: "Controle interno HVAC PRO",
+    status: "VERSÃO 1.0 FECHADA: Acervo operacional com marcas principais, busca por modelo/código, links oficiais e registros marcados para validar etiqueta/manual quando necessário."
   })
 ];
