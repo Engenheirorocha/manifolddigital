@@ -1,49 +1,33 @@
 /* HVAC PRO - app.js
-   CORRECAO ESTAVEL
-   Este arquivo restaura o carrossel principal, Gases, Erros e Acervo Tecnico.
+   Extraído do HTML principal original.
+   Mantém a lógica existente e adiciona exibição da fonte/base dos erros.
 */
 
-var gasData = window.gasData || {};
-var errorCategories = window.errorCategories || [];
-var brandsByCategory = window.brandsByCategory || {};
-var modelsByBrand = window.modelsByBrand || {};
-var errorCodesByModel = window.errorCodesByModel || {};
-var acervoTecnico = window.acervoTecnico || [];
+const gasData = window.gasData || {};
+const errorCategories = window.errorCategories || [];
+const brandsByCategory = window.brandsByCategory || {};
+const modelsByBrand = window.modelsByBrand || {};
+const errorCodesByModel = window.errorCodesByModel || {};
 
-var cards = [];
-var current = 0;
-var startX = 0;
-var endX = 0;
+const cards = document.querySelectorAll(".card");
 
-var catCurrent = 0;
-var brandCurrent = 0;
-var modelCurrent = 0;
-var codeCurrent = 0;
+let current = 0;
+let startX = 0;
+let endX = 0;
 
-function cleanText(value) {
-  return String(value || "")
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function safe(value, fallback) {
-  return value || fallback || "Nao informado no manual oficial";
-}
+let catCurrent = 0;
+let brandCurrent = 0;
+let modelCurrent = 0;
+let codeCurrent = 0;
 
 function updateCarousel() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
-
-  cards.forEach(function(card, index) {
+  cards.forEach((card, index) => {
     card.className = "card";
 
-    var total = cards.length;
-    var left = (current - 1 + total) % total;
-    var right = (current + 1) % total;
-    var farLeft = (current - 2 + total) % total;
-    var farRight = (current + 2) % total;
+    const left = (current - 1 + cards.length) % cards.length;
+    const right = (current + 1) % cards.length;
+    const farLeft = (current - 2 + cards.length) % cards.length;
+    const farRight = (current + 2) % cards.length;
 
     if (index === current) {
       card.classList.add("center");
@@ -62,40 +46,34 @@ function updateCarousel() {
 }
 
 function next() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
   current = (current + 1) % cards.length;
   updateCarousel();
 }
 
 function prev() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
   current = (current - 1 + cards.length) % cards.length;
   updateCarousel();
 }
 
 function searchHome() {
-  var input = document.getElementById("homeSearch");
+  const input = document.getElementById("homeSearch");
+
   if (!input) return;
 
-  var value = cleanText(input.value);
+  const value = input.value.trim().toLowerCase();
+
   if (value.length < 2) return;
 
-  var map = [
+  const map = [
     { keys: ["manifold", "pressao", "pressão"], index: 0 },
     { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
     { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
     { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
-    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
-    { keys: ["acervo", "manual", "manual tecnico", "manual técnico", "catalogo", "catálogo"], index: 5 }
+    { keys: ["modelos", "modelo", "equipamento"], index: 4 }
   ];
 
-  var found = map.find(function(item) {
-    return item.keys.some(function(key) {
-      var k = cleanText(key);
-      return k.includes(value) || value.includes(k);
-    });
+  const found = map.find((item) => {
+    return item.keys.some((key) => key.includes(value) || value.includes(key));
   });
 
   if (found) {
@@ -104,28 +82,30 @@ function searchHome() {
   }
 }
 
-function setupMainSwipe() {
-  var carousel = document.getElementById("carousel");
-  if (!carousel) return;
+const carousel = document.getElementById("carousel");
 
-  carousel.addEventListener("touchstart", function(event) {
+if (carousel) {
+  carousel.addEventListener("touchstart", (event) => {
     startX = event.touches[0].clientX;
   });
 
-  carousel.addEventListener("touchend", function(event) {
+  carousel.addEventListener("touchend", (event) => {
     endX = event.changedTouches[0].clientX;
-    var diff = endX - startX;
+
+    const diff = endX - startX;
+
     if (diff > 45) prev();
     if (diff < -45) next();
   });
 }
 
 function openScreen(id) {
-  document.querySelectorAll(".screen").forEach(function(screen) {
+  document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.remove("active");
   });
 
-  var screen = document.getElementById(id);
+  const screen = document.getElementById(id);
+
   if (!screen) return;
 
   screen.classList.add("active");
@@ -135,13 +115,11 @@ function openScreen(id) {
   }
 
   if (id === "gases") {
-    var gases = document.getElementById("gases");
-    if (gases) gases.scrollTop = 0;
+    document.getElementById("gases").scrollTop = 0;
   }
 
   if (id === "erros") {
-    var erros = document.getElementById("erros");
-    if (erros) erros.scrollTop = 0;
+    document.getElementById("erros").scrollTop = 0;
 
     document.getElementById("typeStep").style.display = "block";
     document.getElementById("brandStep").style.display = "none";
@@ -150,184 +128,243 @@ function openScreen(id) {
 
     renderCategoryCarousel();
   }
-
-  if (id === "acervo") {
-    var acervo = document.getElementById("acervo");
-    if (acervo) acervo.scrollTop = 0;
-    renderAcervoIntro();
-  }
 }
 
 /* GASES */
 
 function renderGas(name) {
-  var key = String(name || "").toUpperCase();
-  var gas = gasData[key];
-  var gasInfo = document.getElementById("gasInfo");
+  const key = String(name || "").toUpperCase();
+  const gas = gasData[key];
+  const gasInfo = document.getElementById("gasInfo");
+
   if (!gasInfo) return;
 
   if (!gas) {
-    gasInfo.innerHTML = "<h2>Nao encontrado</h2><div class='info-row'>Digite um gas valido.</div>";
+    gasInfo.innerHTML = `
+      <h2>Não encontrado</h2>
+      <div class="info-row">Digite um gás válido.</div>
+    `;
     return;
   }
 
-  var ptRows = "";
-  if (Array.isArray(gas.pt)) {
-    ptRows = gas.pt.map(function(row) {
-      return "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td></tr>";
-    }).join("");
-  }
+  const ptRows = Array.isArray(gas.pt)
+    ? gas.pt.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")
+    : "";
 
-  gasInfo.innerHTML =
-    "<h2>" + (gas.nome || key) + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + safe(gas.tipo, "-") + "</div>" +
-    "<div class='info-row'><span>Composicao:</span><br>" + safe(gas.composicao, "-") + "</div>" +
-    "<div class='info-row'><span>Aplicacao:</span><br>" + safe(gas.aplicacao, "-") + "</div>" +
-    "<div class='info-row'><span>Oleo:</span><br>" + safe(gas.oleo, "-") + "</div>" +
-    "<div class='info-row'><span>Seguranca:</span><br>" + safe(gas.seguranca, "-") + "</div>" +
-    "<div class='info-row'><span>GWP:</span><br>" + safe(gas.gwp, "-") + "</div>" +
-    "<div class='info-row'><span>ODP:</span><br>" + safe(gas.odp, "-") + "</div>" +
-    "<div class='info-row'><span>Ebulicao:</span><br>" + safe(gas.ebulição || gas.ebulicao, "-") + "</div>" +
-    "<div class='info-row'><span>Critica:</span><br>" + safe(gas.critica, "-") + "</div>" +
-    "<div class='info-row'><span>Pressao critica:</span><br>" + safe(gas.pressaoCritica, "-") + "</div>" +
-    "<div class='info-row'><span>Glide:</span><br>" + safe(gas.glide, "-") + "</div>" +
-    "<div class='info-row'><span>Transferencia:</span><br>" + safe(gas.transferencia, "-") + "</div>" +
-    "<div class='info-row'><span>Evaporacao tipica:</span><br>" + safe(gas.faixaEvaporacao, "-") + "</div>" +
-    "<div class='info-row'><span>Condensacao tipica:</span><br>" + safe(gas.faixaCondensacao, "-") + "</div>" +
-    "<div class='info-row'><span>Campo:</span><br>" + safe(gas.campo, "-") + "</div>" +
-    "<div class='info-row'><span>Tabela PT resumida:</span>" +
-    "<table class='pt-table'><thead><tr><th>Temp.</th><th>Pressao</th></tr></thead><tbody>" + ptRows + "</tbody></table>" +
-    "<div class='note'>Valores aproximados para referencia rapida. Conferir tabela oficial para ajuste fino.</div></div>";
+  gasInfo.innerHTML = `
+    <h2>${gas.nome || key}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${gas.tipo || "-"}</div>
+    <div class="info-row"><span>Composição:</span><br>${gas.composicao || "-"}</div>
+    <div class="info-row"><span>Aplicação:</span><br>${gas.aplicacao || "-"}</div>
+    <div class="info-row"><span>Óleo:</span><br>${gas.oleo || "-"}</div>
+    <div class="info-row"><span>Segurança:</span><br>${gas.seguranca || "-"}</div>
+    <div class="info-row"><span>GWP:</span><br>${gas.gwp || "-"}</div>
+    <div class="info-row"><span>ODP:</span><br>${gas.odp || "-"}</div>
+    <div class="info-row"><span>Ebulição:</span><br>${gas.ebulição || gas.ebulicao || "-"}</div>
+    <div class="info-row"><span>Crítica:</span><br>${gas.critica || "-"}</div>
+    <div class="info-row"><span>Pressão crítica:</span><br>${gas.pressaoCritica || "-"}</div>
+    <div class="info-row"><span>Glide:</span><br>${gas.glide || "-"}</div>
+    <div class="info-row"><span>Transferência:</span><br>${gas.transferencia || "-"}</div>
+    <div class="info-row"><span>Evaporação típica:</span><br>${gas.faixaEvaporacao || "-"}</div>
+    <div class="info-row"><span>Condensação típica:</span><br>${gas.faixaCondensacao || "-"}</div>
+    <div class="info-row"><span>Campo:</span><br>${gas.campo || "-"}</div>
+    <div class="info-row">
+      <span>Tabela PT resumida:</span>
+      ${
+        ptRows
+          ? `<table class="pt-table">
+              <thead>
+                <tr>
+                  <th>Temp.</th>
+                  <th>Pressão</th>
+                </tr>
+              </thead>
+              <tbody>${ptRows}</tbody>
+            </table>`
+          : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`
+      }
+      <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
+    </div>
+  `;
 }
 
 function selectGas(name, element) {
-  document.querySelectorAll(".gas-chip").forEach(function(chip) {
+  document.querySelectorAll(".gas-chip").forEach((chip) => {
     chip.classList.remove("active-gas");
   });
 
-  if (element) element.classList.add("active-gas");
+  if (element) {
+    element.classList.add("active-gas");
+  }
 
-  var input = document.getElementById("gasSearch");
-  if (input) input.value = name;
+  const gasSearch = document.getElementById("gasSearch");
+
+  if (gasSearch) {
+    gasSearch.value = name;
+  }
 
   renderGas(name);
 }
 
 function searchGas() {
-  var input = document.getElementById("gasSearch");
+  const input = document.getElementById("gasSearch");
+
   if (!input) return;
 
-  var value = input.value.trim();
-  if (value.length >= 2) renderGas(value);
+  const value = input.value.trim();
+
+  if (value.length >= 2) {
+    renderGas(value);
+  }
+}
+
+/* ÍCONES */
+
+function svgSplit() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgCassete() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/><rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/><path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgJanela() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="20" width="56" height="60" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M30 38H70" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 52H66M34 63H66" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><circle cx="67" cy="70" r="4" fill="#ff3636"/></svg>`;
+}
+
+function svgPisoTeto() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/><path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
 }
 
 /* ERROS */
 
 function activeCategory() {
-  if (!errorCategories[catCurrent]) return "";
-  return errorCategories[catCurrent].name;
+  return errorCategories[catCurrent]?.name || "";
 }
 
 function activeBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
+  const brands = brandsByCategory[activeCategory()] || [];
   return brands[brandCurrent] || "";
 }
 
 function activeModel() {
-  var models = modelsByBrand[activeBrand()] || [];
+  const models = modelsByBrand[activeBrand()] || [];
   return models[modelCurrent] || "";
 }
 
 function getCodes() {
-  var key = activeBrand() + "|" + activeModel();
-  var codes = errorCodesByModel[key];
+  const key = activeBrand() + "|" + activeModel();
+  const codes = errorCodesByModel[key];
 
-  if (Array.isArray(codes) && codes.length) return codes;
+  if (Array.isArray(codes) && codes.length) {
+    return codes;
+  }
 
   return [
     {
       code: "E1",
-      title: "Falha generica",
-      cause: "Codigo ainda nao refinado para este modelo.",
-      test: "Verificar alimentacao, sensores, comunicacao e placas.",
-      solution: "Cadastrar diagnostico especifico na proxima etapa.",
+      title: "Falha genérica",
+      cause: "Código ainda não refinado para este modelo.",
+      test: "Verificar alimentação, sensores, comunicação e placas.",
+      solution: "Cadastrar diagnóstico específico na próxima etapa.",
+      sourceLevel: "DIAGNOSTICO_CAMPO"
+    },
+    {
+      code: "E3",
+      title: "Ventilador / sensor",
+      cause: "Possível falha no motor, sensor ou rotação.",
+      test: "Verificar motor, capacitor, sensor Hall e placa.",
+      solution: "Corrigir componente defeituoso.",
       sourceLevel: "DIAGNOSTICO_CAMPO"
     }
   ];
 }
 
 function formatSourceLevel(sourceLevel) {
-  var map = {
-    DIAGNOSTICO_CAMPO: "Diagnostico de campo",
+  const map = {
+    DIAGNOSTICO_CAMPO: "Diagnóstico de campo",
     VALIDAR_MANUAL_MODELO: "Validar no manual do modelo",
     BASE_APP_ORIGINAL: "Base original do app",
     BASE_APP_ORIGINAL_VALIDAR_MANUAL: "Base original do app / validar manual",
     OFICIAL_SAMSUNG_SUPORTE: "Suporte oficial Samsung",
-    OFICIAL_MIDEA_FREEMATCH: "Manual tecnico Midea FreeMatch",
-    OFICIAL_MIDEA_PORTATIL_REFERENCIA: "Referencia oficial Midea",
+    OFICIAL_MIDEA_FREEMATCH: "Manual técnico Midea FreeMatch",
+    OFICIAL_MIDEA_PORTATIL_REFERENCIA: "Referência oficial Midea",
     OFICIAL_FUJITSU_MANUAL_LED: "Manual Fujitsu / leitura por LED",
     OFICIAL_CONSUL_SUPORTE_GERAL: "Suporte oficial Consul",
-    OFICIAL_TRANE_U_MATCH: "Manual tecnico Trane",
-    LISTA_TECNICA_NAO_OFICIAL_VALIDAR: "Lista tecnica nao oficial / validar"
+    OFICIAL_TRANE_U_MATCH: "Manual técnico Trane",
+    LISTA_TECNICA_NAO_OFICIAL_VALIDAR: "Lista técnica não oficial / validar"
   };
 
-  return map[sourceLevel] || sourceLevel || "Nao informado";
+  return map[sourceLevel] || sourceLevel || "Não informado";
 }
 
 function renderCategoryCarousel() {
-  var box = document.getElementById("categoryCarousel");
+  const box = document.getElementById("categoryCarousel");
+
   if (!box) return;
 
-  box.innerHTML = errorCategories.map(function(cat, index) {
-    return "<div class='category-card' onclick='selectTypeAndOpenBrand(" + index + ")'>" +
-      "<div class='cat-icon'>" + cat.icon + "</div>" +
-      "<div class='cat-title'>" + cat.name + "</div>" +
-      "</div>";
-  }).join("");
+  box.innerHTML = errorCategories
+    .map((cat, index) => {
+      return `
+        <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
+          <div class="cat-icon">${cat.icon}</div>
+          <div class="cat-title">${cat.name}</div>
+        </div>
+      `;
+    })
+    .join("");
 
   updateCategoryCarousel();
 }
 
 function updateCategoryCarousel() {
-  var items = document.querySelectorAll(".category-card");
-  if (!items.length) return;
+  const catCards = document.querySelectorAll(".category-card");
 
-  items.forEach(function(card, index) {
+  if (!catCards.length) return;
+
+  catCards.forEach((card, index) => {
     card.className = "category-card";
-    var left = (catCurrent - 1 + items.length) % items.length;
-    var right = (catCurrent + 1) % items.length;
 
-    if (index === catCurrent) card.classList.add("cat-center");
-    else if (index === left) card.classList.add("cat-left");
-    else if (index === right) card.classList.add("cat-right");
-    else card.classList.add("cat-hidden");
+    const left = (catCurrent - 1 + catCards.length) % catCards.length;
+    const right = (catCurrent + 1) % catCards.length;
+
+    if (index === catCurrent) {
+      card.classList.add("cat-center");
+    } else if (index === left) {
+      card.classList.add("cat-left");
+    } else if (index === right) {
+      card.classList.add("cat-right");
+    } else {
+      card.classList.add("cat-hidden");
+    }
   });
 }
 
 function nextCategory() {
   if (!errorCategories.length) return;
+
   catCurrent = (catCurrent + 1) % errorCategories.length;
   updateCategoryCarousel();
 }
 
 function prevCategory() {
   if (!errorCategories.length) return;
+
   catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
   updateCategoryCarousel();
 }
 
 function searchErrorType() {
-  var input = document.getElementById("errorTypeSearch");
+  const input = document.getElementById("errorTypeSearch");
+
   if (!input) return;
 
-  var value = cleanText(input.value);
+  const value = input.value.trim().toLowerCase();
+
   if (value.length < 2) return;
 
-  var index = errorCategories.findIndex(function(cat) {
-    return cat.search.some(function(term) {
-      var clean = cleanText(term);
-      return clean.includes(value) || value.includes(clean);
-    });
+  const index = errorCategories.findIndex((cat) => {
+    return cat.search.some((term) => term.includes(value) || value.includes(term));
   });
 
   if (index >= 0) {
@@ -339,6 +376,8 @@ function searchErrorType() {
 function selectTypeAndOpenBrand(index) {
   catCurrent = index;
   brandCurrent = 0;
+
+  updateCategoryCarousel();
 
   document.getElementById("typeStep").style.display = "none";
   document.getElementById("brandStep").style.display = "block";
@@ -356,60 +395,80 @@ function backToType() {
 }
 
 function renderBrandCarousel() {
-  var brands = brandsByCategory[activeCategory()] || [];
-  var box = document.getElementById("brandCarousel");
+  const brands = brandsByCategory[activeCategory()] || [];
+  const box = document.getElementById("brandCarousel");
+
   if (!box) return;
 
-  box.innerHTML = brands.map(function(brand, index) {
-    return "<div class='brand-card' onclick='selectBrandAndOpenModel(" + index + ")'>" +
-      "<div class='brand-title'>" + brand + "</div>" +
-      "<div class='brand-sub'>" + activeCategory() + "</div>" +
-      "</div>";
-  }).join("");
+  box.innerHTML = brands
+    .map((brand, index) => {
+      return `
+        <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
+          <div class="brand-title">${brand}</div>
+          <div class="brand-sub">${activeCategory()}</div>
+        </div>
+      `;
+    })
+    .join("");
 
   updateBrandCarousel();
 }
 
 function updateBrandCarousel() {
-  var items = document.querySelectorAll(".brand-card");
-  if (!items.length) return;
+  const brandCards = document.querySelectorAll(".brand-card");
 
-  items.forEach(function(card, index) {
+  if (!brandCards.length) return;
+
+  brandCards.forEach((card, index) => {
     card.className = "brand-card";
-    var left = (brandCurrent - 1 + items.length) % items.length;
-    var right = (brandCurrent + 1) % items.length;
 
-    if (index === brandCurrent) card.classList.add("brand-center");
-    else if (index === left) card.classList.add("brand-left");
-    else if (index === right) card.classList.add("brand-right");
-    else card.classList.add("brand-hidden");
+    const left = (brandCurrent - 1 + brandCards.length) % brandCards.length;
+    const right = (brandCurrent + 1) % brandCards.length;
+
+    if (index === brandCurrent) {
+      card.classList.add("brand-center");
+    } else if (index === left) {
+      card.classList.add("brand-left");
+    } else if (index === right) {
+      card.classList.add("brand-right");
+    } else {
+      card.classList.add("brand-hidden");
+    }
   });
 }
 
 function nextBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
+  const brands = brandsByCategory[activeCategory()] || [];
+
   if (!brands.length) return;
+
   brandCurrent = (brandCurrent + 1) % brands.length;
   updateBrandCarousel();
 }
 
 function prevBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
+  const brands = brandsByCategory[activeCategory()] || [];
+
   if (!brands.length) return;
+
   brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
   updateBrandCarousel();
 }
 
 function searchBrand() {
-  var input = document.getElementById("brandSearch");
+  const input = document.getElementById("brandSearch");
+
   if (!input) return;
 
-  var value = cleanText(input.value);
-  var brands = brandsByCategory[activeCategory()] || [];
+  const value = input.value.trim().toLowerCase();
 
-  var index = brands.findIndex(function(brand) {
-    var clean = cleanText(brand);
-    return clean.includes(value) || value.includes(clean);
+  if (value.length < 1) return;
+
+  const brands = brandsByCategory[activeCategory()] || [];
+
+  const index = brands.findIndex((brand) => {
+    const cleanBrand = brand.toLowerCase();
+    return cleanBrand.includes(value) || value.includes(cleanBrand);
   });
 
   if (index >= 0) {
@@ -426,6 +485,12 @@ function selectBrandAndOpenModel(index) {
   document.getElementById("modelStep").style.display = "block";
   document.getElementById("codeStep").style.display = "none";
 
+  const modelSearch = document.getElementById("modelSearch");
+
+  if (modelSearch) {
+    modelSearch.value = "";
+  }
+
   renderModelCarousel();
 }
 
@@ -436,81 +501,111 @@ function backToBrand() {
 }
 
 function renderModelCarousel() {
-  var brand = activeBrand();
-  var models = modelsByBrand[brand] || ["Modelo nao cadastrado"];
-  var box = document.getElementById("modelCarousel");
+  const brand = activeBrand();
+  const models = modelsByBrand[brand] || ["Modelo não cadastrado"];
+  const box = document.getElementById("modelCarousel");
+
   if (!box) return;
 
-  box.innerHTML = models.map(function(model, index) {
-    return "<div class='model-card' onclick='selectModelAndOpenCodes(" + index + ")'>" +
-      "<div class='model-title'>" + model + "</div>" +
-      "<div class='model-sub'>" + brand + "</div>" +
-      "</div>";
-  }).join("");
+  box.innerHTML = models
+    .map((model, index) => {
+      return `
+        <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
+          <div class="model-title">${model}</div>
+          <div class="model-sub">${brand}</div>
+        </div>
+      `;
+    })
+    .join("");
 
   updateModelCarousel();
   renderModelInfo();
 }
 
 function updateModelCarousel() {
-  var items = document.querySelectorAll(".model-card");
-  if (!items.length) return;
+  const modelCards = document.querySelectorAll(".model-card");
 
-  items.forEach(function(card, index) {
+  if (!modelCards.length) return;
+
+  modelCards.forEach((card, index) => {
     card.className = "model-card";
-    var left = (modelCurrent - 1 + items.length) % items.length;
-    var right = (modelCurrent + 1) % items.length;
 
-    if (index === modelCurrent) card.classList.add("model-center");
-    else if (index === left) card.classList.add("model-left");
-    else if (index === right) card.classList.add("model-right");
-    else card.classList.add("model-hidden");
+    const left = (modelCurrent - 1 + modelCards.length) % modelCards.length;
+    const right = (modelCurrent + 1) % modelCards.length;
+
+    if (index === modelCurrent) {
+      card.classList.add("model-center");
+    } else if (index === left) {
+      card.classList.add("model-left");
+    } else if (index === right) {
+      card.classList.add("model-right");
+    } else {
+      card.classList.add("model-hidden");
+    }
   });
 
   renderModelInfo();
 }
 
 function nextModel() {
-  var models = modelsByBrand[activeBrand()] || [];
+  const models = modelsByBrand[activeBrand()] || [];
+
   if (!models.length) return;
+
   modelCurrent = (modelCurrent + 1) % models.length;
   updateModelCarousel();
 }
 
 function prevModel() {
-  var models = modelsByBrand[activeBrand()] || [];
+  const models = modelsByBrand[activeBrand()] || [];
+
   if (!models.length) return;
+
   modelCurrent = (modelCurrent - 1 + models.length) % models.length;
   updateModelCarousel();
 }
 
 function searchModel() {
-  var input = document.getElementById("modelSearch");
+  const input = document.getElementById("modelSearch");
+
   if (!input) return;
 
-  var value = cleanText(input.value);
-  var models = modelsByBrand[activeBrand()] || [];
+  const value = input.value.trim().toLowerCase();
+  const models = modelsByBrand[activeBrand()] || [];
 
-  var index = models.findIndex(function(model) {
-    var clean = cleanText(model);
-    return clean.includes(value) || value.includes(clean);
+  if (value.length < 1) {
+    renderModelInfo();
+    return;
+  }
+
+  const index = models.findIndex((model) => {
+    const cleanModel = model.toLowerCase();
+    return cleanModel.includes(value) || value.includes(cleanModel);
   });
 
   if (index >= 0) {
     modelCurrent = index;
     updateModelCarousel();
+  } else {
+    document.getElementById("modelInfo").innerHTML = `
+      <h2>Modelo informado</h2>
+      <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+      <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
+    `;
   }
 }
 
 function renderModelInfo() {
-  var info = document.getElementById("modelInfo");
-  if (!info) return;
+  const modelInfo = document.getElementById("modelInfo");
 
-  info.innerHTML =
-    "<h2>" + activeBrand() + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + activeCategory() + "</div>" +
-    "<div class='info-row'><span>Modelo/Linha selecionado:</span><br>" + activeModel() + "</div>" +
-    "<div class='info-row'><span>Proximo passo:</span><br>Toque no card do modelo para ver os codigos de erro.</div>";
+  if (!modelInfo) return;
+
+  modelInfo.innerHTML = `
+    <h2>${activeBrand()}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo para ver os códigos de erro.</div>
+  `;
 }
 
 function selectModelAndOpenCodes(index) {
@@ -519,6 +614,12 @@ function selectModelAndOpenCodes(index) {
 
   document.getElementById("modelStep").style.display = "none";
   document.getElementById("codeStep").style.display = "block";
+
+  const codeSearch = document.getElementById("codeSearch");
+
+  if (codeSearch) {
+    codeSearch.value = "";
+  }
 
   renderCodeCarousel();
 }
@@ -529,63 +630,87 @@ function backToModel() {
 }
 
 function renderCodeCarousel() {
-  var codes = getCodes();
-  var box = document.getElementById("codeCarousel");
+  const codes = getCodes();
+  const box = document.getElementById("codeCarousel");
+
   if (!box) return;
 
-  box.innerHTML = codes.map(function(item) {
-    return "<div class='code-card'>" +
-      "<div class='code-title'>" + item.code + "</div>" +
-      "<div class='code-sub'>" + item.title + "</div>" +
-      "</div>";
-  }).join("");
+  box.innerHTML = codes
+    .map((item) => {
+      return `
+        <div class="code-card">
+          <div class="code-title">${item.code}</div>
+          <div class="code-sub">${item.title}</div>
+        </div>
+      `;
+    })
+    .join("");
 
   updateCodeCarousel();
   renderCodeInfo();
 }
 
 function updateCodeCarousel() {
-  var items = document.querySelectorAll(".code-card");
-  if (!items.length) return;
+  const codeCards = document.querySelectorAll(".code-card");
 
-  items.forEach(function(card, index) {
+  if (!codeCards.length) return;
+
+  codeCards.forEach((card, index) => {
     card.className = "code-card";
-    var left = (codeCurrent - 1 + items.length) % items.length;
-    var right = (codeCurrent + 1) % items.length;
 
-    if (index === codeCurrent) card.classList.add("code-center");
-    else if (index === left) card.classList.add("code-left");
-    else if (index === right) card.classList.add("code-right");
-    else card.classList.add("code-hidden");
+    const left = (codeCurrent - 1 + codeCards.length) % codeCards.length;
+    const right = (codeCurrent + 1) % codeCards.length;
+
+    if (index === codeCurrent) {
+      card.classList.add("code-center");
+    } else if (index === left) {
+      card.classList.add("code-left");
+    } else if (index === right) {
+      card.classList.add("code-right");
+    } else {
+      card.classList.add("code-hidden");
+    }
   });
 
   renderCodeInfo();
 }
 
 function nextCode() {
-  var codes = getCodes();
+  const codes = getCodes();
+
   if (!codes.length) return;
+
   codeCurrent = (codeCurrent + 1) % codes.length;
   updateCodeCarousel();
 }
 
 function prevCode() {
-  var codes = getCodes();
+  const codes = getCodes();
+
   if (!codes.length) return;
+
   codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
   updateCodeCarousel();
 }
 
 function searchCode() {
-  var input = document.getElementById("codeSearch");
+  const input = document.getElementById("codeSearch");
+
   if (!input) return;
 
-  var value = cleanText(input.value);
-  var codes = getCodes();
+  const value = input.value.trim().toLowerCase();
+  const codes = getCodes();
 
-  var index = codes.findIndex(function(item) {
-    var text = cleanText([item.code, item.title, item.cause, item.test, item.solution].join(" "));
-    return text.includes(value);
+  if (value.length < 1) {
+    renderCodeInfo();
+    return;
+  }
+
+  const index = codes.findIndex((item) => {
+    const cleanCode = String(item.code || "").toLowerCase();
+    const cleanTitle = String(item.title || "").toLowerCase();
+
+    return cleanCode.includes(value) || cleanTitle.includes(value) || value.includes(cleanCode);
   });
 
   if (index >= 0) {
@@ -595,138 +720,57 @@ function searchCode() {
 }
 
 function renderCodeInfo() {
-  var info = document.getElementById("codeInfo");
-  var codes = getCodes();
-  var item = codes[codeCurrent];
-  if (!info || !item) return;
+  const codeInfo = document.getElementById("codeInfo");
+  const codes = getCodes();
+  const item = codes[codeCurrent];
 
-  info.innerHTML =
-    "<h2>" + item.code + " - " + item.title + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + activeCategory() + "</div>" +
-    "<div class='info-row'><span>Marca:</span><br>" + activeBrand() + "</div>" +
-    "<div class='info-row'><span>Modelo/Linha:</span><br>" + activeModel() + "</div>" +
-    "<div class='info-row'><span>Causa provavel:</span><br>" + safe(item.cause, "-") + "</div>" +
-    "<div class='info-row'><span>Teste em campo:</span><br>" + safe(item.test, "-") + "</div>" +
-    "<div class='info-row'><span>Solucao sugerida:</span><br>" + safe(item.solution, "-") + "</div>" +
-    "<div class='info-row'><span>Fonte/base:</span><br>" + formatSourceLevel(item.sourceLevel) + "</div>";
+  if (!codeInfo || !item) return;
+
+  const sourceText = formatSourceLevel(item.sourceLevel);
+
+  codeInfo.innerHTML = `
+    <h2>${item.code} - ${item.title}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+    <div class="info-row"><span>Modelo/Linha:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Causa provável:</span><br>${item.cause || "-"}</div>
+    <div class="info-row"><span>Teste em campo:</span><br>${item.test || "-"}</div>
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution || "-"}</div>
+    <div class="info-row"><span>Fonte/base:</span><br>${sourceText}</div>
+  `;
 }
 
-/* ACERVO TECNICO */
-
-function renderAcervoIntro() {
-  var info = document.getElementById("acervoInfo");
-  if (!info) return;
-
-  info.innerHTML =
-    "<h2>Acervo Tecnico</h2>" +
-    "<div class='info-row'><span>Como usar:</span><br>Digite o modelo ou codigo da maquina para consultar dados tecnicos refinados.</div>" +
-    "<div class='info-row'><span>Regra:</span><br>Quando o manual oficial nao informar algum dado, o app mostrara Nao informado no manual oficial ou Validar etiqueta/manual.</div>";
-}
-
-function searchAcervoTecnico() {
-  var input = document.getElementById("acervoSearch");
-  var info = document.getElementById("acervoInfo");
-  if (!input || !info) return;
-
-  var value = cleanText(input.value);
-
-  if (value.length < 2) {
-    renderAcervoIntro();
-    return;
-  }
-
-  var results = acervoTecnico.filter(function(item) {
-    var codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca.join(" ") : "";
-    var text = cleanText([
-      item.marca,
-      item.modelo,
-      codigos,
-      item.linha,
-      item.tipo,
-      item.capacidade,
-      item.fluidoRefrigerante
-    ].join(" "));
-
-    return text.includes(value);
-  });
-
-  if (!results.length) {
-    info.innerHTML =
-      "<h2>Nada encontrado</h2>" +
-      "<div class='info-row'><span>Busca:</span><br>" + input.value + "</div>" +
-      "<div class='info-row'>Nenhum modelo cadastrado no Acervo Tecnico contem esse termo.</div>";
-    return;
-  }
-
-  info.innerHTML = results.map(renderAcervoItem).join("");
-}
-
-function renderAcervoItem(item) {
-  var manualInstalacao = item.manualInstalacao || "Nao cadastrado ainda";
-  var manualManutencao = item.manualManutencao || "Nao cadastrado ainda";
-
-  if (manualInstalacao.indexOf("http") === 0) {
-    manualInstalacao = "<a href='" + manualInstalacao + "' target='_blank'>Abrir manual de instalacao</a>";
-  }
-
-  if (manualManutencao.indexOf("http") === 0) {
-    manualManutencao = "<a href='" + manualManutencao + "' target='_blank'>Abrir manual de manutencao/tecnico</a>";
-  }
-
-  return "<h2>" + safe(item.marca, "-") + " - " + safe(item.modelo, "-") + "</h2>" +
-    "<div class='info-row'><span>Linha:</span><br>" + safe(item.linha) + "</div>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + safe(item.tipo) + "</div>" +
-    "<div class='info-row'><span>Capacidade:</span><br>" + safe(item.capacidade) + "</div>" +
-    "<div class='info-row'><span>Ano/faixa de fabricacao:</span><br>" + safe(item.anoFabricacao, "Validar etiqueta/manual") + "</div>" +
-    "<div class='info-row'><span>Fluido refrigerante:</span><br>" + safe(item.fluidoRefrigerante, "Validar etiqueta/manual") + "</div>" +
-    "<div class='info-row'><span>Corrente nominal:</span><br>" + safe(item.correnteNominal) + "</div>" +
-    "<div class='info-row'><span>Superaquecimento:</span><br>" + safe(item.superaquecimento, "Validar procedimento tecnico do fabricante") + "</div>" +
-    "<div class='info-row'><span>Subresfriamento:</span><br>" + safe(item.subresfriamento, "Validar procedimento tecnico do fabricante") + "</div>" +
-    "<div class='info-row'><span>Capacitor:</span><br>" + safe(item.capacitor) + "</div>" +
-    "<div class='info-row'><span>Placa eletronica:</span><br>" + safe(item.placaEletronica) + "</div>" +
-    "<div class='info-row'><span>Tubulacao liquido / alta:</span><br>" + safe(item.tubulacaoAlta) + "</div>" +
-    "<div class='info-row'><span>Tubulacao succao / baixa:</span><br>" + safe(item.tubulacaoBaixa) + "</div>" +
-    "<div class='info-row'><span>Manual de instalacao:</span><br>" + manualInstalacao + "</div>" +
-    "<div class='info-row'><span>Manual de manutencao/tecnico:</span><br>" + manualManutencao + "</div>" +
-    "<div class='info-row'><span>Fonte:</span><br>" + safe(item.fonte, "Nao informado") + "</div>" +
-    "<div class='info-row'><span>Status:</span><br>" + safe(item.status, "Nao informado") + "</div>";
-}
-
-/* SWIPE INTERNO */
+/* SWIPE DOS CARROSSÉIS INTERNOS */
 
 function setupSwipe(id, prevFn, nextFn) {
-  var el = document.getElementById(id);
-  if (!el) return;
+  const element = document.getElementById(id);
 
-  var sx = 0;
-  var ex = 0;
+  if (!element) return;
 
-  el.addEventListener("touchstart", function(event) {
+  let sx = 0;
+  let ex = 0;
+
+  element.addEventListener("touchstart", (event) => {
     sx = event.touches[0].clientX;
   });
 
-  el.addEventListener("touchend", function(event) {
+  element.addEventListener("touchend", (event) => {
     ex = event.changedTouches[0].clientX;
-    var diff = ex - sx;
+
+    const diff = ex - sx;
+
     if (diff > 45) prevFn();
     if (diff < -45) nextFn();
   });
 }
 
-function initApp() {
-  cards = document.querySelectorAll(".card");
-  current = 0;
-
-  updateCarousel();
-  setupMainSwipe();
-
+setTimeout(() => {
   setupSwipe("categoryCarousel", prevCategory, nextCategory);
   setupSwipe("brandCarousel", prevBrand, nextBrand);
   setupSwipe("modelCarousel", prevModel, nextModel);
   setupSwipe("codeCarousel", prevCode, nextCode);
+}, 300);
 
-  renderGas("R410A");
-  renderCategoryCarousel();
-}
-
-window.addEventListener("load", initA
+updateCarousel();
+renderGas("R410A");
+renderCategoryCarousel();
