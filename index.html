@@ -61,6 +61,11 @@
         <div class="title blue">MODELOS</div>
       </div>
 
+      <div class="card" onclick="openScreen('acervo')">
+        <div class="icon blue">🛠️</div>
+        <div class="title blue">ACERVO</div>
+      </div>
+
     </div>
   </div>
 
@@ -191,7 +196,37 @@
   </div>
 </div>
 
+<div class="screen page" id="acervo">
+  <div class="topbar">
+    <div class="back" onclick="openScreen('home')">← Voltar</div>
+    <div class="page-title blue">ACERVO</div>
+  </div>
+
+  <div class="mode-box">
+    <div class="mode-title">Acervo Técnico</div>
+
+    <div class="model-info">
+      <h2>Acervo Técnico</h2>
+      <div class="info-row">
+        <span>Status:</span><br>
+        Módulo em preparação.
+      </div>
+      <div class="info-row">
+        <span>Objetivo:</span><br>
+        Aqui vamos organizar consulta técnica por modelo, código e informações oficiais do equipamento.
+      </div>
+      <div class="info-row">
+        <span>Próxima etapa:</span><br>
+        Na próxima atualização, vamos inserir a busca técnica do acervo.
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="databases/gases.js"></script>
 <script src="databases/modelos.js"></script>
 <script src="databases/erros.js"></script>
 <script src="app.js"></script>
+
+</body>
+</html>
