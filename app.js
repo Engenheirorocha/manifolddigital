@@ -1,52 +1,75 @@
 /* HVAC PRO - app.js */
-/* Lógica principal do aplicativo */
 
-/* =========================
-   ESTADOS GERAIS
-========================= */
+const cards = document.querySelectorAll(".card");
 
-let cards = [];
 let current = 0;
+let startX = 0;
+let endX = 0;
+let lastTap = 0;
 
 let catCurrent = 0;
 let brandCurrent = 0;
 let modelCurrent = 0;
 let codeCurrent = 0;
 
-let startX = 0;
-let endX = 0;
+const moduleKeywords = [
+  {
+    id: "manifold",
+    keys: ["manifold", "pressao", "pressão", "superaquecimento", "subresfriamento"]
+  },
+  {
+    id: "erros",
+    keys: ["erros", "erro", "defeito", "defeitos", "codigo", "código", "falha"]
+  },
+  {
+    id: "testes",
+    keys: ["testes", "teste", "multimetro", "multímetro", "compressor", "capacitor", "sensor"]
+  },
+  {
+    id: "gases",
+    keys: ["gases", "gas", "gás", "refrigerante", "r410", "r22", "r32", "r290"]
+  },
+  {
+    id: "modelos",
+    keys: ["modelos", "modelo", "equipamento", "marca", "split"]
+  }
+];
 
-/* =========================
-   HELPERS DE BANCO DE DADOS
-========================= */
-
-function getGasDatabase() {
-  return typeof gasData !== "undefined" ? gasData : {};
+function getGasData() {
+  return window.HVAC_GASES || {};
 }
 
-function getErrorCategories() {
-  return typeof errorCategories !== "undefined" ? errorCategories : [];
+function getModelData() {
+  return window.HVAC_MODELOS || {
+    errorCategories: [],
+    brandsByCategory: {},
+    modelsByBrand: {}
+  };
 }
 
-function getBrandsByCategory() {
-  return typeof brandsByCategory !== "undefined" ? brandsByCategory : {};
+function getErrorData() {
+  return window.HVAC_ERROS || {
+    errorCodesByModel: {}
+  };
 }
 
-function getModelsByBrand() {
-  return typeof modelsByBrand !== "undefined" ? modelsByBrand : {};
+function getDiagnosticosData() {
+  return window.HVAC_DIAGNOSTICOS || {
+    testes: {}
+  };
 }
 
-function getErrorCodesByModel() {
-  return typeof errorCodesByModel !== "undefined" ? errorCodesByModel : {};
+function normalizeText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
-/* =========================
-   CARROSSEL PRINCIPAL
-========================= */
+/* HOME / CARROSSEL */
 
 function updateCarousel() {
-  if (!cards || !cards.length) return;
-
   cards.forEach((card, index) => {
     card.className = "card";
 
@@ -72,93 +95,167 @@ function updateCarousel() {
 }
 
 function next() {
-  if (!cards.length) return;
   current = (current + 1) % cards.length;
   updateCarousel();
 }
 
 function prev() {
-  if (!cards.length) return;
   current = (current - 1 + cards.length) % cards.length;
   updateCarousel();
+}
+
+function cardTap(index) {
+  const now = Date.now();
+
+  if (current === index && now - lastTap < 420) {
+    openCurrentModule();
+    return;
+  }
+
+  current = index;
+  lastTap = now;
+  updateCarousel();
+}
+
+function openCurrentModule() {
+  const selectedCard = cards[current];
+
+  if (!selectedCard) return;
+
+  const moduleId = selectedCard.dataset.module;
+  openScreen(moduleId);
 }
 
 function searchHome() {
   const input = document.getElementById("homeSearch");
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
+  const value = normalizeText(input.value);
+
   if (value.length < 2) return;
 
-  const map = [
-    { keys: ["manifold", "pressao", "pressão"], index: 0 },
-    { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
-    { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
-    { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
-    { keys: ["modelos", "modelo", "equipamento"], index: 4 }
-  ];
+  const found = moduleKeywords.find((item) => {
+    return item.keys.some((key) => {
+      const cleanKey = normalizeText(key);
+      return cleanKey.includes(value) || value.includes(cleanKey);
+    });
+  });
 
-  const found = map.find((item) =>
-    item.keys.some((key) => key.includes(value) || value.includes(key))
-  );
+  if (!found) return;
 
-  if (found) {
-    current = found.index;
+  const index = moduleKeywords.findIndex((item) => item.id === found.id);
+
+  if (index >= 0) {
+    current = index;
     updateCarousel();
   }
 }
 
-/* =========================
-   TROCA DE TELAS
-========================= */
+function homeKey(event) {
+  if (event.key === "Enter") {
+    openCurrentModule();
+  }
+}
+
+const mainCarousel = document.getElementById("carousel");
+
+if (mainCarousel) {
+  mainCarousel.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+  });
+
+  mainCarousel.addEventListener("touchend", (event) => {
+    endX = event.changedTouches[0].clientX;
+    const diff = endX - startX;
+
+    if (diff > 45) prev();
+    if (diff < -45) next();
+  });
+}
+
+/* TELAS */
 
 function openScreen(id) {
   document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.remove("active");
   });
 
-  const target = document.getElementById(id);
-  if (!target) return;
+  const screen = document.getElementById(id);
 
-  target.classList.add("active");
+  if (!screen) {
+    alert("Módulo ainda não encontrado: " + id);
+    return;
+  }
+
+  screen.classList.add("active");
+  screen.scrollTop = 0;
 
   if (id === "gases") {
-    target.scrollTop = 0;
+    renderGasList();
+    const firstGas = Object.keys(getGasData())[0];
+    if (firstGas) renderGas(firstGas);
   }
 
   if (id === "erros") {
-    target.scrollTop = 0;
-
-    const typeStep = document.getElementById("typeStep");
-    const brandStep = document.getElementById("brandStep");
-    const modelStep = document.getElementById("modelStep");
-    const codeStep = document.getElementById("codeStep");
-
-    if (typeStep) typeStep.style.display = "block";
-    if (brandStep) brandStep.style.display = "none";
-    if (modelStep) modelStep.style.display = "none";
-    if (codeStep) codeStep.style.display = "none";
-
+    resetErrorFlow();
     renderCategoryCarousel();
+  }
+
+  if (id === "modelos") {
+    renderModelosHome();
   }
 }
 
-/* =========================
-   GASES
-========================= */
+/* GASES */
+
+function renderGasList() {
+  const gasList = document.getElementById("gasList");
+  const gasData = getGasData();
+
+  if (!gasList) return;
+
+  const keys = Object.keys(gasData);
+
+  if (!keys.length) {
+    gasList.innerHTML = `
+      <div class="gas-chip active-gas">
+        <strong>Base</strong>
+        <small>não carregada</small>
+      </div>
+    `;
+    return;
+  }
+
+  gasList.innerHTML = keys
+    .map((key, index) => {
+      const gas = gasData[key];
+      const active = index === 0 ? "active-gas" : "";
+      const label = gas.nome || key;
+      const uso = gas.usoCurto || gas.aplicacaoCurta || "Refrigerante";
+
+      return `
+        <button type="button" class="gas-chip ${active}" onclick="selectGas('${key}', this)">
+          <strong>${label}</strong>
+          <small>${uso}</small>
+        </button>
+      `;
+    })
+    .join("");
+}
 
 function renderGas(name) {
-  const database = getGasDatabase();
+  const gasData = getGasData();
   const key = String(name || "").toUpperCase();
-  const gas = database[key];
+  const gas = gasData[key];
 
   const gasInfo = document.getElementById("gasInfo");
+
   if (!gasInfo) return;
 
   if (!gas) {
     gasInfo.innerHTML = `
       <h2>Não encontrado</h2>
-      <div class="info-row">Digite um gás válido.</div>
+      <div class="info-row">Digite um gás válido ou aguarde a base ser cadastrada.</div>
     `;
     return;
   }
@@ -170,7 +267,7 @@ function renderGas(name) {
     : "";
 
   gasInfo.innerHTML = `
-    <h2>${gas.nome || "-"}</h2>
+    <h2>${gas.nome || key}</h2>
 
     <div class="info-row"><span>Tipo:</span><br>${gas.tipo || "-"}</div>
     <div class="info-row"><span>Composição:</span><br>${gas.composicao || "-"}</div>
@@ -179,8 +276,8 @@ function renderGas(name) {
     <div class="info-row"><span>Segurança:</span><br>${gas.seguranca || "-"}</div>
     <div class="info-row"><span>GWP:</span><br>${gas.gwp || "-"}</div>
     <div class="info-row"><span>ODP:</span><br>${gas.odp || "-"}</div>
-    <div class="info-row"><span>Ebulição:</span><br>${gas["ebulição"] || "-"}</div>
-    <div class="info-row"><span>Crítica:</span><br>${gas.critica || "-"}</div>
+    <div class="info-row"><span>Ebulição:</span><br>${gas.ebulicao || gas.ebulição || "-"}</div>
+    <div class="info-row"><span>Temperatura crítica:</span><br>${gas.critica || "-"}</div>
     <div class="info-row"><span>Pressão crítica:</span><br>${gas.pressaoCritica || "-"}</div>
     <div class="info-row"><span>Glide:</span><br>${gas.glide || "-"}</div>
     <div class="info-row"><span>Transferência:</span><br>${gas.transferencia || "-"}</div>
@@ -191,29 +288,31 @@ function renderGas(name) {
     <div class="info-row">
       <span>Tabela PT resumida:</span>
 
-      <table class="pt-table">
-        <thead>
-          <tr>
-            <th>Temp.</th>
-            <th>Pressão</th>
-          </tr>
-        </thead>
-        <tbody>${ptRows}</tbody>
-      </table>
+      ${
+        ptRows
+          ? `<table class="pt-table">
+              <thead>
+                <tr>
+                  <th>Temp.</th>
+                  <th>Pressão</th>
+                </tr>
+              </thead>
+              <tbody>${ptRows}</tbody>
+            </table>`
+          : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`
+      }
 
-      <div class="note">
-        Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.
-      </div>
+      <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
     </div>
   `;
 }
 
-function selectGas(name, el) {
+function selectGas(name, element) {
   document.querySelectorAll(".gas-chip").forEach((chip) => {
     chip.classList.remove("active-gas");
   });
 
-  if (el) el.classList.add("active-gas");
+  if (element) element.classList.add("active-gas");
 
   const gasSearch = document.getElementById("gasSearch");
   if (gasSearch) gasSearch.value = name;
@@ -232,13 +331,93 @@ function searchGas() {
   }
 }
 
-/* =========================
-   ERROS - ESTADOS ATIVOS
-========================= */
+/* SVG DOS TIPOS DE EQUIPAMENTO */
+
+function svgSplit() {
+  return `
+    <svg viewBox="0 0 100 100" fill="none">
+      <rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/>
+      <path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+      <path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function svgCassete() {
+  return `
+    <svg viewBox="0 0 100 100" fill="none">
+      <rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/>
+      <rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/>
+      <path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function svgJanela() {
+  return `
+    <svg viewBox="0 0 100 100" fill="none">
+      <rect x="22" y="20" width="56" height="60" rx="8" stroke="#ff3636" stroke-width="6"/>
+      <path d="M30 38H70" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+      <path d="M34 52H66M34 63H66" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="67" cy="70" r="4" fill="#ff3636"/>
+    </svg>
+  `;
+}
+
+function svgPisoTeto() {
+  return `
+    <svg viewBox="0 0 100 100" fill="none">
+      <rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/>
+      <path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+      <path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function getCategoryIcon(iconKey) {
+  const icons = {
+    split: svgSplit(),
+    cassete: svgCassete(),
+    janela: svgJanela(),
+    pisoTeto: svgPisoTeto()
+  };
+
+  return icons[iconKey] || svgSplit();
+}
+
+/* ERROS */
+
+function getCategories() {
+  return getModelData().errorCategories || [];
+}
+
+function getBrandsByCategory() {
+  return getModelData().brandsByCategory || {};
+}
+
+function getModelsByBrand() {
+  return getModelData().modelsByBrand || {};
+}
+
+function getErrorCodesByModel() {
+  return getErrorData().errorCodesByModel || {};
+}
+
+function resetErrorFlow() {
+  const typeStep = document.getElementById("typeStep");
+  const brandStep = document.getElementById("brandStep");
+  const modelStep = document.getElementById("modelStep");
+  const codeStep = document.getElementById("codeStep");
+
+  if (typeStep) typeStep.style.display = "block";
+  if (brandStep) brandStep.style.display = "none";
+  if (modelStep) modelStep.style.display = "none";
+  if (codeStep) codeStep.style.display = "none";
+}
 
 function activeCategory() {
-  const categories = getErrorCategories();
-  return categories[catCurrent] ? categories[catCurrent].name : "";
+  const categories = getCategories();
+  return categories[catCurrent]?.name || "";
 }
 
 function activeBrand() {
@@ -252,62 +431,70 @@ function activeModel() {
 }
 
 function getCodes() {
-  const database = getErrorCodesByModel();
   const key = activeBrand() + "|" + activeModel();
+  const codes = getErrorCodesByModel()[key];
 
-  return (
-    database[key] || [
-      {
-        code: "E1",
-        title: "Falha genérica",
-        cause: "Código ainda não refinado para este modelo.",
-        test: "Verificar alimentação, sensores, comunicação e placas.",
-        solution: "Cadastrar diagnóstico específico na próxima etapa."
-      },
-      {
-        code: "E3",
-        title: "Ventilador / sensor",
-        cause: "Possível falha no motor, sensor ou rotação.",
-        test: "Verificar motor, capacitor, sensor Hall e placa.",
-        solution: "Corrigir componente defeituoso."
-      }
-    ]
-  );
+  if (Array.isArray(codes) && codes.length) {
+    return codes;
+  }
+
+  return [
+    {
+      code: "E1",
+      title: "Falha genérica",
+      cause: "Código ainda não refinado para este modelo.",
+      test: "Verificar alimentação, sensores, comunicação, ventilação e placas.",
+      solution: "Cadastrar diagnóstico específico na próxima etapa."
+    },
+    {
+      code: "E3",
+      title: "Ventilador / sensor",
+      cause: "Possível falha no motor, sensor, rotação, capacitor ou placa.",
+      test: "Verificar motor, capacitor, sensor Hall, conectores e placa.",
+      solution: "Corrigir componente defeituoso conforme medição."
+    }
+  ];
 }
-
-/* =========================
-   ERROS - TIPO DE EQUIPAMENTO
-========================= */
 
 function renderCategoryCarousel() {
   const box = document.getElementById("categoryCarousel");
-  const categories = getErrorCategories();
+  const categories = getCategories();
 
   if (!box) return;
 
+  if (!categories.length) {
+    box.innerHTML = `
+      <div class="category-card cat-center">
+        <div class="cat-title">Base não carregada</div>
+      </div>
+    `;
+    return;
+  }
+
   box.innerHTML = categories
-    .map(
-      (cat, index) => `
-        <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
-          <div class="cat-icon">${cat.icon || ""}</div>
+    .map((cat, index) => {
+      return `
+        <button type="button" class="category-card" onclick="selectTypeAndOpenBrand(${index})">
+          <div class="cat-icon">${getCategoryIcon(cat.icon)}</div>
           <div class="cat-title">${cat.name}</div>
-        </div>
-      `
-    )
+        </button>
+      `;
+    })
     .join("");
 
   updateCategoryCarousel();
 }
 
 function updateCategoryCarousel() {
-  const catCards = document.querySelectorAll(".category-card");
-  if (!catCards.length) return;
+  const categoryCards = document.querySelectorAll(".category-card");
 
-  catCards.forEach((card, index) => {
+  if (!categoryCards.length) return;
+
+  categoryCards.forEach((card, index) => {
     card.className = "category-card";
 
-    const left = (catCurrent - 1 + catCards.length) % catCards.length;
-    const right = (catCurrent + 1) % catCards.length;
+    const left = (catCurrent - 1 + categoryCards.length) % categoryCards.length;
+    const right = (catCurrent + 1) % categoryCards.length;
 
     if (index === catCurrent) {
       card.classList.add("cat-center");
@@ -322,7 +509,7 @@ function updateCategoryCarousel() {
 }
 
 function nextCategory() {
-  const categories = getErrorCategories();
+  const categories = getCategories();
   if (!categories.length) return;
 
   catCurrent = (catCurrent + 1) % categories.length;
@@ -330,7 +517,7 @@ function nextCategory() {
 }
 
 function prevCategory() {
-  const categories = getErrorCategories();
+  const categories = getCategories();
   if (!categories.length) return;
 
   catCurrent = (catCurrent - 1 + categories.length) % categories.length;
@@ -339,18 +526,22 @@ function prevCategory() {
 
 function searchErrorType() {
   const input = document.getElementById("errorTypeSearch");
-  const categories = getErrorCategories();
+  if (!input) return;
 
-  if (!input || !categories.length) return;
+  const value = normalizeText(input.value);
 
-  const value = input.value.trim().toLowerCase();
   if (value.length < 2) return;
 
-  const index = categories.findIndex((cat) =>
-    Array.isArray(cat.search)
-      ? cat.search.some((term) => term.includes(value) || value.includes(term))
-      : String(cat.name || "").toLowerCase().includes(value)
-  );
+  const categories = getCategories();
+
+  const index = categories.findIndex((cat) => {
+    const terms = cat.search || [cat.name];
+
+    return terms.some((term) => {
+      const cleanTerm = normalizeText(term);
+      return cleanTerm.includes(value) || value.includes(cleanTerm);
+    });
+  });
 
   if (index >= 0) {
     catCurrent = index;
@@ -361,8 +552,6 @@ function searchErrorType() {
 function selectTypeAndOpenBrand(index) {
   catCurrent = index;
   brandCurrent = 0;
-
-  updateCategoryCarousel();
 
   const typeStep = document.getElementById("typeStep");
   const brandStep = document.getElementById("brandStep");
@@ -378,20 +567,11 @@ function selectTypeAndOpenBrand(index) {
 }
 
 function backToType() {
-  const typeStep = document.getElementById("typeStep");
-  const brandStep = document.getElementById("brandStep");
-  const modelStep = document.getElementById("modelStep");
-  const codeStep = document.getElementById("codeStep");
-
-  if (brandStep) brandStep.style.display = "none";
-  if (modelStep) modelStep.style.display = "none";
-  if (codeStep) codeStep.style.display = "none";
-  if (typeStep) typeStep.style.display = "block";
+  document.getElementById("brandStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("typeStep").style.display = "block";
 }
-
-/* =========================
-   ERROS - MARCAS
-========================= */
 
 function renderBrandCarousel() {
   const brands = getBrandsByCategory()[activeCategory()] || [];
@@ -399,15 +579,25 @@ function renderBrandCarousel() {
 
   if (!box) return;
 
+  if (!brands.length) {
+    box.innerHTML = `
+      <div class="brand-card brand-center">
+        <div class="brand-title">Sem marcas</div>
+        <div class="brand-sub">Cadastre em modelos.js</div>
+      </div>
+    `;
+    return;
+  }
+
   box.innerHTML = brands
-    .map(
-      (brand, index) => `
-        <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
+    .map((brand, index) => {
+      return `
+        <button type="button" class="brand-card" onclick="selectBrandAndOpenModel(${index})">
           <div class="brand-title">${brand}</div>
           <div class="brand-sub">${activeCategory()}</div>
-        </div>
-      `
-    )
+        </button>
+      `;
+    })
     .join("");
 
   updateBrandCarousel();
@@ -415,6 +605,7 @@ function renderBrandCarousel() {
 
 function updateBrandCarousel() {
   const brandCards = document.querySelectorAll(".brand-card");
+
   if (!brandCards.length) return;
 
   brandCards.forEach((card, index) => {
@@ -453,16 +644,17 @@ function prevBrand() {
 
 function searchBrand() {
   const input = document.getElementById("brandSearch");
-  const brands = getBrandsByCategory()[activeCategory()] || [];
+  if (!input) return;
 
-  if (!input || !brands.length) return;
+  const value = normalizeText(input.value);
 
-  const value = input.value.trim().toLowerCase();
   if (value.length < 1) return;
 
+  const brands = getBrandsByCategory()[activeCategory()] || [];
+
   const index = brands.findIndex((brand) => {
-    const normalized = brand.toLowerCase();
-    return normalized.includes(value) || value.includes(normalized);
+    const cleanBrand = normalizeText(brand);
+    return cleanBrand.includes(value) || value.includes(cleanBrand);
   });
 
   if (index >= 0) {
@@ -475,49 +667,49 @@ function selectBrandAndOpenModel(index) {
   brandCurrent = index;
   modelCurrent = 0;
 
-  const brandStep = document.getElementById("brandStep");
-  const modelStep = document.getElementById("modelStep");
-  const codeStep = document.getElementById("codeStep");
-  const modelSearch = document.getElementById("modelSearch");
+  document.getElementById("brandStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "block";
+  document.getElementById("codeStep").style.display = "none";
 
-  if (brandStep) brandStep.style.display = "none";
-  if (modelStep) modelStep.style.display = "block";
-  if (codeStep) codeStep.style.display = "none";
+  const modelSearch = document.getElementById("modelSearch");
   if (modelSearch) modelSearch.value = "";
 
   renderModelCarousel();
 }
 
 function backToBrand() {
-  const brandStep = document.getElementById("brandStep");
-  const modelStep = document.getElementById("modelStep");
-  const codeStep = document.getElementById("codeStep");
-
-  if (modelStep) modelStep.style.display = "none";
-  if (codeStep) codeStep.style.display = "none";
-  if (brandStep) brandStep.style.display = "block";
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("brandStep").style.display = "block";
 }
-
-/* =========================
-   ERROS - MODELOS
-========================= */
 
 function renderModelCarousel() {
   const brand = activeBrand();
-  const models = getModelsByBrand()[brand] || ["Modelo não cadastrado"];
+  const models = getModelsByBrand()[brand] || [];
   const box = document.getElementById("modelCarousel");
 
   if (!box) return;
 
+  if (!models.length) {
+    box.innerHTML = `
+      <div class="model-card model-center">
+        <div class="model-title">Sem modelos</div>
+        <div class="model-sub">Cadastre em modelos.js</div>
+      </div>
+    `;
+    renderModelInfo();
+    return;
+  }
+
   box.innerHTML = models
-    .map(
-      (model, index) => `
-        <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
+    .map((model, index) => {
+      return `
+        <button type="button" class="model-card" onclick="selectModelAndOpenCodes(${index})">
           <div class="model-title">${model}</div>
           <div class="model-sub">${brand}</div>
-        </div>
-      `
-    )
+        </button>
+      `;
+    })
     .join("");
 
   updateModelCarousel();
@@ -526,6 +718,7 @@ function renderModelCarousel() {
 
 function updateModelCarousel() {
   const modelCards = document.querySelectorAll(".model-card");
+
   if (!modelCards.length) return;
 
   modelCards.forEach((card, index) => {
@@ -566,12 +759,10 @@ function prevModel() {
 
 function searchModel() {
   const input = document.getElementById("modelSearch");
-  const modelInfo = document.getElementById("modelInfo");
+  if (!input) return;
+
+  const value = normalizeText(input.value);
   const models = getModelsByBrand()[activeBrand()] || [];
-
-  if (!input || !modelInfo) return;
-
-  const value = input.value.trim().toLowerCase();
 
   if (value.length < 1) {
     renderModelInfo();
@@ -579,34 +770,34 @@ function searchModel() {
   }
 
   const index = models.findIndex((model) => {
-    const normalized = model.toLowerCase();
-    return normalized.includes(value) || value.includes(normalized);
+    const cleanModel = normalizeText(model);
+    return cleanModel.includes(value) || value.includes(cleanModel);
   });
 
   if (index >= 0) {
     modelCurrent = index;
     updateModelCarousel();
-  } else {
-    modelInfo.innerHTML = `
-      <h2>Modelo informado</h2>
-      <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
-      <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
-    `;
+    return;
   }
+
+  document.getElementById("modelInfo").innerHTML = `
+    <h2>Modelo informado</h2>
+    <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+    <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
+    <div class="info-row">Esse modelo ainda não possui códigos específicos cadastrados.</div>
+  `;
 }
 
 function renderModelInfo() {
   const modelInfo = document.getElementById("modelInfo");
+
   if (!modelInfo) return;
 
-  const brand = activeBrand();
-  const model = activeModel();
-
   modelInfo.innerHTML = `
-    <h2>${brand || "Marca"}</h2>
+    <h2>${activeBrand() || "Marca"}</h2>
     <div class="info-row"><span>Tipo:</span><br>${activeCategory() || "-"}</div>
-    <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${model || "-"}</div>
-    <div class="info-row"><span>Toque no card do modelo para ver os códigos de erro.</span></div>
+    <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${activeModel() || "-"}</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo ou no botão ✓ para ver os códigos de erro.</div>
   `;
 }
 
@@ -614,28 +805,19 @@ function selectModelAndOpenCodes(index) {
   modelCurrent = index;
   codeCurrent = 0;
 
-  const modelStep = document.getElementById("modelStep");
-  const codeStep = document.getElementById("codeStep");
-  const codeSearch = document.getElementById("codeSearch");
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "block";
 
-  if (modelStep) modelStep.style.display = "none";
-  if (codeStep) codeStep.style.display = "block";
+  const codeSearch = document.getElementById("codeSearch");
   if (codeSearch) codeSearch.value = "";
 
   renderCodeCarousel();
 }
 
 function backToModel() {
-  const modelStep = document.getElementById("modelStep");
-  const codeStep = document.getElementById("codeStep");
-
-  if (codeStep) codeStep.style.display = "none";
-  if (modelStep) modelStep.style.display = "block";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "block";
 }
-
-/* =========================
-   ERROS - CÓDIGOS
-========================= */
 
 function renderCodeCarousel() {
   const codes = getCodes();
@@ -644,14 +826,14 @@ function renderCodeCarousel() {
   if (!box) return;
 
   box.innerHTML = codes
-    .map(
-      (item) => `
+    .map((item) => {
+      return `
         <div class="code-card">
           <div class="code-title">${item.code}</div>
           <div class="code-sub">${item.title}</div>
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 
   updateCodeCarousel();
@@ -660,6 +842,7 @@ function renderCodeCarousel() {
 
 function updateCodeCarousel() {
   const codeCards = document.querySelectorAll(".code-card");
+
   if (!codeCards.length) return;
 
   codeCards.forEach((card, index) => {
@@ -700,11 +883,10 @@ function prevCode() {
 
 function searchCode() {
   const input = document.getElementById("codeSearch");
+  if (!input) return;
+
+  const value = normalizeText(input.value);
   const codes = getCodes();
-
-  if (!input || !codes.length) return;
-
-  const value = input.value.trim().toLowerCase();
 
   if (value.length < 1) {
     renderCodeInfo();
@@ -712,8 +894,8 @@ function searchCode() {
   }
 
   const index = codes.findIndex((item) => {
-    const normalized = item.code.toLowerCase();
-    return normalized.includes(value) || value.includes(normalized);
+    const cleanCode = normalizeText(item.code);
+    return cleanCode.includes(value) || value.includes(cleanCode);
   });
 
   if (index >= 0) {
@@ -734,30 +916,219 @@ function renderCodeInfo() {
     <div class="info-row"><span>Tipo:</span><br>${activeCategory() || "-"}</div>
     <div class="info-row"><span>Marca:</span><br>${activeBrand() || "-"}</div>
     <div class="info-row"><span>Modelo/Linha:</span><br>${activeModel() || "-"}</div>
-    <div class="info-row"><span>Causa provável:</span><br>${item.cause}</div>
-    <div class="info-row"><span>Teste em campo:</span><br>${item.test}</div>
-    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution}</div>
+    <div class="info-row"><span>Causa provável:</span><br>${item.cause || "-"}</div>
+    <div class="info-row"><span>Teste em campo:</span><br>${item.test || "-"}</div>
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution || "-"}</div>
+    ${
+      item.alerta
+        ? `<div class="info-row"><span>Alerta:</span><br><strong class="status-alert">${item.alerta}</strong></div>`
+        : ""
+    }
   `;
 }
 
-/* =========================
-   SWIPE
-========================= */
+/* TESTES */
+
+function renderTest(testKey, element) {
+  document.querySelectorAll(".action-card").forEach((card) => {
+    card.classList.remove("active");
+  });
+
+  if (element) element.classList.add("active");
+
+  const testResult = document.getElementById("testResult");
+  const testes = getDiagnosticosData().testes || {};
+  const teste = testes[testKey];
+
+  if (!testResult) return;
+
+  if (!teste) {
+    testResult.innerHTML = `
+      <h2>Teste não cadastrado</h2>
+      <div class="info-row">Esse teste será preenchido na base diagnosticos.js.</div>
+    `;
+    return;
+  }
+
+  const passos = Array.isArray(teste.passos)
+    ? teste.passos.map((passo) => `<div class="info-row">${passo}</div>`).join("")
+    : "";
+
+  const alertas = Array.isArray(teste.alertas)
+    ? teste.alertas.map((alerta) => `<span class="pill">${alerta}</span>`).join("")
+    : "";
+
+  testResult.innerHTML = `
+    <h2>${teste.titulo}</h2>
+    <div class="info-row"><span>Objetivo:</span><br>${teste.objetivo}</div>
+    ${passos}
+    ${
+      alertas
+        ? `<div class="pill-list">${alertas}</div>`
+        : ""
+    }
+  `;
+}
+
+/* MODELOS */
+
+function renderModelosHome() {
+  const modelosResult = document.getElementById("modelosResult");
+
+  if (!modelosResult) return;
+
+  const brandsByCategory = getBrandsByCategory();
+  const totalCategorias = Object.keys(brandsByCategory).length;
+  const allBrands = new Set();
+
+  Object.values(brandsByCategory).forEach((brands) => {
+    brands.forEach((brand) => allBrands.add(brand));
+  });
+
+  modelosResult.innerHTML = `
+    <h2>Base de modelos</h2>
+    <div class="info-row"><span>Categorias cadastradas:</span><br>${totalCategorias}</div>
+    <div class="info-row"><span>Marcas cadastradas:</span><br>${allBrands.size}</div>
+    <div class="info-row">Digite uma marca ou linha para localizar rapidamente.</div>
+  `;
+}
+
+function searchModelos() {
+  const input = document.getElementById("modelosSearch");
+  const modelosResult = document.getElementById("modelosResult");
+
+  if (!input || !modelosResult) return;
+
+  const value = normalizeText(input.value);
+
+  if (value.length < 1) {
+    renderModelosHome();
+    return;
+  }
+
+  const modelsByBrand = getModelsByBrand();
+  const foundBrands = [];
+
+  Object.entries(modelsByBrand).forEach(([brand, models]) => {
+    const brandMatch = normalizeText(brand).includes(value);
+    const modelMatches = models.filter((model) => normalizeText(model).includes(value));
+
+    if (brandMatch || modelMatches.length) {
+      foundBrands.push({
+        brand,
+        models: brandMatch ? models : modelMatches
+      });
+    }
+  });
+
+  if (!foundBrands.length) {
+    modelosResult.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row">Tente buscar por outra marca ou modelo.</div>
+    `;
+    return;
+  }
+
+  modelosResult.innerHTML = `
+    <h2>Resultado</h2>
+    ${foundBrands
+      .map((item) => {
+        return `
+          <div class="info-row">
+            <span>Marca:</span><br>
+            <strong>${item.brand}</strong>
+            <div class="pill-list">
+              ${item.models.map((model) => `<span class="pill">${model}</span>`).join("")}
+            </div>
+          </div>
+        `;
+      })
+      .join("")}
+  `;
+}
+
+/* MANIFOLD */
+
+function readNumber(id) {
+  const element = document.getElementById(id);
+  const value = Number(element?.value);
+
+  return Number.isFinite(value) ? value : null;
+}
+
+function calcManifold() {
+  const gas = document.getElementById("manifoldGas")?.value || "-";
+
+  const lowPsi = readNumber("lowPsi");
+  const highPsi = readNumber("highPsi");
+  const suctionTemp = readNumber("suctionTemp");
+  const evapSat = readNumber("evapSat");
+  const liquidTemp = readNumber("liquidTemp");
+  const condSat = readNumber("condSat");
+
+  const manifoldResult = document.getElementById("manifoldResult");
+
+  if (!manifoldResult) return;
+
+  const hasSuperheat = suctionTemp !== null && evapSat !== null;
+  const hasSubcooling = liquidTemp !== null && condSat !== null;
+
+  if (!hasSuperheat && !hasSubcooling) {
+    manifoldResult.innerHTML = `
+      <h2>Dados insuficientes</h2>
+      <div class="info-row">Preencha pelo menos temperatura de sucção e temperatura evaporada saturada, ou temperatura de líquido e temperatura condensada saturada.</div>
+    `;
+    return;
+  }
+
+  const superheat = hasSuperheat ? suctionTemp - evapSat : null;
+  const subcooling = hasSubcooling ? condSat - liquidTemp : null;
+
+  const superheatStatus =
+    superheat === null
+      ? "-"
+      : superheat < 4
+        ? `<span class="status-danger">baixo / risco de retorno de líquido</span>`
+        : superheat > 15
+          ? `<span class="status-alert">alto / possível falta de fluido, restrição ou baixa carga térmica</span>`
+          : `<span class="status-ok">faixa comum de referência</span>`;
+
+  const subcoolingStatus =
+    subcooling === null
+      ? "-"
+      : subcooling < 3
+        ? `<span class="status-alert">baixo / possível baixa carga ou flash gas</span>`
+        : subcooling > 15
+          ? `<span class="status-alert">alto / possível excesso de fluido ou restrição</span>`
+          : `<span class="status-ok">faixa comum de referência</span>`;
+
+  manifoldResult.innerHTML = `
+    <h2>Resultado rápido</h2>
+    <div class="info-row"><span>Gás selecionado:</span><br>${gas}</div>
+    <div class="info-row"><span>Pressão baixa:</span><br>${lowPsi !== null ? lowPsi + " psi" : "-"}</div>
+    <div class="info-row"><span>Pressão alta:</span><br>${highPsi !== null ? highPsi + " psi" : "-"}</div>
+    <div class="info-row"><span>Superaquecimento:</span><br>${superheat !== null ? superheat.toFixed(1) + " °C" : "-"}<br>${superheatStatus}</div>
+    <div class="info-row"><span>Subresfriamento:</span><br>${subcooling !== null ? subcooling.toFixed(1) + " °C" : "-"}<br>${subcoolingStatus}</div>
+    <div class="note">Interpretação aproximada. A faixa correta muda conforme equipamento, carga térmica, tecnologia, ambiente e manual do fabricante.</div>
+  `;
+}
+
+/* SWIPE DOS CARROSSÉIS INTERNOS */
 
 function setupSwipe(id, prevFn, nextFn) {
-  const el = document.getElementById(id);
-  if (!el) return;
+  const element = document.getElementById(id);
+
+  if (!element) return;
 
   let sx = 0;
   let ex = 0;
 
-  el.addEventListener("touchstart", (event) => {
+  element.addEventListener("touchstart", (event) => {
     sx = event.touches[0].clientX;
   });
 
-  el.addEventListener("touchend", (event) => {
+  element.addEventListener("touchend", (event) => {
     ex = event.changedTouches[0].clientX;
-
     const diff = ex - sx;
 
     if (diff > 45) prevFn();
@@ -765,36 +1136,16 @@ function setupSwipe(id, prevFn, nextFn) {
   });
 }
 
-function setupMainCarouselSwipe() {
-  const carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  carousel.addEventListener("touchstart", (event) => {
-    startX = event.touches[0].clientX;
-  });
-
-  carousel.addEventListener("touchend", (event) => {
-    endX = event.changedTouches[0].clientX;
-
-    const diff = endX - startX;
-
-    if (diff > 45) prev();
-    if (diff < -45) next();
-  });
-}
-
-/* =========================
-   INICIALIZAÇÃO
-========================= */
+/* INICIALIZAÇÃO */
 
 function initApp() {
-  cards = Array.from(document.querySelectorAll(".card"));
-
   updateCarousel();
-  renderGas("R410A");
-  renderCategoryCarousel();
+  renderGasList();
 
-  setupMainCarouselSwipe();
+  const firstGas = Object.keys(getGasData())[0];
+  if (firstGas) renderGas(firstGas);
+
+  renderCategoryCarousel();
 
   setupSwipe("categoryCarousel", prevCategory, nextCategory);
   setupSwipe("brandCarousel", prevBrand, nextBrand);
@@ -803,51 +1154,3 @@ function initApp() {
 }
 
 document.addEventListener("DOMContentLoaded", initApp);
-
-/* =========================
-   EXPORTAÇÃO GLOBAL
-   Necessário porque o HTML usa onclick/oninput
-========================= */
-
-window.updateCarousel = updateCarousel;
-window.next = next;
-window.prev = prev;
-window.searchHome = searchHome;
-window.openScreen = openScreen;
-
-window.renderGas = renderGas;
-window.selectGas = selectGas;
-window.searchGas = searchGas;
-
-window.renderCategoryCarousel = renderCategoryCarousel;
-window.updateCategoryCarousel = updateCategoryCarousel;
-window.nextCategory = nextCategory;
-window.prevCategory = prevCategory;
-window.searchErrorType = searchErrorType;
-window.selectTypeAndOpenBrand = selectTypeAndOpenBrand;
-window.backToType = backToType;
-
-window.renderBrandCarousel = renderBrandCarousel;
-window.updateBrandCarousel = updateBrandCarousel;
-window.nextBrand = nextBrand;
-window.prevBrand = prevBrand;
-window.searchBrand = searchBrand;
-window.selectBrandAndOpenModel = selectBrandAndOpenModel;
-window.backToBrand = backToBrand;
-
-window.renderModelCarousel = renderModelCarousel;
-window.updateModelCarousel = updateModelCarousel;
-window.nextModel = nextModel;
-window.prevModel = prevModel;
-window.searchModel = searchModel;
-window.renderModelInfo = renderModelInfo;
-window.selectModelAndOpenCodes = selectModelAndOpenCodes;
-window.backToModel = backToModel;
-
-window.renderCodeCarousel = renderCodeCarousel;
-window.updateCodeCarousel = updateCodeCarousel;
-window.nextCode = nextCode;
-window.prevCode = prevCode;
-window.searchCode = searchCode;
-window.renderCodeInfo = renderCodeInfo;
-window.backToModel = backToModel;
