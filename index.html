@@ -1,732 +1,226 @@
-/* HVAC PRO - app.js
-   CORRECAO ESTAVEL
-   Restaura carrossel principal, Gases, Erros e adiciona Acervo Tecnico.
-*/
-
-var gasData = window.gasData || {};
-var errorCategories = window.errorCategories || [];
-var brandsByCategory = window.brandsByCategory || {};
-var modelsByBrand = window.modelsByBrand || {};
-var errorCodesByModel = window.errorCodesByModel || {};
-var acervoTecnico = window.acervoTecnico || [];
-
-var cards = [];
-var current = 0;
-var startX = 0;
-var endX = 0;
-
-var catCurrent = 0;
-var brandCurrent = 0;
-var modelCurrent = 0;
-var codeCurrent = 0;
-
-function cleanText(value) {
-  return String(value || "")
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function textOrDefault(value, fallback) {
-  return value || fallback || "Nao informado no manual oficial";
-}
-
-function updateCarousel() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
-
-  cards.forEach(function(card, index) {
-    card.className = "card";
-
-    var total = cards.length;
-    var left = (current - 1 + total) % total;
-    var right = (current + 1) % total;
-    var farLeft = (current - 2 + total) % total;
-    var farRight = (current + 2) % total;
-
-    if (index === current) {
-      card.classList.add("center");
-    } else if (index === left) {
-      card.classList.add("left");
-    } else if (index === right) {
-      card.classList.add("right");
-    } else if (index === farLeft) {
-      card.classList.add("far-left");
-    } else if (index === farRight) {
-      card.classList.add("far-right");
-    } else {
-      card.classList.add("hidden");
-    }
-  });
-}
-
-function next() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
-  current = (current + 1) % cards.length;
-  updateCarousel();
-}
-
-function prev() {
-  cards = document.querySelectorAll(".card");
-  if (!cards.length) return;
-  current = (current - 1 + cards.length) % cards.length;
-  updateCarousel();
-}
-
-function searchHome() {
-  var input = document.getElementById("homeSearch");
-  if (!input) return;
-
-  var value = cleanText(input.value);
-  if (value.length < 2) return;
-
-  var map = [
-    { keys: ["manifold", "pressao", "pressão"], index: 0 },
-    { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
-    { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
-    { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
-    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
-    { keys: ["acervo", "manual", "manual tecnico", "manual técnico", "catalogo", "catálogo"], index: 5 }
-  ];
-
-  var found = map.find(function(item) {
-    return item.keys.some(function(key) {
-      var k = cleanText(key);
-      return k.includes(value) || value.includes(k);
-    });
-  });
-
-  if (found) {
-    current = found.index;
-    updateCarousel();
-  }
-}
-
-function setupMainSwipe() {
-  var carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  carousel.addEventListener("touchstart", function(event) {
-    startX = event.touches[0].clientX;
-  });
-
-  carousel.addEventListener("touchend", function(event) {
-    endX = event.changedTouches[0].clientX;
-    var diff = endX - startX;
-    if (diff > 45) prev();
-    if (diff < -45) next();
-  });
-}
-
-function openScreen(id) {
-  document.querySelectorAll(".screen").forEach(function(screen) {
-    screen.classList.remove("active");
-  });
-
-  var screen = document.getElementById(id);
-  if (!screen) return;
-
-  screen.classList.add("active");
-
-  if (id === "home") {
-    updateCarousel();
-  }
-
-  if (id === "gases") {
-    var gases = document.getElementById("gases");
-    if (gases) gases.scrollTop = 0;
-  }
-
-  if (id === "erros") {
-    var erros = document.getElementById("erros");
-    if (erros) erros.scrollTop = 0;
-
-    document.getElementById("typeStep").style.display = "block";
-    document.getElementById("brandStep").style.display = "none";
-    document.getElementById("modelStep").style.display = "none";
-    document.getElementById("codeStep").style.display = "none";
-
-    renderCategoryCarousel();
-  }
-
-  if (id === "acervo") {
-    var acervo = document.getElementById("acervo");
-    if (acervo) acervo.scrollTop = 0;
-    renderAcervoIntro();
-  }
-}
-
-/* GASES */
-
-function renderGas(name) {
-  var key = String(name || "").toUpperCase();
-  var gas = gasData[key];
-  var gasInfo = document.getElementById("gasInfo");
-  if (!gasInfo) return;
-
-  if (!gas) {
-    gasInfo.innerHTML = "<h2>Nao encontrado</h2><div class='info-row'>Digite um gas valido.</div>";
-    return;
-  }
-
-  var ptRows = "";
-  if (Array.isArray(gas.pt)) {
-    ptRows = gas.pt.map(function(row) {
-      return "<tr><td>" + row[0] + "</td><td>" + row[1] + "</td></tr>";
-    }).join("");
-  }
-
-  gasInfo.innerHTML =
-    "<h2>" + (gas.nome || key) + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + textOrDefault(gas.tipo, "-") + "</div>" +
-    "<div class='info-row'><span>Composicao:</span><br>" + textOrDefault(gas.composicao, "-") + "</div>" +
-    "<div class='info-row'><span>Aplicacao:</span><br>" + textOrDefault(gas.aplicacao, "-") + "</div>" +
-    "<div class='info-row'><span>Oleo:</span><br>" + textOrDefault(gas.oleo, "-") + "</div>" +
-    "<div class='info-row'><span>Seguranca:</span><br>" + textOrDefault(gas.seguranca, "-") + "</div>" +
-    "<div class='info-row'><span>GWP:</span><br>" + textOrDefault(gas.gwp, "-") + "</div>" +
-    "<div class='info-row'><span>ODP:</span><br>" + textOrDefault(gas.odp, "-") + "</div>" +
-    "<div class='info-row'><span>Ebulicao:</span><br>" + textOrDefault(gas.ebulição || gas.ebulicao, "-") + "</div>" +
-    "<div class='info-row'><span>Critica:</span><br>" + textOrDefault(gas.critica, "-") + "</div>" +
-    "<div class='info-row'><span>Pressao critica:</span><br>" + textOrDefault(gas.pressaoCritica, "-") + "</div>" +
-    "<div class='info-row'><span>Glide:</span><br>" + textOrDefault(gas.glide, "-") + "</div>" +
-    "<div class='info-row'><span>Transferencia:</span><br>" + textOrDefault(gas.transferencia, "-") + "</div>" +
-    "<div class='info-row'><span>Evaporacao tipica:</span><br>" + textOrDefault(gas.faixaEvaporacao, "-") + "</div>" +
-    "<div class='info-row'><span>Condensacao tipica:</span><br>" + textOrDefault(gas.faixaCondensacao, "-") + "</div>" +
-    "<div class='info-row'><span>Campo:</span><br>" + textOrDefault(gas.campo, "-") + "</div>" +
-    "<div class='info-row'><span>Tabela PT resumida:</span>" +
-    "<table class='pt-table'><thead><tr><th>Temp.</th><th>Pressao</th></tr></thead><tbody>" + ptRows + "</tbody></table>" +
-    "<div class='note'>Valores aproximados para referencia rapida. Conferir tabela oficial para ajuste fino.</div></div>";
-}
-
-function selectGas(name, element) {
-  document.querySelectorAll(".gas-chip").forEach(function(chip) {
-    chip.classList.remove("active-gas");
-  });
-
-  if (element) element.classList.add("active-gas");
-
-  var input = document.getElementById("gasSearch");
-  if (input) input.value = name;
-
-  renderGas(name);
-}
-
-function searchGas() {
-  var input = document.getElementById("gasSearch");
-  if (!input) return;
-
-  var value = input.value.trim();
-  if (value.length >= 2) renderGas(value);
-}
-
-/* ERROS */
-
-function activeCategory() {
-  if (!errorCategories[catCurrent]) return "";
-  return errorCategories[catCurrent].name;
-}
-
-function activeBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
-  return brands[brandCurrent] || "";
-}
-
-function activeModel() {
-  var models = modelsByBrand[activeBrand()] || [];
-  return models[modelCurrent] || "";
-}
-
-function getCodes() {
-  var key = activeBrand() + "|" + activeModel();
-  var codes = errorCodesByModel[key];
-
-  if (Array.isArray(codes) && codes.length) return codes;
-
-  return [
-    {
-      code: "E1",
-      title: "Falha generica",
-      cause: "Codigo ainda nao refinado para este modelo.",
-      test: "Verificar alimentacao, sensores, comunicacao e placas.",
-      solution: "Cadastrar diagnostico especifico na proxima etapa.",
-      sourceLevel: "DIAGNOSTICO_CAMPO"
-    }
-  ];
-}
-
-function formatSourceLevel(sourceLevel) {
-  var map = {
-    DIAGNOSTICO_CAMPO: "Diagnostico de campo",
-    VALIDAR_MANUAL_MODELO: "Validar no manual do modelo",
-    BASE_APP_ORIGINAL: "Base original do app",
-    BASE_APP_ORIGINAL_VALIDAR_MANUAL: "Base original do app / validar manual",
-    OFICIAL_SAMSUNG_SUPORTE: "Suporte oficial Samsung",
-    OFICIAL_MIDEA_FREEMATCH: "Manual tecnico Midea FreeMatch",
-    OFICIAL_MIDEA_PORTATIL_REFERENCIA: "Referencia oficial Midea",
-    OFICIAL_FUJITSU_MANUAL_LED: "Manual Fujitsu / leitura por LED",
-    OFICIAL_CONSUL_SUPORTE_GERAL: "Suporte oficial Consul",
-    OFICIAL_TRANE_U_MATCH: "Manual tecnico Trane",
-    LISTA_TECNICA_NAO_OFICIAL_VALIDAR: "Lista tecnica nao oficial / validar"
-  };
-
-  return map[sourceLevel] || sourceLevel || "Nao informado";
-}
-
-function renderCategoryCarousel() {
-  var box = document.getElementById("categoryCarousel");
-  if (!box) return;
-
-  box.innerHTML = errorCategories.map(function(cat, index) {
-    return "<div class='category-card' onclick='selectTypeAndOpenBrand(" + index + ")'>" +
-      "<div class='cat-icon'>" + cat.icon + "</div>" +
-      "<div class='cat-title'>" + cat.name + "</div>" +
-      "</div>";
-  }).join("");
-
-  updateCategoryCarousel();
-}
-
-function updateCategoryCarousel() {
-  var items = document.querySelectorAll(".category-card");
-  if (!items.length) return;
-
-  items.forEach(function(card, index) {
-    card.className = "category-card";
-    var left = (catCurrent - 1 + items.length) % items.length;
-    var right = (catCurrent + 1) % items.length;
-
-    if (index === catCurrent) card.classList.add("cat-center");
-    else if (index === left) card.classList.add("cat-left");
-    else if (index === right) card.classList.add("cat-right");
-    else card.classList.add("cat-hidden");
-  });
-}
-
-function nextCategory() {
-  if (!errorCategories.length) return;
-  catCurrent = (catCurrent + 1) % errorCategories.length;
-  updateCategoryCarousel();
-}
-
-function prevCategory() {
-  if (!errorCategories.length) return;
-  catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
-  updateCategoryCarousel();
-}
-
-function searchErrorType() {
-  var input = document.getElementById("errorTypeSearch");
-  if (!input) return;
-
-  var value = cleanText(input.value);
-  if (value.length < 2) return;
-
-  var index = errorCategories.findIndex(function(cat) {
-    return cat.search.some(function(term) {
-      var clean = cleanText(term);
-      return clean.includes(value) || value.includes(clean);
-    });
-  });
-
-  if (index >= 0) {
-    catCurrent = index;
-    updateCategoryCarousel();
-  }
-}
-
-function selectTypeAndOpenBrand(index) {
-  catCurrent = index;
-  brandCurrent = 0;
-
-  document.getElementById("typeStep").style.display = "none";
-  document.getElementById("brandStep").style.display = "block";
-  document.getElementById("modelStep").style.display = "none";
-  document.getElementById("codeStep").style.display = "none";
-
-  renderBrandCarousel();
-}
-
-function backToType() {
-  document.getElementById("brandStep").style.display = "none";
-  document.getElementById("modelStep").style.display = "none";
-  document.getElementById("codeStep").style.display = "none";
-  document.getElementById("typeStep").style.display = "block";
-}
-
-function renderBrandCarousel() {
-  var brands = brandsByCategory[activeCategory()] || [];
-  var box = document.getElementById("brandCarousel");
-  if (!box) return;
-
-  box.innerHTML = brands.map(function(brand, index) {
-    return "<div class='brand-card' onclick='selectBrandAndOpenModel(" + index + ")'>" +
-      "<div class='brand-title'>" + brand + "</div>" +
-      "<div class='brand-sub'>" + activeCategory() + "</div>" +
-      "</div>";
-  }).join("");
-
-  updateBrandCarousel();
-}
-
-function updateBrandCarousel() {
-  var items = document.querySelectorAll(".brand-card");
-  if (!items.length) return;
-
-  items.forEach(function(card, index) {
-    card.className = "brand-card";
-    var left = (brandCurrent - 1 + items.length) % items.length;
-    var right = (brandCurrent + 1) % items.length;
-
-    if (index === brandCurrent) card.classList.add("brand-center");
-    else if (index === left) card.classList.add("brand-left");
-    else if (index === right) card.classList.add("brand-right");
-    else card.classList.add("brand-hidden");
-  });
-}
-
-function nextBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
-  if (!brands.length) return;
-  brandCurrent = (brandCurrent + 1) % brands.length;
-  updateBrandCarousel();
-}
-
-function prevBrand() {
-  var brands = brandsByCategory[activeCategory()] || [];
-  if (!brands.length) return;
-  brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
-  updateBrandCarousel();
-}
-
-function searchBrand() {
-  var input = document.getElementById("brandSearch");
-  if (!input) return;
-
-  var value = cleanText(input.value);
-  var brands = brandsByCategory[activeCategory()] || [];
-
-  var index = brands.findIndex(function(brand) {
-    var clean = cleanText(brand);
-    return clean.includes(value) || value.includes(clean);
-  });
-
-  if (index >= 0) {
-    brandCurrent = index;
-    updateBrandCarousel();
-  }
-}
-
-function selectBrandAndOpenModel(index) {
-  brandCurrent = index;
-  modelCurrent = 0;
-
-  document.getElementById("brandStep").style.display = "none";
-  document.getElementById("modelStep").style.display = "block";
-  document.getElementById("codeStep").style.display = "none";
-
-  renderModelCarousel();
-}
-
-function backToBrand() {
-  document.getElementById("modelStep").style.display = "none";
-  document.getElementById("codeStep").style.display = "none";
-  document.getElementById("brandStep").style.display = "block";
-}
-
-function renderModelCarousel() {
-  var brand = activeBrand();
-  var models = modelsByBrand[brand] || ["Modelo nao cadastrado"];
-  var box = document.getElementById("modelCarousel");
-  if (!box) return;
-
-  box.innerHTML = models.map(function(model, index) {
-    return "<div class='model-card' onclick='selectModelAndOpenCodes(" + index + ")'>" +
-      "<div class='model-title'>" + model + "</div>" +
-      "<div class='model-sub'>" + brand + "</div>" +
-      "</div>";
-  }).join("");
-
-  updateModelCarousel();
-  renderModelInfo();
-}
-
-function updateModelCarousel() {
-  var items = document.querySelectorAll(".model-card");
-  if (!items.length) return;
-
-  items.forEach(function(card, index) {
-    card.className = "model-card";
-    var left = (modelCurrent - 1 + items.length) % items.length;
-    var right = (modelCurrent + 1) % items.length;
-
-    if (index === modelCurrent) card.classList.add("model-center");
-    else if (index === left) card.classList.add("model-left");
-    else if (index === right) card.classList.add("model-right");
-    else card.classList.add("model-hidden");
-  });
-
-  renderModelInfo();
-}
-
-function nextModel() {
-  var models = modelsByBrand[activeBrand()] || [];
-  if (!models.length) return;
-  modelCurrent = (modelCurrent + 1) % models.length;
-  updateModelCarousel();
-}
-
-function prevModel() {
-  var models = modelsByBrand[activeBrand()] || [];
-  if (!models.length) return;
-  modelCurrent = (modelCurrent - 1 + models.length) % models.length;
-  updateModelCarousel();
-}
-
-function searchModel() {
-  var input = document.getElementById("modelSearch");
-  if (!input) return;
-
-  var value = cleanText(input.value);
-  var models = modelsByBrand[activeBrand()] || [];
-
-  var index = models.findIndex(function(model) {
-    var clean = cleanText(model);
-    return clean.includes(value) || value.includes(clean);
-  });
-
-  if (index >= 0) {
-    modelCurrent = index;
-    updateModelCarousel();
-  }
-}
-
-function renderModelInfo() {
-  var info = document.getElementById("modelInfo");
-  if (!info) return;
-
-  info.innerHTML =
-    "<h2>" + activeBrand() + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + activeCategory() + "</div>" +
-    "<div class='info-row'><span>Modelo/Linha selecionado:</span><br>" + activeModel() + "</div>" +
-    "<div class='info-row'><span>Proximo passo:</span><br>Toque no card do modelo para ver os codigos de erro.</div>";
-}
-
-function selectModelAndOpenCodes(index) {
-  modelCurrent = index;
-  codeCurrent = 0;
-
-  document.getElementById("modelStep").style.display = "none";
-  document.getElementById("codeStep").style.display = "block";
-
-  renderCodeCarousel();
-}
-
-function backToModel() {
-  document.getElementById("codeStep").style.display = "none";
-  document.getElementById("modelStep").style.display = "block";
-}
-
-function renderCodeCarousel() {
-  var codes = getCodes();
-  var box = document.getElementById("codeCarousel");
-  if (!box) return;
-
-  box.innerHTML = codes.map(function(item) {
-    return "<div class='code-card'>" +
-      "<div class='code-title'>" + item.code + "</div>" +
-      "<div class='code-sub'>" + item.title + "</div>" +
-      "</div>";
-  }).join("");
-
-  updateCodeCarousel();
-  renderCodeInfo();
-}
-
-function updateCodeCarousel() {
-  var items = document.querySelectorAll(".code-card");
-  if (!items.length) return;
-
-  items.forEach(function(card, index) {
-    card.className = "code-card";
-    var left = (codeCurrent - 1 + items.length) % items.length;
-    var right = (codeCurrent + 1) % items.length;
-
-    if (index === codeCurrent) card.classList.add("code-center");
-    else if (index === left) card.classList.add("code-left");
-    else if (index === right) card.classList.add("code-right");
-    else card.classList.add("code-hidden");
-  });
-
-  renderCodeInfo();
-}
-
-function nextCode() {
-  var codes = getCodes();
-  if (!codes.length) return;
-  codeCurrent = (codeCurrent + 1) % codes.length;
-  updateCodeCarousel();
-}
-
-function prevCode() {
-  var codes = getCodes();
-  if (!codes.length) return;
-  codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
-  updateCodeCarousel();
-}
-
-function searchCode() {
-  var input = document.getElementById("codeSearch");
-  if (!input) return;
-
-  var value = cleanText(input.value);
-  var codes = getCodes();
-
-  var index = codes.findIndex(function(item) {
-    var text = cleanText([item.code, item.title, item.cause, item.test, item.solution].join(" "));
-    return text.includes(value);
-  });
-
-  if (index >= 0) {
-    codeCurrent = index;
-    updateCodeCarousel();
-  }
-}
-
-function renderCodeInfo() {
-  var info = document.getElementById("codeInfo");
-  var codes = getCodes();
-  var item = codes[codeCurrent];
-  if (!info || !item) return;
-
-  info.innerHTML =
-    "<h2>" + item.code + " - " + item.title + "</h2>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + activeCategory() + "</div>" +
-    "<div class='info-row'><span>Marca:</span><br>" + activeBrand() + "</div>" +
-    "<div class='info-row'><span>Modelo/Linha:</span><br>" + activeModel() + "</div>" +
-    "<div class='info-row'><span>Causa provavel:</span><br>" + textOrDefault(item.cause, "-") + "</div>" +
-    "<div class='info-row'><span>Teste em campo:</span><br>" + textOrDefault(item.test, "-") + "</div>" +
-    "<div class='info-row'><span>Solucao sugerida:</span><br>" + textOrDefault(item.solution, "-") + "</div>" +
-    "<div class='info-row'><span>Fonte/base:</span><br>" + formatSourceLevel(item.sourceLevel) + "</div>";
-}
-
-/* ACERVO TECNICO */
-
-function renderAcervoIntro() {
-  var info = document.getElementById("acervoInfo");
-  if (!info) return;
-
-  info.innerHTML =
-    "<h2>Acervo Tecnico</h2>" +
-    "<div class='info-row'><span>Como usar:</span><br>Digite o modelo ou codigo da maquina para consultar dados tecnicos refinados.</div>" +
-    "<div class='info-row'><span>Regra:</span><br>Quando o manual oficial nao informar algum dado, o app mostrara Nao informado no manual oficial ou Validar etiqueta/manual.</div>";
-}
-
-function searchAcervoTecnico() {
-  var input = document.getElementById("acervoSearch");
-  var info = document.getElementById("acervoInfo");
-  if (!input || !info) return;
-
-  var value = cleanText(input.value);
-
-  if (value.length < 2) {
-    renderAcervoIntro();
-    return;
-  }
-
-  var results = acervoTecnico.filter(function(item) {
-    var codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca.join(" ") : "";
-    var text = cleanText([
-      item.marca,
-      item.modelo,
-      codigos,
-      item.linha,
-      item.tipo,
-      item.capacidade,
-      item.fluidoRefrigerante
-    ].join(" "));
-
-    return text.includes(value);
-  });
-
-  if (!results.length) {
-    info.innerHTML =
-      "<h2>Nada encontrado</h2>" +
-      "<div class='info-row'><span>Busca:</span><br>" + input.value + "</div>" +
-      "<div class='info-row'>Nenhum modelo cadastrado no Acervo Tecnico contem esse termo.</div>";
-    return;
-  }
-
-  info.innerHTML = results.map(renderAcervoItem).join("");
-}
-
-function renderAcervoItem(item) {
-  var manualInstalacao = item.manualInstalacao || "Nao cadastrado ainda";
-  var manualManutencao = item.manualManutencao || "Nao cadastrado ainda";
-
-  if (manualInstalacao.indexOf("http") === 0) {
-    manualInstalacao = "<a href='" + manualInstalacao + "' target='_blank'>Abrir manual de instalacao</a>";
-  }
-
-  if (manualManutencao.indexOf("http") === 0) {
-    manualManutencao = "<a href='" + manualManutencao + "' target='_blank'>Abrir manual de manutencao/tecnico</a>";
-  }
-
-  return "<h2>" + textOrDefault(item.marca, "-") + " - " + textOrDefault(item.modelo, "-") + "</h2>" +
-    "<div class='info-row'><span>Linha:</span><br>" + textOrDefault(item.linha) + "</div>" +
-    "<div class='info-row'><span>Tipo:</span><br>" + textOrDefault(item.tipo) + "</div>" +
-    "<div class='info-row'><span>Capacidade:</span><br>" + textOrDefault(item.capacidade) + "</div>" +
-    "<div class='info-row'><span>Ano/faixa de fabricacao:</span><br>" + textOrDefault(item.anoFabricacao, "Validar etiqueta/manual") + "</div>" +
-    "<div class='info-row'><span>Fluido refrigerante:</span><br>" + textOrDefault(item.fluidoRefrigerante, "Validar etiqueta/manual") + "</div>" +
-    "<div class='info-row'><span>Corrente nominal:</span><br>" + textOrDefault(item.correnteNominal) + "</div>" +
-    "<div class='info-row'><span>Superaquecimento:</span><br>" + textOrDefault(item.superaquecimento, "Validar procedimento tecnico do fabricante") + "</div>" +
-    "<div class='info-row'><span>Subresfriamento:</span><br>" + textOrDefault(item.subresfriamento, "Validar procedimento tecnico do fabricante") + "</div>" +
-    "<div class='info-row'><span>Capacitor:</span><br>" + textOrDefault(item.capacitor) + "</div>" +
-    "<div class='info-row'><span>Placa eletronica:</span><br>" + textOrDefault(item.placaEletronica) + "</div>" +
-    "<div class='info-row'><span>Tubulacao liquido / alta:</span><br>" + textOrDefault(item.tubulacaoAlta) + "</div>" +
-    "<div class='info-row'><span>Tubulacao succao / baixa:</span><br>" + textOrDefault(item.tubulacaoBaixa) + "</div>" +
-    "<div class='info-row'><span>Manual de instalacao:</span><br>" + manualInstalacao + "</div>" +
-    "<div class='info-row'><span>Manual de manutencao/tecnico:</span><br>" + manualManutencao + "</div>" +
-    "<div class='info-row'><span>Fonte:</span><br>" + textOrDefault(item.fonte, "Nao informado") + "</div>" +
-    "<div class='info-row'><span>Status:</span><br>" + textOrDefault(item.status, "Nao informado") + "</div>";
-}
-
-/* SWIPE INTERNO */
-
-function setupSwipe(id, prevFn, nextFn) {
-  var el = document.getElementById(id);
-  if (!el) return;
-
-  var sx = 0;
-  var ex = 0;
-
-  el.addEventListener("touchstart", function(event) {
-    sx = event.touches[0].clientX;
-  });
-
-  el.addEventListener("touchend", function(event) {
-    ex = event.changedTouches[0].clientX;
-    var diff = ex - sx;
-    if (diff > 45) prevFn();
-    if (diff < -45) nextFn();
-  });
-}
-
-function initApp() {
-  cards = document.querySelectorAll(".card");
-  current = 0;
-
-  updateCarousel();
-  setupMainSwipe();
-
-  setupSwipe("categoryCarousel", prevCategory, nextCategory);
-  setupSwipe("brandCarousel", prevBrand, nextBrand);
-  setupSwipe("modelCarousel", prevModel, nextModel);
-  setupSwipe("codeCarousel", prevCode, nextCode);
-
-  renderGas("R410A");
-  renderCategoryCarousel();
-}
-
-window.addEventListener("load", initApp);
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HVAC PRO</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app screen active" id="home">
+  <div class="logo">HVAC PRO</div>
+
+  <div class="home-search">
+    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos, acervo" oninput="searchHome()">
+  </div>
+
+  <div class="carousel-wrap">
+    <div class="carousel" id="carousel">
+
+      <div class="card">
+        <div class="manifold-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="18" y="14" width="64" height="50" rx="10" stroke="#009dff" stroke-width="6"/>
+            <circle cx="35" cy="39" r="10" stroke="#009dff" stroke-width="5"/>
+            <circle cx="65" cy="39" r="10" stroke="#ff3636" stroke-width="5"/>
+            <path d="M30 66V88" stroke="#009dff" stroke-width="6" stroke-linecap="round"/>
+            <path d="M70 66V88" stroke="#ff3636" stroke-width="6" stroke-linecap="round"/>
+            <path d="M50 64V86" stroke="#ff8c1a" stroke-width="6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="title blue">MANIFOLD</div>
+      </div>
+
+      <div class="card" onclick="openScreen('erros')">
+        <div class="icon red">⚠️</div>
+        <div class="title red">ERROS</div>
+      </div>
+
+      <div class="card">
+        <div class="icon orange">📟</div>
+        <div class="title orange">TESTES</div>
+      </div>
+
+      <div class="card" onclick="openScreen('gases')">
+        <div class="gas-icon">
+          <svg viewBox="0 0 100 100" fill="none">
+            <rect x="32" y="18" width="36" height="58" rx="10" stroke="#00d084" stroke-width="6"/>
+            <rect x="42" y="10" width="16" height="10" rx="3" fill="#00d084"/>
+            <path d="M38 40H62" stroke="#00d084" stroke-width="5" stroke-linecap="round"/>
+            <path d="M38 52H62" stroke="#00d084" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="title green">GASES</div>
+      </div>
+
+      <div class="card">
+        <div class="icon blue">❄️</div>
+        <div class="title blue">MODELOS</div>
+      </div>
+
+      <div class="card" onclick="openScreen('acervo')">
+        <div class="icon blue">📚</div>
+        <div class="title blue">ACERVO</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="nav">
+    <button onclick="prev()">‹</button>
+    <button onclick="next()">›</button>
+  </div>
+</div>
+
+<div class="screen page" id="gases">
+  <div class="topbar">
+    <div class="back" onclick="openScreen('home')">← Voltar</div>
+    <div class="page-title green">GASES</div>
+  </div>
+
+  <div class="mode-box">
+    <div class="mode-title">Modo interativo</div>
+
+    <div class="gas-list">
+      <div class="gas-chip active-gas" onclick="selectGas('R410A', this)"><strong>R410A</strong><small>Split</small></div>
+      <div class="gas-chip" onclick="selectGas('R22', this)"><strong>R22</strong><small>Antigo</small></div>
+      <div class="gas-chip" onclick="selectGas('R32', this)"><strong>R32</strong><small>A2L</small></div>
+      <div class="gas-chip" onclick="selectGas('R407C', this)"><strong>R407C</strong><small>Split/Chiller</small></div>
+      <div class="gas-chip" onclick="selectGas('R134A', this)"><strong>R134a</strong><small>Leve</small></div>
+      <div class="gas-chip" onclick="selectGas('R404A', this)"><strong>R404A</strong><small>Comercial</small></div>
+      <div class="gas-chip" onclick="selectGas('R507A', this)"><strong>R507A</strong><small>Freezer</small></div>
+      <div class="gas-chip" onclick="selectGas('R448A', this)"><strong>R448A</strong><small>Baixo GWP</small></div>
+      <div class="gas-chip" onclick="selectGas('R449A', this)"><strong>R449A</strong><small>Retrofit</small></div>
+      <div class="gas-chip" onclick="selectGas('R600A', this)"><strong>R600a</strong><small>Geladeira</small></div>
+      <div class="gas-chip" onclick="selectGas('R290', this)"><strong>R290</strong><small>Propano</small></div>
+    </div>
+
+    <div class="mode-title">Modo manual</div>
+    <div class="search-area">
+      <input id="gasSearch" type="text" placeholder="Digite o gás: R410A, R22, R404A..." oninput="searchGas()">
+    </div>
+
+    <div class="gas-info" id="gasInfo"></div>
+  </div>
+</div>
+
+<div class="screen page" id="erros">
+  <div class="topbar">
+    <div class="back" onclick="openScreen('home')">← Voltar</div>
+    <div class="page-title red">ERROS</div>
+  </div>
+
+  <div class="mode-box">
+
+    <div id="typeStep">
+      <div class="mode-title">Buscar tipo de equipamento</div>
+      <div class="search-area">
+        <input id="errorTypeSearch" type="text" placeholder="Digite: split, cassete, janela ou piso teto" oninput="searchErrorType()">
+      </div>
+
+      <div class="mode-title">Escolha o tipo de equipamento</div>
+      <div class="error-category-wrap">
+        <div class="error-category-carousel" id="categoryCarousel"></div>
+      </div>
+
+      <div class="small-nav">
+        <button onclick="prevCategory()">‹</button>
+        <button onclick="nextCategory()">›</button>
+      </div>
+    </div>
+
+    <div id="brandStep" style="display:none;">
+      <div class="back" onclick="backToType()" style="margin-bottom:18px;">← Voltar tipo</div>
+
+      <div class="mode-title">Buscar marca</div>
+      <div class="search-area">
+        <input id="brandSearch" type="text" placeholder="Digite: Midea, Carrier, Samsung, Consul..." oninput="searchBrand()">
+      </div>
+
+      <div class="mode-title">Escolha a marca</div>
+      <div class="brand-category-wrap">
+        <div class="brand-category-carousel" id="brandCarousel"></div>
+      </div>
+
+      <div class="small-nav">
+        <button onclick="prevBrand()">‹</button>
+        <button onclick="nextBrand()">›</button>
+      </div>
+    </div>
+
+    <div id="modelStep" style="display:none;">
+      <div class="back" onclick="backToBrand()" style="margin-bottom:18px;">← Voltar marca</div>
+
+      <div class="mode-title">Buscar ou digitar modelo / série</div>
+      <div class="search-area">
+        <input id="modelSearch" type="text" placeholder="Ex: Xtreme Save, WindFree, Dual Inverter..." oninput="searchModel()">
+      </div>
+
+      <div class="mode-title">Modelos / linhas disponíveis</div>
+      <div class="model-category-wrap">
+        <div class="model-category-carousel" id="modelCarousel"></div>
+      </div>
+
+      <div class="small-nav">
+        <button onclick="prevModel()">‹</button>
+        <button onclick="nextModel()">›</button>
+      </div>
+
+      <div class="model-info" id="modelInfo"></div>
+    </div>
+
+    <div id="codeStep" style="display:none;">
+      <div class="back" onclick="backToModel()" style="margin-bottom:18px;">← Voltar modelo</div>
+
+      <div class="mode-title">Buscar código de erro</div>
+      <div class="search-area">
+        <input id="codeSearch" type="text" placeholder="Ex: E1, E3, P4, CH05, E101..." oninput="searchCode()">
+      </div>
+
+      <div class="mode-title">Códigos disponíveis</div>
+      <div class="code-category-wrap">
+        <div class="code-category-carousel" id="codeCarousel"></div>
+      </div>
+
+      <div class="small-nav">
+        <button onclick="prevCode()">‹</button>
+        <button onclick="nextCode()">›</button>
+      </div>
+
+      <div class="model-info" id="codeInfo"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="screen page" id="acervo">
+  <div class="topbar">
+    <div class="back" onclick="openScreen('home')">← Voltar</div>
+    <div class="page-title blue">ACERVO</div>
+  </div>
+
+  <div class="mode-box">
+    <div class="mode-title">Consulta técnica por modelo/código da máquina</div>
+
+    <div class="search-area">
+      <input id="acervoSearch" type="text" placeholder="Digite o modelo ou código da máquina..." oninput="searchAcervoTecnico()">
+    </div>
+
+    <div class="model-info" id="acervoInfo">
+      <h2>Acervo Técnico</h2>
+      <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina para consultar dados técnicos refinados.</div>
+      <div class="info-row"><span>Regra:</span><br>Quando o manual oficial não informar algum dado, o app mostrará “Não informado no manual oficial” ou “Validar etiqueta/manual”.</div>
+    </div>
+  </div>
+</div>
+
+<script src="databases/gases.js"></script>
+<script src="databases/modelos.js"></script>
+<script src="databases/erros.js"></script>
+<script src="databases/acervo_tecnico.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
