@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
-
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=901">
 </head>
 
 <body>
@@ -14,7 +13,7 @@
   <div class="logo">HVAC PRO</div>
 
   <div class="home-search">
-    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos" oninput="searchHome()">
+    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos, acervo" oninput="searchHome()">
   </div>
 
   <div class="carousel-wrap">
@@ -206,32 +205,23 @@
     <div class="mode-title">Consulta técnica por modelo/código</div>
 
     <div class="search-area">
-      <input id="acervoSearch" type="text" placeholder="Digite o modelo ou código da máquina...">
+      <input id="acervoSearch" type="text" placeholder="Digite o modelo ou código da máquina..." oninput="searchAcervoTecnico()">
     </div>
 
     <div class="model-info" id="acervoInfo">
       <h2>Acervo Técnico</h2>
-      <div class="info-row">
-        <span>Como usar:</span><br>
-        Digite o modelo ou código da máquina no campo acima.
-      </div>
-      <div class="info-row">
-        <span>Objetivo:</span><br>
-        Aqui vamos organizar dados oficiais de manuais, instalação, manutenção, gás, corrente, tubulação, capacitor, placa eletrônica e observações técnicas por modelo.
-      </div>
-      <div class="info-row">
-        <span>Status:</span><br>
-        Campo de busca criado. Na próxima etapa vamos ativar a busca pelo app.js.
-      </div>
+      <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina no campo acima.</div>
+      <div class="info-row"><span>Objetivo:</span><br>Organizar dados oficiais de manuais, instalação, manutenção, gás, corrente, tubulação, capacitor, placa eletrônica e observações técnicas por modelo.</div>
+      <div class="info-row"><span>Status:</span><br>Busca técnica ativa. Teste digitando EXEMPLO.</div>
     </div>
   </div>
 </div>
 
-<script src="databases/gases.js"></script>
-<script src="databases/modelos.js"></script>
-<script src="databases/erros.js"></script>
-<script src="databases/acervo_tecnico.js"></script>
-<script src="app.js"></script>
+<script src="databases/gases.js?v=901"></script>
+<script src="databases/modelos.js?v=901"></script>
+<script src="databases/erros.js?v=901"></script>
+<script src="databases/acervo_tecnico.js?v=901"></script>
+<script src="app.js?v=901"></script>
 
 </body>
 </html>
