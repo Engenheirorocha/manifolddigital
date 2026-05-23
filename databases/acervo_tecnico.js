@@ -1,16 +1,23 @@
 /* HVAC PRO - databases/acervo_tecnico.js
    Acervo Técnico Oficial
    Consulta por modelo/código da máquina.
-   Regra: não inventar dados. Quando não houver informação oficial, mostrar "Não informado no manual oficial" ou "Validar etiqueta/manual".
+
+   Regra:
+   - Usar somente fonte oficial do fabricante.
+   - Não inventar corrente, capacitor, tubulação ou placa.
+   - Quando o manual oficial não informar, mostrar:
+     "Não informado no manual oficial"
+     ou
+     "Validar etiqueta/manual".
 */
 
 window.acervoTecnico = [
   {
     marca: "Midea",
-    modelo: "EXEMPLO",
-    codigoBusca: ["EXEMPLO", "MODELO TESTE"],
-    linha: "Exemplo de linha",
-    tipo: "Split Hi Wall Inverter",
+    modelo: "Exemplo técnico",
+    codigoBusca: ["EXEMPLO", "TESTE", "MIDEIA", "MIDEA"],
+    linha: "Modelo de teste do Acervo Técnico",
+    tipo: "Split / equipamento de referência",
     capacidade: "Não informado no manual oficial",
     anoFabricacao: "Validar etiqueta/manual",
     fluidoRefrigerante: "Validar etiqueta/manual",
@@ -24,6 +31,6 @@ window.acervoTecnico = [
     manualInstalacao: "Não cadastrado ainda",
     manualManutencao: "Não cadastrado ainda",
     fonte: "Base inicial do módulo Acervo Técnico",
-    status: "Modelo de exemplo para testar a busca"
+    status: "Registro de teste para validar a busca antes de inserir manuais reais"
   }
 ];
