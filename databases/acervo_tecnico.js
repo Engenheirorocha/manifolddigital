@@ -1,47 +1,41 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   ACERVO TÉCNICO - ETAPA 3 DE 4 - REFEITO E ENRIQUECIDO
+   ACERVO TECNICO - ETAPA 3/4 SEGURA
 
-   NÃO MEXER NO app.js.
-   NÃO MEXER NO index.html.
-   NÃO MEXER NO style.css.
+   INSTRUCAO:
+   1. Apagar tudo em databases/acervo_tecnico.js
+   2. Colar este arquivo inteiro
+   3. Commit changes
+   4. Testar com ?v=5400
 
-   CORES NO APP:
+   NAO MEXER:
+   - app.js
+   - index.html
+   - style.css
+
+   CORES DO APP:
    - OFICIAL = azul
    - CONFIAVEL_NAO_OFICIAL = verde
    - INFORMACAO_SUGERIDA = branco
 
-   REGRA:
-   - Cada dado técnico recebe sua própria confiança em confiancaCampos.
-   - Fonte geral deve ficar neutra para não contaminar as cores.
-   - Campo sem dado útil deve ficar vazio ou não existir.
-
-   ETAPA 3:
-   Mantém as 20 marcas anteriores e adiciona complementos importantes:
-   - York / Johnson Controls
-   - Mitsubishi Electric
-   - Rheem
-   - Comfee
-   - Fontaine
-   - Carrier/Springer legado
-   - Complementos: janela, portátil, cassete, piso-teto, multi split, VRF e comercial leve.
+   ETAPA 3/4 SEGURA:
+   - Mantem a base da Etapa 2.
+   - Adiciona 5 reforcos com cuidado:
+     York / Johnson Controls, Mitsubishi Electric, Rheem, Comfee e Fontaine.
+   - Sem funcoes dentro do banco.
+   - Sem palavras como "sugerida" ou "campo" no campo global fonte.
 */
 
 window.acervoTecnico = [
-
-  /* =========================================================
-     ETAPA 1 - 10 MARCAS BASE
-     ========================================================= */
-
   {
     marca: "Midea",
     modelo: "Midea Xtreme Save AI Connect AGVCJ R32 9000 12000 BTU",
-    codigoBusca: ["MIDEA", "MIDEIA", "XTREME SAVE", "XTREME SAVE AI CONNECT", "AGVCJ", "42AGVCJ", "38AGVCJ", "42AGVCJ09M5", "38AGVCJ09M5", "42AGVCJ12M5", "38AGVCJ12M5", "MIDEA R32"],
+    codigoBusca: ["MIDEA", "MIDEIA", "XTREME SAVE", "XTREME SAVE AI", "XTREME SAVE AI CONNECT", "AGVCJ", "42AGVCJ", "38AGVCJ", "42AGVCJ09M5", "38AGVCJ09M5", "42AGVCJ12M5", "38AGVCJ12M5", "42AGVCJ09", "38AGVCJ09", "42AGVCJ12", "38AGVCJ12", "MIDEA R32", "MIDEA 9000 R32", "MIDEA 12000 R32"],
     linha: "Xtreme Save AI Connect",
     tipo: "Split Hi Wall Inverter Frio",
     capacidade: "9.000 / 12.000 BTU/h",
     tensao: "220V",
     fluidoRefrigerante: "R32",
-    cargaGas: "9.000: 320 g até 5 m | 12.000: 440 g até 5 m",
+    cargaGas: "9.000: 320 g ate 5 m | 12.000: 440 g ate 5 m",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "25 m",
@@ -52,24 +46,47 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", tensao: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL",
-      cargaGas: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "OFICIAL",
-      cargaGas: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "OFICIAL", cargaGas: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL" }
   },
-
+  {
+    marca: "Midea",
+    modelo: "Midea Xtreme Save Connect AGVCI R32 9000 12000 18000 24000 BTU",
+    codigoBusca: ["MIDEA AGVCI", "XTREME SAVE CONNECT", "42AGVCI", "38AGVCI", "42AGVCI09M5", "38AGVCI09M5", "42AGVCI12M5", "38AGVCI12M5", "42AGVCI18M5", "38AGVCI18M5", "42AGVCI24M5", "38AGVCI24M5", "MIDEA XTREME SAVE 9000", "MIDEA XTREME SAVE 12000", "MIDEA XTREME SAVE 18000", "MIDEA XTREME SAVE 24000"],
+    linha: "Xtreme Save Connect",
+    tipo: "Split Hi Wall Inverter Frio / Quente-Frio conforme modelo",
+    capacidade: "9.000 / 12.000 / 18.000 / 24.000 BTU/h conforme modelo",
+    tensao: "220V",
+    fluidoRefrigerante: "R32",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-inverter-24000-btus-xtremesave-quente-e-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-inverter-24000-btus-xtremesave-quente-e-frio-midea.pdf",
+    fonte: "Base tecnica HVAC PRO - Midea Xtreme Save Connect",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
+  },
+  {
+    marca: "Midea",
+    modelo: "Midea Multi Inverter FreeMatch",
+    codigoBusca: ["MIDEA MULTI", "MULTI INVERTER", "FREEMATCH", "FREE MATCH", "42AGMSB", "42MGMSB", "40KVAQ", "40KVBQ", "42BQ", "MIDEA MULTISPLIT"],
+    linha: "Multi Inverter / FreeMatch",
+    tipo: "Multi Split Inverter / Hi Wall / Cassete / Built-in conforme combinacao",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
+    fonte: "Base tecnica HVAC PRO - Midea Multi Inverter FreeMatch",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
   {
     marca: "Gree",
     modelo: "Gree G-Diamond Auto Inverter R32 9000 12000 18000 24000 BTU",
-    codigoBusca: ["GREE", "G DIAMOND", "G-DIAMOND", "G-DIAMOND AUTO", "G-DIAMOND AUTO INVERTER", "GWC09ACA-D6DNA1A", "GWH09ACA-D6DNA1A", "GWC12ACC-D6DNA1A", "GWH12ACC-D6DNA1A", "GWC18ACD-D6DNA1C", "GWH18ACD-D6DNA1C", "GWC24ACE-D6DNA1B", "GWH24ACE-D6DNA1B"],
+    codigoBusca: ["GREE", "G DIAMOND", "G-DIAMOND", "G-DIAMOND AUTO", "G-DIAMOND AUTO INVERTER", "GWC09ACA-D6DNA1A", "GWH09ACA-D6DNA1A", "GWC12ACC-D6DNA1A", "GWH12ACC-D6DNA1A", "GWC18ACD-D6DNA1C", "GWH18ACD-D6DNA1C", "GWC24ACE-D6DNA1B", "GWH24ACE-D6DNA1B", "GREE R32", "GREE 9000", "GREE 12000", "GREE 18000", "GREE 24000"],
     linha: "G-Diamond Auto Inverter",
     tipo: "Split Hi Wall Inverter",
     capacidade: "9.000 / 12.000 / 18.000 / 24.000 BTU/h",
-    tensao: "220V / 60Hz / monofásico",
+    tensao: "220V / 60Hz / monofasico",
     fluidoRefrigerante: "R32",
     cargaGas: "9.000: 550 g | 12.000: 630 g | 18.000: 940 g | 24.000: 1100 g",
     correnteNominal: "9.000: 6 A | 12.000: 10,6 A | 18.000: 13,5 A | 24.000: 13,5 A",
@@ -79,24 +96,44 @@ window.acervoTecnico = [
     desnivelMaximo: "10 m",
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
-    fonte: "Base tecnica HVAC PRO - Gree G-Diamond Auto",
+    fonte: "Base tecnica HVAC PRO - Gree G-Diamond Auto Inverter",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL", cargaGas: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL", cargaGas: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL", tensao: "CONFIAVEL_NAO_OFICIAL", cargaGas: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL" }
   },
-
+  {
+    marca: "Gree",
+    modelo: "Gree G-Prime Inverter Compact",
+    codigoBusca: ["GREE G PRIME", "G-PRIME", "G-PRIME INVERTER", "G-PRIME INVERTER COMPACT", "G PRIME INVERTER COMPACT", "GREE G-PRIME COMPACT"],
+    linha: "G-Prime Inverter Compact",
+    tipo: "Split Hi Wall Inverter",
+    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
+    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
+    fonte: "Base tecnica HVAC PRO - Gree G-Prime Inverter Compact",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+  {
+    marca: "Gree",
+    modelo: "Gree Portal Oficial Materiais Tecnicos",
+    codigoBusca: ["GREE MANUAIS", "MANUAIS GREE", "MATERIAIS TECNICOS GREE", "MATERIAIS TÉCNICOS GREE", "GREE G TOP", "GREE G-DIAMOND", "GREE G-PRIME", "GREE G-LINEA", "GREE G-CLASSIC", "PISO TETO GREE", "CASSETE GREE", "GREE PORTATIL", "GREE JANELA"],
+    linha: "Portal oficial de materiais tecnicos",
+    tipo: "Consulta oficial por linha/modelo",
+    manualInstalacao: "https://gree.com.br/manuais/",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Portal Gree",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
   {
     marca: "LG",
     modelo: "LG S4-Q12JA315 Dual Inverter Voice 12000 BTU Frio 220V",
-    codigoBusca: ["LG", "S4-Q12JA315", "S4Q12JA315", "DUAL INVERTER", "DUAL INVERTER VOICE", "LG DUAL INVERTER VOICE 12000"],
+    codigoBusca: ["LG", "S4-Q12JA315", "S4Q12JA315", "DUAL INVERTER", "DUAL INVERTER VOICE", "LG DUAL INVERTER VOICE 12000", "LG 12000 FRIO", "12000 BTU LG 220V"],
     linha: "Dual Inverter Voice",
     tipo: "Split Hi Wall Inverter",
     capacidade: "12.000 BTU/h",
@@ -104,26 +141,34 @@ window.acervoTecnico = [
     fluidoRefrigerante: "R410A",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
-    manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
+    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-split/s4-q12ja315/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "Base tecnica HVAC PRO - LG S4-Q12JA315",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", tensao: "FABRICANTE_OFICIAL",
-      fluidoRefrigerante: "INFORMACAO_SUGERIDA", tubulacaoAlta: "INFORMACAO_SUGERIDA", tubulacaoBaixa: "INFORMACAO_SUGERIDA"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL",
-      fluidoRefrigerante: "INFORMACAO_SUGERIDA", tubulacaoAlta: "INFORMACAO_SUGERIDA", tubulacaoBaixa: "INFORMACAO_SUGERIDA"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "INFORMACAO_SUGERIDA", tubulacaoAlta: "INFORMACAO_SUGERIDA", tubulacaoBaixa: "INFORMACAO_SUGERIDA" }
   },
-
+  {
+    marca: "LG",
+    modelo: "LG S4-W12JA31A Dual Inverter Voice 12000 BTU Quente Frio 220V",
+    codigoBusca: ["LG S4-W12JA31A", "S4-W12JA31A", "S4W12JA31A", "LG DUAL INVERTER VOICE QUENTE FRIO", "LG 12000 QUENTE FRIO"],
+    linha: "Dual Inverter Voice",
+    tipo: "Split Hi Wall Inverter Quente/Frio",
+    capacidade: "12.000 BTU/h",
+    tensao: "220V",
+    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-residencial-inverter/s4-w12ja31a/",
+    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
+    fonte: "Base tecnica HVAC PRO - LG S4-W12JA31A",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL" }
+  },
   {
     marca: "Samsung",
     modelo: "Samsung AR12MVPXAWKNAZ WindFree 12000 BTU Frio",
-    codigoBusca: ["SAMSUNG", "AR12MVPXAWKNAZ", "AR12MVPX", "AR12MVPXAWK", "WINDFREE", "WIND FREE", "SAMSUNG WINDFREE 12000"],
+    codigoBusca: ["SAMSUNG", "AR12MVPXAWKNAZ", "AR12MVPX", "AR12MVPXAWK", "WINDFREE", "WIND FREE", "SAMSUNG WINDFREE 12000", "12000 BTU SAMSUNG"],
     linha: "WindFree",
     tipo: "Split Hi Wall Inverter",
     capacidade: "12.000 BTU/h",
@@ -133,65 +178,124 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
-
+  {
+    marca: "Samsung",
+    modelo: "Samsung AR12DYFABWKNAZ WindFree AI 12000 BTU Frio Wi-Fi",
+    codigoBusca: ["SAMSUNG AR12DYFABWKNAZ", "AR12DYFABWKNAZ", "AR12DYFAB", "AR12DYFABWK", "WINDFREE AI", "WIND FREE AI", "SAMSUNG WINDFREE AI 12000", "12000 BTU SAMSUNG WIFI"],
+    linha: "WindFree AI",
+    tipo: "Split Hi Wall Inverter Wi-Fi",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
+    manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
+    fonte: "Base tecnica HVAC PRO - Samsung AR12DYFABWKNAZ",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
+  {
+    marca: "Samsung",
+    modelo: "Samsung AR12DXFAAWKXAZ WindFree 12000 BTU",
+    codigoBusca: ["SAMSUNG AR12DXFAAWKXAZ", "AR12DXFAAWKXAZ", "AR12DXFAA", "WINDFREE DXFA", "SAMSUNG DXFA"],
+    linha: "WindFree",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.samsung.com/br/support/model/AR12DXFAAWKXAZ/",
+    manualManutencao: "https://www.samsung.com/br/support/model/AR12DXFAAWKXAZ/",
+    fonte: "Base tecnica HVAC PRO - Samsung AR12DXFAAWKXAZ",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
   {
     marca: "Elgin",
     modelo: "Elgin Eco Inverter II Wi-Fi HJFC12C2WBCB 12000 BTU Frio 220V",
-    codigoBusca: ["ELGIN", "ECO INVERTER II", "ECO INVERTER II WIFI", "HJFC12C2WBCB", "HJFI12C2WB", "HJFE12C2CB", "ELGIN 12000 R32"],
+    codigoBusca: ["ELGIN", "ECO INVERTER II", "ECO INVERTER II WIFI", "ECO INVERTER II WI-FI", "HJFC12C2WBCB", "HJFI12C2WB", "HJFE12C2CB", "ELGIN HJFC12", "ELGIN 12000 R32", "ELGIN 12000 FRIO"],
     linha: "Eco Inverter II Wi-Fi",
     tipo: "Split Hi Wall Inverter Frio",
     capacidade: "12.000 BTU/h",
-    tensao: "220V / monofásico",
+    tensao: "220V / monofasico",
     fluidoRefrigerante: "R32",
-    correnteNominal: "6,7 A corrente máxima",
+    correnteNominal: "6,7 A corrente maxima",
     disjuntor: "10 A",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "15 m",
     desnivelMaximo: "7 m",
-    manualInstalacao: "https://www.elgin.com.br/manuals",
+    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-12000-btus-frio-wifi-220v/p",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Base tecnica HVAC PRO - Elgin Eco Inverter II",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", disjuntor: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", disjuntor: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", disjuntor: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL" }
   },
-
+  {
+    marca: "Elgin",
+    modelo: "Elgin Eco Inverter II Wi-Fi HJFC09C2WBCB 9000 BTU Frio 220V",
+    codigoBusca: ["ELGIN HJFC09C2WBCB", "HJFC09C2WBCB", "HJFI09C2WB", "HJFE09C2CB", "ELGIN HJFC09", "ELGIN 9000 R32", "ELGIN 9000 FRIO"],
+    linha: "Eco Inverter II Wi-Fi",
+    tipo: "Split Hi Wall Inverter Frio",
+    capacidade: "9.000 BTU/h",
+    tensao: "220V",
+    fluidoRefrigerante: "R32",
+    correnteNominal: "7,3 A corrente maxima",
+    disjuntor: "10 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    comprimentoMaximo: "15 m",
+    desnivelMaximo: "7 m",
+    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-9000-btus-frio-wifi-220v/p",
+    manualManutencao: "https://www.elgin.com.br/manuals",
+    fonte: "Base tecnica HVAC PRO - Elgin Eco Inverter II 9000",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", disjuntor: "CONFIAVEL_NAO_OFICIAL", tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL" }
+  },
   {
     marca: "Komeco",
     modelo: "Komeco KOHI 09QC 1HV Inverter 9000 BTU",
-    codigoBusca: ["KOMECO", "KOHI", "KOHI09QC1HV", "KOHI 09QC 1HV", "KOHI 09", "KOMECO KOHI 09QC"],
+    codigoBusca: ["KOMECO", "KOHI", "KOHI09QC1HV", "KOHI 09QC 1HV", "KOHI 09", "KOMECO KOHI 09QC", "KOMECO 9000"],
     linha: "KOHI Inverter",
     tipo: "Split Hi Wall Inverter",
     capacidade: "9.000 BTU/h",
     fluidoRefrigerante: "A2L baixa inflamabilidade conforme manual da linha",
     tubulacaoAlta: "Descarga: 1/4 pol. (6,35 mm)",
-    tubulacaoBaixa: "Sucção: 1/2 pol. (12,7 mm)",
+    tubulacaoBaixa: "Succao: 1/2 pol. (12,7 mm)",
     manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
-    manualManutencao: "https://www.komeco.com.br/portaltecnico/",
+    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
     fonte: "Base tecnica HVAC PRO - Komeco KOHI 09",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL", tubulacaoAlta: "FABRICANTE_OFICIAL", tubulacaoBaixa: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL", tubulacaoAlta: "OFICIAL", tubulacaoBaixa: "OFICIAL" }
   },
-
+  {
+    marca: "Komeco",
+    modelo: "Komeco KOHI 12QC 1HV Inverter 12000 BTU",
+    codigoBusca: ["KOMECO KOHI12QC1HV", "KOHI12QC1HV", "KOHI 12QC 1HV", "KOHI 12", "KOMECO KOHI 12QC", "KOMECO 12000"],
+    linha: "KOHI Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    fluidoRefrigerante: "A2L baixa inflamabilidade conforme manual da linha",
+    tubulacaoAlta: "Descarga: 3/8 pol. (9,52 mm)",
+    tubulacaoBaixa: "Succao: 1/4 pol. (6,35 mm)",
+    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
+    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
+    fonte: "Base tecnica HVAC PRO - Komeco KOHI 12",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL", tubulacaoAlta: "OFICIAL", tubulacaoBaixa: "OFICIAL" }
+  },
   {
     marca: "Daikin",
     modelo: "Daikin EcoSwing R32",
-    codigoBusca: ["DAIKIN", "ECOSWING", "ECO SWING", "ECOSWING R32", "ECO SWING R32", "FTKP12Q5VL", "RKP12Q5VL", "DAIKIN R32"],
+    codigoBusca: ["DAIKIN", "ECOSWING", "ECO SWING", "ECOSWING R32", "ECO SWING R32", "FTKP12Q5VL", "RKP12Q5VL", "DAIKIN R32", "DAIKIN 9000", "DAIKIN 12000", "DAIKIN 18000", "DAIKIN 24000"],
     linha: "EcoSwing R-32",
     tipo: "Split Hi Wall Inverter",
     capacidade: "9.000 / 12.000 / 18.000 / 24.000 BTU/h conforme modelo",
@@ -202,10 +306,23 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
+  {
+    marca: "Daikin",
+    modelo: "Daikin EcoSwing Smart Gold R32",
+    codigoBusca: ["DAIKIN SMART GOLD", "ECOSWING SMART GOLD", "ECO SWING SMART GOLD", "SPLIT ECOSWING SMART GOLD", "DAIKIN GOLD R32"],
+    linha: "EcoSwing Smart Gold R-32",
+    tipo: "Split Hi Wall Inverter Premium",
+    fluidoRefrigerante: "R32",
+    manualInstalacao: "https://www.daikin.com.br/produto/split-ecoswing-smart-gold-r-32",
+    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
+    fonte: "Base tecnica HVAC PRO - Daikin EcoSwing Smart Gold",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
+  },
   {
     marca: "Consul",
     modelo: "Consul CBK12EBBCJ Dual Inverter Cobre Frio 12000 BTU",
@@ -219,14 +336,27 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
-
+  {
+    marca: "Consul",
+    modelo: "Consul CBK12DBXCJ Triple Inverter Cobre Frio 12000 BTU",
+    codigoBusca: ["CONSUL CBK12DBXCJ", "CBK12DBXCJ", "CONSUL TRIPLE INVERTER", "TRIPLE INVERTER CONSUL", "CONSUL 12000 TRIPLE"],
+    linha: "Triple Inverter Cobre Frio",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.consul.com.br/ar-condicionado-split-consul-triple-inverter-cobre-frio-12000-btus-cbk12dbxcj/p",
+    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    fonte: "Base tecnica HVAC PRO - Consul CBK12DBXCJ",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
   {
     marca: "Electrolux",
     modelo: "Electrolux QI12F QE12F Inverter Split 12000 BTU Frio 220V",
-    codigoBusca: ["ELECTROLUX", "QI12F", "QE12F", "QI12F/QE12F", "ELECTROLUX QI12F", "ELECTROLUX QE12F", "ELECTROLUX INVERTER 12000"],
+    codigoBusca: ["ELECTROLUX", "QI12F", "QE12F", "QI12F/QE12F", "ELECTROLUX QI12F", "ELECTROLUX QE12F", "ELECTROLUX INVERTER 12000", "ELECTROLUX 12000 FRIO"],
     linha: "Split Inverter",
     tipo: "Split Hi Wall Inverter Frio",
     capacidade: "12.000 BTU/h",
@@ -237,14 +367,42 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", tensao: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL" }
   },
-
+  {
+    marca: "Electrolux",
+    modelo: "Electrolux JI12R JE12R Color Adapt Inverter 12000 BTU Quente Frio",
+    codigoBusca: ["ELECTROLUX JI12R", "ELECTROLUX JE12R", "JI12R", "JE12R", "JI12R/JE12R", "COLOR ADAPT", "ELECTROLUX COLOR ADAPT", "ELECTROLUX QUENTE FRIO 12000"],
+    linha: "Color Adapt Inverter",
+    tipo: "Split Hi Wall Inverter Quente/Frio",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://loja.electrolux.com.br/ar-condicionado-split-electrolux-inverter-12000-btus-color-adapt-quente-frio-ji12r-je12r/p",
+    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
+    fonte: "Base tecnica HVAC PRO - Electrolux JI12R JE12R",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
+  {
+    marca: "Philco",
+    modelo: "Philco PAC12QC Split Inverter 12000 BTU",
+    codigoBusca: ["PHILCO", "PAC12QC", "PHILCO PAC12QC", "PHILCO SPLIT INVERTER 12000", "PHILCO 12000", "PAC12QC SPLIT"],
+    linha: "Split Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.philco.com.br/ar-condicionado-split-12000-pac12qc/p",
+    manualManutencao: "https://www.philco.com.br/ar-condicionado-split-12000-pac12qc/p",
+    fonte: "Base tecnica HVAC PRO - Philco PAC12QC",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
   {
     marca: "Philco",
     modelo: "Philco PAC12QA Inverter Espelhado 12000 BTU Quente Frio R32",
-    codigoBusca: ["PHILCO", "PAC12QA", "PHILCO PAC12QA", "PHILCO ESPELHADO", "PHILCO R32", "PHILCO QUENTE FRIO 12000"],
+    codigoBusca: ["PHILCO PAC12QA", "PAC12QA", "PHILCO ESPELHADO", "PHILCO R32", "PHILCO QUENTE FRIO 12000", "PAC12QA R32"],
     linha: "Inverter Espelhado",
     tipo: "Split Hi Wall Inverter Quente/Frio",
     capacidade: "12.000 BTU/h",
@@ -255,17 +413,11 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
-  /* =========================================================
-     ETAPA 2 - MAIS 10 MARCAS
-     ========================================================= */
-
   {
-    marca: "Britânia",
-    modelo: "Britânia Prime Air Inverter 12000BTUs Quente Frio 12QC",
+    marca: "Britania",
+    modelo: "Britania Prime Air Inverter 12000BTUs Quente Frio 12QC",
     codigoBusca: ["BRITANIA", "BRITÂNIA", "PRIME AIR", "PRIME AIR INVERTER", "12QC", "BRITANIA 12QC", "BRITÂNIA 12QC", "BRITANIA 12000", "BRITÂNIA 12000"],
     linha: "Prime Air Split Inverter",
     tipo: "Split Hi Wall Inverter Quente/Frio",
@@ -277,15 +429,13 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
   {
     marca: "TCL",
-    modelo: "TCL Série A2 Inverter TAC-09CSA2-INV",
+    modelo: "TCL Serie A2 Inverter TAC-09CSA2-INV",
     codigoBusca: ["TCL", "TCL A2", "SERIE A2", "SÉRIE A2", "TAC-09CSA2-INV", "TAC09CSA2INV", "TCL 9000", "TCL SPLIT A2", "TCL INVERTER"],
-    linha: "Série A2 Inverter",
+    linha: "Serie A2 Inverter",
     tipo: "Split Hi Wall Inverter",
     capacidade: "9.000 BTU/h",
     manualInstalacao: "https://www.tcl.com/br/pt/air-conditioners/series-a2-inverter",
@@ -294,10 +444,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
-
   {
     marca: "Agratto",
     modelo: "Agratto LIV Inverter TOP LCST12F-02I 12000 BTU Frio",
@@ -312,10 +460,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", tensao: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL" }
   },
-
   {
     marca: "Hisense",
     modelo: "Hisense Split Hi-Smart Inverter",
@@ -328,10 +474,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
-
   {
     marca: "EOS",
     modelo: "EOS Master Inverter R32 9000 12000 18000 24000 30000 BTU",
@@ -346,13 +490,11 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
   {
     marca: "Fujitsu / General",
-    modelo: "Fujitsu General Split High Wall Linha Premium 9 12",
+    modelo: "Fujitsu General Split High Wall Linha Premium 9000 12000 BTU",
     codigoBusca: ["FUJITSU", "GENERAL", "FUJITSU GENERAL", "SPLIT HIGH WALL FUJITSU", "HIGH WALL GENERAL", "FUJITSU PREMIUM", "GENERAL PREMIUM", "FUJITSU 9000", "FUJITSU 12000"],
     linha: "Split High Wall - Linha Premium",
     tipo: "Split Hi Wall Inverter",
@@ -364,10 +506,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
   {
     marca: "Springer Midea / Carrier",
     modelo: "Springer Midea AirVolution Connect Split Hi Wall",
@@ -380,10 +520,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
-
   {
     marca: "Trane",
     modelo: "Trane Multi Split Inverter R410A",
@@ -397,10 +535,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
   {
     marca: "Hitachi",
     modelo: "Hitachi airHome 600 Split Hi Wall Inverter R32",
@@ -415,115 +551,59 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL", capacidade: "FABRICANTE_OFICIAL", fluidoRefrigerante: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
-
   {
     marca: "Olimpia Splendid",
-    modelo: "Olimpia Splendid Ar Condicionado Portatil",
-    codigoBusca: ["OLIMPIA", "OLIMPIA SPLENDID", "OLIMPIA PORTATIL", "OLIMPIA PORTÁTIL", "PORTATIL OLIMPIA", "PORTÁTIL OLIMPIA", "DOLCECLIMA"],
-    linha: "Portátil / Dolceclima",
-    tipo: "Ar-condicionado portátil",
+    modelo: "Olimpia Splendid Ar Condicionado Portatil Dolceclima",
+    codigoBusca: ["OLIMPIA", "OLIMPIA SPLENDID", "OLIMPIA PORTATIL", "OLIMPIA PORTÁTIL", "PORTATIL OLIMPIA", "PORTÁTIL OLIMPIA", "DOLCECLIMA", "DOLCE CLIMA"],
+    linha: "Portatil / Dolceclima",
+    tipo: "Ar-condicionado portatil",
     manualInstalacao: "https://www.olimpiasplendid.com.br/area_download",
     manualManutencao: "https://www.olimpiasplendid.com.br/area_download",
     fonte: "Base tecnica HVAC PRO - Olimpia Splendid Portatil",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: { marca: "FABRICANTE_OFICIAL", modelo: "FABRICANTE_OFICIAL", linha: "FABRICANTE_OFICIAL", tipo: "FABRICANTE_OFICIAL" },
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   /* =========================================================
-     ETAPA 3 - MARCAS COMPLEMENTARES E CATEGORIAS IMPORTANTES
+     ETAPA 3/4 - REFORCOS NOVOS, INSERIDOS COM SEGURANCA
      ========================================================= */
 
   {
     marca: "York / Johnson Controls",
     modelo: "York Split Hi Wall Everest RAEA RADA RAKA RAJA",
-    codigoBusca: ["YORK", "YORK EVEREST", "EVEREST", "RAEA", "RADA", "RAKA", "RAJA", "YORK HI WALL", "YORK SPLIT", "YORK 9000", "YORK 12000", "YORK 18000", "YORK 24000"],
+    codigoBusca: ["YORK", "JOHNSON CONTROLS", "YORK EVEREST", "EVEREST", "RAEA", "RADA", "RAKA", "RAJA", "YORK HI WALL", "YORK SPLIT", "YORK 9000", "YORK 12000", "YORK 18000", "YORK 24000"],
     linha: "Everest / Split Hi Wall legado",
     tipo: "Split Hi Wall",
     manualInstalacao: "https://pdf.webarcondicionado.com.br/york/manual/usuario/mdu-split-hi-wall-raea-rada-raka-raja-everest.pdf",
-    manualManutencao: "https://digital.johnsoncontrols.com/yorkbr",
+    manualManutencao: "https://digital.johnsoncontrols.com/brasilhvac",
     fonte: "Base tecnica HVAC PRO - York Everest",
     fonteTipo: "CONFIAVEL_NAO_OFICIAL",
     nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
     status: "CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL"
-    }
+    confiancaCampos: { marca: "CONFIAVEL_NAO_OFICIAL", modelo: "CONFIAVEL_NAO_OFICIAL", linha: "CONFIAVEL_NAO_OFICIAL", tipo: "CONFIAVEL_NAO_OFICIAL" }
   },
-
-  {
-    marca: "York / Johnson Controls",
-    modelo: "York Split Cassete Supreme YKE YKKA 18000 48000 BTU",
-    codigoBusca: ["YORK CASSETE", "YORK CASSETTE", "YORK SUPREME", "YKE", "YKKA", "YKE18", "YKE24", "YKE36", "YKE48", "YORK 18000 CASSETE", "YORK 48000 CASSETE"],
-    linha: "Supreme Cassete",
-    tipo: "Split Cassete",
-    capacidade: "18.000 / 24.000 / 36.000 / 48.000 BTU/h conforme modelo",
-    manualInstalacao: "https://pdf.webarcondicionado.com.br/york/manual/usuario/mdu-split-cassete-yke%28k%29a18-48fs-ad-supreme.pdf",
-    manualManutencao: "https://digital.johnsoncontrols.com/yorkbr",
-    fonte: "Base tecnica HVAC PRO - York Cassete Supreme",
-    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
-    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
-    status: "CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL",
-      capacidade: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL",
-      capacidade: "CONFIAVEL_NAO_OFICIAL"
-    }
-  },
-
   {
     marca: "Mitsubishi Electric",
-    modelo: "Mitsubishi Electric Ar Condicionado e Sistemas de Climatizacao",
-    codigoBusca: ["MITSUBISHI", "MITSUBISHI ELECTRIC", "MITSUBISHI AR CONDICIONADO", "MITSUBISHI SPLIT", "MITSUBISHI VRF", "MITSUBISHI CITY MULTI", "MITSUBISHI MR SLIM"],
-    linha: "Climatização Mitsubishi Electric",
+    modelo: "Mitsubishi Electric MSZ MUZ Mr Slim City Multi",
+    codigoBusca: ["MITSUBISHI", "MITSUBISHI ELECTRIC", "MITSUBISHI AR CONDICIONADO", "MITSUBISHI SPLIT", "MITSUBISHI VRF", "MITSUBISHI CITY MULTI", "CITY MULTI", "MR SLIM", "MITSUBISHI MR SLIM", "MSZ", "MUZ", "MSY", "MUY"],
+    linha: "Mr Slim / City Multi / Split / VRF",
     tipo: "Split / Multi Split / VRF conforme linha",
-    manualInstalacao: "https://mitsubishielectric.com.br/",
-    manualManutencao: "https://mitsubishielectric.com.br/",
+    manualInstalacao: "https://br.mitsubishielectric.com/pt/products-solutions/",
+    manualManutencao: "https://br.mitsubishielectric.com/pt/products-solutions/",
     fonte: "Base tecnica HVAC PRO - Mitsubishi Electric",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
-
   {
     marca: "Rheem",
     modelo: "Rheem Multi Split Inverter e Split Hi Wall",
-    codigoBusca: ["RHEEM", "RHEEM SPLIT", "RHEEM MULTI SPLIT", "RHEEM INVERTER", "RHEEM HI WALL", "RHEEM 9000", "RHEEM 12000", "RHEEM 18000", "RHEEM 24000"],
+    codigoBusca: ["RHEEM", "RHEEM SPLIT", "RHEEM MULTI SPLIT", "RHEEM MULTISPLIT", "RHEEM INVERTER", "RHEEM HI WALL", "RHEEM 9000", "RHEEM 12000", "RHEEM 18000", "RHEEM 24000"],
     linha: "Split / Multi Split",
     tipo: "Split Hi Wall / Multi Split conforme modelo",
     manualInstalacao: "https://www.rheem.com.br/manuais/",
@@ -532,24 +612,12 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
-
   {
     marca: "Comfee",
     modelo: "Comfee Split Hi Wall 12000 BTU Frio",
-    codigoBusca: ["COMFEE", "COMFEE SPLIT", "COMFEE HI WALL", "COMFEE 12000", "COMFEE FRIO", "COMFEE MIDEA", "42AFVC", "38AFVC"],
+    codigoBusca: ["COMFEE", "COMFEE SPLIT", "COMFEE HI WALL", "COMFEE 12000", "COMFEE FRIO", "COMFEE MIDEA", "42AFVC", "38AFVC", "42AFCB", "42AFCD", "38KCW"],
     linha: "Split Hi Wall Comfee",
     tipo: "Split Hi Wall",
     capacidade: "12.000 BTU/h",
@@ -559,22 +627,8 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL",
-      capacidade: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
-
   {
     marca: "Fontaine",
     modelo: "Fontaine Split Hi Wall 127V 220V",
@@ -588,152 +642,6 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL",
-      tensao: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      tensao: "OFICIAL"
-    }
-  },
-
-  {
-    marca: "Carrier / Springer Carrier",
-    modelo: "Carrier Springer Split Hi Wall e Piso Teto Legado",
-    codigoBusca: ["CARRIER", "SPRINGER CARRIER", "SPRINGER", "CARRIER SPLIT", "CARRIER HI WALL", "CARRIER PISO TETO", "CARRIER CASSETE", "CARRIER 42", "CARRIER 38"],
-    linha: "Split / Piso Teto / Cassete legado",
-    tipo: "Split Hi Wall / Piso Teto / Cassete conforme modelo",
-    manualInstalacao: "https://www.carrierdobrasil.com.br/",
-    manualManutencao: "https://www.carrierdobrasil.com.br/",
-    fonte: "Base tecnica HVAC PRO - Carrier Springer legado",
-    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
-    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
-    status: "CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "CONFIAVEL_NAO_OFICIAL",
-      modelo: "CONFIAVEL_NAO_OFICIAL",
-      linha: "CONFIAVEL_NAO_OFICIAL",
-      tipo: "CONFIAVEL_NAO_OFICIAL"
-    }
-  },
-
-  {
-    marca: "Midea",
-    modelo: "Midea Piso Teto Inverter 36000 48000 60000 BTU",
-    codigoBusca: ["MIDEA PISO TETO", "PISO TETO MIDEA", "MIDEA PISO TETO INVERTER", "MIDEA 36000", "MIDEA 48000", "MIDEA 60000", "42ZQ", "38ZQ", "42Q"],
-    linha: "Piso Teto Inverter",
-    tipo: "Split Piso Teto",
-    capacidade: "36.000 / 48.000 / 60.000 BTU/h conforme modelo",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/",
-    fonte: "Base tecnica HVAC PRO - Midea Piso Teto",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "OFICIAL",
-    status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL",
-      capacidade: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL"
-    }
-  },
-
-  {
-    marca: "Gree",
-    modelo: "Gree Piso Teto Cassete e MultiSplit G-Max",
-    codigoBusca: ["GREE PISO TETO", "GREE CASSETE", "GREE CASSETTE", "GREE MULTISPLIT", "GREE G-MAX", "G-MAX MULTISPLIT", "PISO TETO GREE", "CASSETE GREE", "MULTI SPLIT GREE"],
-    linha: "Piso Teto / Cassete / G-Max Multisplit",
-    tipo: "Comercial leve / Multi Split conforme linha",
-    manualInstalacao: "https://gree.com.br/manuais/",
-    manualManutencao: "https://gree.com.br/manuais/",
-    fonte: "Base tecnica HVAC PRO - Gree Comercial Leve",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "OFICIAL",
-    status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL"
-    }
-  },
-
-  {
-    marca: "Consul",
-    modelo: "Consul Janela Inverter e Janela Convencional",
-    codigoBusca: ["CONSUL JANELA", "JANELA CONSUL", "CONSUL JANELA INVERTER", "CONSUL JANELA 7500", "CONSUL JANELA 10000", "CONSUL JANELA 12000", "CCB07", "CCK07", "CCN10"],
-    linha: "Janela / Janela Inverter",
-    tipo: "Ar-condicionado de janela",
-    manualInstalacao: "https://www.consul.com.br/eletrodomesticos/ar-condicionado/ar-condicionado-janela",
-    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
-    fonte: "Base tecnica HVAC PRO - Consul Janela",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "OFICIAL",
-    status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL"
-    }
-  },
-
-  {
-    marca: "Philco",
-    modelo: "Philco Portatil PAC12000F5 e Linha Portatil",
-    codigoBusca: ["PHILCO PORTATIL", "PHILCO PORTÁTIL", "PORTATIL PHILCO", "PORTÁTIL PHILCO", "PAC12000F5", "PAC11000F5", "PHILCO 12000 PORTATIL", "PHILCO 11000 PORTATIL"],
-    linha: "Portátil",
-    tipo: "Ar-condicionado portátil",
-    manualInstalacao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
-    manualManutencao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
-    fonte: "Base tecnica HVAC PRO - Philco Portatil",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "OFICIAL",
-    status: "OFICIAL",
-    fontesCampos: {
-      marca: "FABRICANTE_OFICIAL",
-      modelo: "FABRICANTE_OFICIAL",
-      linha: "FABRICANTE_OFICIAL",
-      tipo: "FABRICANTE_OFICIAL"
-    },
-    confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL"
-    }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", tensao: "OFICIAL" }
   }
 ];
