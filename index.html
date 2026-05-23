@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,7 +14,7 @@
   <div class="logo">HVAC PRO</div>
 
   <div class="home-search">
-    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos, acervo" oninput="searchHome()">
+    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos" oninput="searchHome()">
   </div>
 
   <div class="carousel-wrap">
@@ -58,11 +59,6 @@
       <div class="card">
         <div class="icon blue">❄️</div>
         <div class="title blue">MODELOS</div>
-      </div>
-
-      <div class="card" onclick="openScreen('acervo')">
-        <div class="icon blue">📚</div>
-        <div class="title blue">ACERVO</div>
       </div>
 
     </div>
@@ -195,32 +191,7 @@
   </div>
 </div>
 
-<div class="screen page" id="acervo">
-  <div class="topbar">
-    <div class="back" onclick="openScreen('home')">← Voltar</div>
-    <div class="page-title blue">ACERVO</div>
-  </div>
-
-  <div class="mode-box">
-    <div class="mode-title">Consulta técnica por modelo/código da máquina</div>
-
-    <div class="search-area">
-      <input id="acervoSearch" type="text" placeholder="Digite o modelo ou código da máquina..." oninput="searchAcervoTecnico()">
-    </div>
-
-    <div class="model-info" id="acervoInfo">
-      <h2>Acervo Técnico</h2>
-      <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina para consultar dados técnicos refinados.</div>
-      <div class="info-row"><span>Regra:</span><br>Quando o manual oficial não informar algum dado, o app mostrará “Não informado no manual oficial” ou “Validar etiqueta/manual”.</div>
-    </div>
-  </div>
-</div>
-
 <script src="databases/gases.js"></script>
 <script src="databases/modelos.js"></script>
 <script src="databases/erros.js"></script>
-<script src="databases/acervo_tecnico.js"></script>
 <script src="app.js"></script>
-
-</body>
-</html>
