@@ -1,68 +1,60 @@
-/* HVAC PRO - databases/erros.js
-   Extraído do HTML principal original. */
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#1b1b1b,#050505 55%,#000);color:#fff;overflow:hidden}
+.app{max-width:430px;margin:auto;height:100dvh;padding:22px;display:flex;flex-direction:column;justify-content:center;animation:entry 1s ease forwards;overflow:hidden}
+@keyframes entry{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.logo{text-align:center;font-size:34px;font-weight:900;letter-spacing:4px;margin-bottom:25px;text-shadow:0 0 18px #008cff,0 0 35px rgba(255,40,40,.35)}
+.screen{display:none}.screen.active{display:block}
+.home-search{margin-bottom:20px}
+.home-search input{width:100%;padding:15px;border-radius:18px;border:1px solid #333;background:#050505;color:#fff;font-size:15px;outline:none}
 
-window.errorCodesByModel = {
-  "Midea|Xtreme Save": [
-    {
-      code: "E1",
-      title: "Comunicação",
-      cause: "Falha de comunicação entre evaporadora e condensadora.",
-      test: "Verificar cabo S, bornes, alimentação e aterramento.",
-      solution: "Corrigir interligação, reapertar bornes e testar placas."
-    },
-    {
-      code: "P4",
-      title: "Proteção inverter",
-      cause: "Proteção do compressor ou módulo IPM.",
-      test: "Medir corrente, pressão, tensão DC e bobinas do compressor.",
-      solution: "Corrigir ventilação, alimentação ou avaliar módulo/compressor."
-    }
-  ],
+.carousel-wrap{position:relative;height:365px;perspective:1100px}
+.carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
+.card{position:absolute;top:25px;left:50%;width:195px;height:285px;margin-left:-97.5px;border-radius:32px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 25px 55px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer}
+.card.center{transform:translateX(0) scale(1) rotateY(0);opacity:1;z-index:5;border-color:#008cff;box-shadow:0 0 34px rgba(0,140,255,.42),0 25px 60px rgba(0,0,0,.95)}
+.card.left{transform:translateX(-130px) scale(.74) rotateY(42deg);opacity:.45;z-index:3}
+.card.right{transform:translateX(130px) scale(.74) rotateY(-42deg);opacity:.45;z-index:3}
+.card.far-left{transform:translateX(-205px) scale(.48) rotateY(55deg);opacity:.16;z-index:2}
+.card.far-right{transform:translateX(205px) scale(.48) rotateY(-55deg);opacity:.16;z-index:2}
+.card.hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
+.icon{font-size:78px;margin-bottom:24px}
+.title{font-size:21px;font-weight:900;letter-spacing:1px}
+.blue{color:#009dff}.red{color:#ff3636}.orange{color:#ff8c1a}.green{color:#00d084}
+.nav{display:flex;justify-content:center;gap:18px;margin-top:8px}
+button{width:58px;height:58px;border-radius:50%;border:1px solid #333;background:linear-gradient(145deg,#181818,#050505);color:#fff;font-size:28px;cursor:pointer;box-shadow:0 12px 25px rgba(0,0,0,.7)}
+button:active{transform:scale(.92)}
+.manifold-icon,.gas-icon{width:86px;height:86px;margin-bottom:22px}
 
-  "LG|Dual Inverter": [
-    {
-      code: "CH05",
-      title: "Comunicação",
-      cause: "Falha de comunicação entre unidades.",
-      test: "Verificar cabo de comunicação, tensão e aterramento.",
-      solution: "Corrigir cabeamento ou substituir placa com defeito."
-    }
-  ],
+.page{max-width:430px;margin:auto;height:100dvh;padding:22px 22px 80px;animation:entry .45s ease forwards;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.back{padding:12px 15px;border-radius:16px;background:linear-gradient(145deg,#181818,#050505);border:1px solid #333;cursor:pointer;color:#fff;font-size:14px}
+.page-title{font-size:26px;font-weight:900;letter-spacing:3px}
+.mode-box{background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;border-radius:28px;padding:18px;box-shadow:0 22px 50px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06)}
+.mode-title{font-size:13px;color:#aaa;margin-bottom:14px}
+.gas-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;margin-bottom:18px}
+.gas-chip{min-width:110px;height:120px;border-radius:22px;background:linear-gradient(145deg,#171717,#050505);border:1px solid #292929;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;text-align:center}
+.gas-chip.active-gas{border-color:#00d084;box-shadow:0 0 24px rgba(0,208,132,.28)}
+.gas-chip strong{font-size:20px;color:#00d084}
+.gas-chip small{margin-top:8px;color:#888}
+.search-area{margin:18px 0}
+.search-area input{width:100%;padding:16px;border-radius:18px;border:1px solid #333;background:#050505;color:#fff;font-size:16px;outline:none}
+.gas-info,.model-info{background:#080808;border:1px solid #252525;border-radius:22px;padding:18px;line-height:1.7}
+.gas-info h2{margin:0 0 10px;color:#00d084;letter-spacing:1px}
+.model-info h2{margin:0 0 10px;color:#ff3636;letter-spacing:1px}
+.info-row{border-bottom:1px solid #1c1c1c;padding:8px 0}.info-row:last-child{border-bottom:0}.info-row span{color:#888;font-size:13px}
+.pt-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.pt-table th,.pt-table td{border-bottom:1px solid #1c1c1c;padding:8px 4px;text-align:left}
+.pt-table th{color:#00d084;font-weight:bold}.note{margin-top:12px;font-size:12px;color:#888;line-height:1.5}
 
-  "Samsung|WindFree": [
-    {
-      code: "E101",
-      title: "Comunicação",
-      cause: "Falha entre unidade interna e externa.",
-      test: "Conferir interligação, bornes e sinal de comunicação.",
-      solution: "Corrigir cabo, conexão ou placa."
-    },
-    {
-      code: "E464",
-      title: "Proteção compressor",
-      cause: "Sobrecorrente ou falha no compressor inverter.",
-      test: "Medir bobinas, corrente e barramento DC.",
-      solution: "Avaliar compressor, módulo inverter e alimentação."
-    }
-  ],
-
-  "Consul|Facilite": [
-    {
-      code: "E1",
-      title: "Sensor ambiente",
-      cause: "Sensor NTC aberto, em curto ou desconectado.",
-      test: "Medir resistência do sensor e verificar conector.",
-      solution: "Reconectar ou substituir sensor."
-    }
-  ],
-
-  "Carrier|XPower": [
-    {
-      code: "E3",
-      title: "Ventilador evaporadora",
-      cause: "Falha de rotação do motor interno.",
-      test: "Verificar motor, capacitor, sensor Hall e placa.",
-      solution: "Corrigir motor, capacitor ou placa."
-    }
-  ]
-};
+.error-category-wrap,.brand-category-wrap,.model-category-wrap,.code-category-wrap{position:relative;height:300px;perspective:1000px;margin-top:15px}
+.error-category-carousel,.brand-category-carousel,.model-category-carousel,.code-category-carousel{position:relative;width:100%;height:100%;touch-action:pan-y}
+.category-card,.brand-card,.model-card,.code-card{position:absolute;top:25px;left:50%;width:165px;height:225px;margin-left:-82.5px;border-radius:30px;background:linear-gradient(145deg,#1c1c1c,#050505);border:1px solid #2d2d2d;box-shadow:0 18px 45px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;align-items:center;transition:transform .55s cubic-bezier(.2,.9,.2,1),opacity .4s,border .3s,box-shadow .3s;cursor:pointer;text-align:center}
+.category-card.cat-center,.brand-card.brand-center,.model-card.model-center,.code-card.code-center{transform:translateX(0) scale(1);opacity:1;z-index:5;border-color:#ff3636;box-shadow:0 0 28px rgba(255,54,54,.35),0 20px 50px rgba(0,0,0,.95)}
+.category-card.cat-left,.brand-card.brand-left,.model-card.model-left,.code-card.code-left{transform:translateX(-105px) scale(.72) rotateY(38deg);opacity:.42;z-index:3}
+.category-card.cat-right,.brand-card.brand-right,.model-card.model-right,.code-card.code-right{transform:translateX(105px) scale(.72) rotateY(-38deg);opacity:.42;z-index:3}
+.category-card.cat-hidden,.brand-card.brand-hidden,.model-card.model-hidden,.code-card.code-hidden{transform:translateX(0) scale(.35);opacity:0;z-index:1}
+.cat-icon{width:76px;height:76px;margin-bottom:18px}
+.cat-icon svg{width:100%;height:100%}
+.cat-title,.brand-title,.model-title,.code-title{font-size:18px;font-weight:900;color:#ff3636;text-align:center}
+.brand-sub,.model-sub,.code-sub{font-size:11px;color:#888;margin-top:8px}
+.small-nav{display:flex;justify-content:center;gap:12px;margin-top:10px;margin-bottom:18px}
+.small-nav button{width:46px;height:46px;font-size:22px}
