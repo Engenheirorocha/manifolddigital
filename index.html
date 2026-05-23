@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
-<link rel="stylesheet" href="style.css?v=901">
+<link rel="stylesheet" href="style.css?v=6600">
 </head>
 
 <body>
@@ -13,7 +13,7 @@
   <div class="logo">HVAC PRO</div>
 
   <div class="home-search">
-    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos, acervo" oninput="searchHome()">
+    <input id="homeSearch" type="text" placeholder="Buscar: manifold, erros, testes, gases, modelos, consultar equipamento" oninput="searchHome()">
   </div>
 
   <div class="carousel-wrap">
@@ -62,7 +62,7 @@
 
       <div class="card" onclick="openScreen('acervo')">
         <div class="icon blue">🛠️</div>
-        <div class="title blue">ACERVO</div>
+        <div class="title blue">CONSULTAR EQUIPAMENTO</div>
       </div>
 
     </div>
@@ -198,30 +198,93 @@
 <div class="screen page" id="acervo">
   <div class="topbar">
     <div class="back" onclick="openScreen('home')">← Voltar</div>
-    <div class="page-title blue">ACERVO</div>
+    <div class="page-title blue">CONSULTAR EQUIPAMENTO</div>
   </div>
 
   <div class="mode-box">
-    <div class="mode-title">Consulta técnica por modelo/código</div>
+    <div class="mode-title">Consulta por modelo, código da etiqueta ou equipamento</div>
 
     <div class="search-area">
-      <input id="acervoSearch" type="text" placeholder="Digite o modelo ou código da máquina..." oninput="searchAcervoTecnico()">
+      <input id="acervoSearch" type="text" placeholder="Digite modelo, código da etiqueta ou equipamento..." oninput="searchAcervoTecnico()">
     </div>
 
     <div class="model-info" id="acervoInfo">
-      <h2>Acervo Técnico</h2>
-      <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina no campo acima.</div>
-      <div class="info-row"><span>Objetivo:</span><br>Organizar dados oficiais de manuais, instalação, manutenção, gás, corrente, tubulação, capacitor, placa eletrônica e observações técnicas por modelo.</div>
-      <div class="info-row"><span>Status:</span><br>Busca técnica ativa. Teste digitando EXEMPLO.</div>
+      <h2>Consultar Equipamento</h2>
+      <div class="info-row"><span>Como usar:</span><br>Digite o modelo, código da etiqueta, evaporadora, condensadora ou equipamento no campo acima.</div>
+      <div class="info-row"><span>Status:</span><br>Banco zerado para reconstrução da nova consulta.</div>
+      <div class="info-row"><span>Próximo passo:</span><br>Definir a nova estrutura de cadastro antes de adicionar dados técnicos.</div>
     </div>
   </div>
 </div>
 
-<script src="databases/gases.js?v=901"></script>
-<script src="databases/modelos.js?v=901"></script>
-<script src="databases/erros.js?v=901"></script>
-<script src="databases/acervo_tecnico.js?v=901"></script>
-<script src="app.js?v=901"></script>
+<script src="databases/gases.js?v=6600"></script>
+<script src="databases/modelos.js?v=6600"></script>
+<script src="databases/erros.js?v=6600"></script>
+<script src="databases/acervo_tecnico.js?v=6600"></script>
+<script src="app.js?v=6600"></script>
+
+<script>
+/* Ajuste temporário de texto e banco vazio para a nova tela Consultar Equipamento.
+   Mantém os IDs antigos do acervo para não quebrar o app.js atual. */
+window.renderAcervoIntro = function () {
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!acervoInfo) return;
+
+  acervoInfo.innerHTML = `
+    <h2>Consultar Equipamento</h2>
+    <div class="info-row"><span>Como usar:</span><br>Digite o modelo, código da etiqueta, evaporadora, condensadora ou equipamento.</div>
+    <div class="info-row"><span>Status:</span><br>Banco zerado para reconstrução da nova consulta.</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Definir a nova estrutura de cadastro antes de adicionar dados técnicos.</div>
+  `;
+};
+
+window.searchAcervoTecnico = function () {
+  const input = document.getElementById("acervoSearch");
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!input || !acervoInfo) return;
+
+  const valor = String(input.value || "").trim();
+
+  if (valor.length < 2) {
+    renderAcervoIntro();
+    return;
+  }
+
+  const base = Array.isArray(window.acervoTecnico) ? window.acervoTecnico : [];
+
+  if (!base.length) {
+    acervoInfo.innerHTML = `
+      <h2>Equipamento não cadastrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${valor}</div>
+      <div class="info-row">O banco de Consultar Equipamento está vazio. Vamos reconstruir essa parte do zero.</div>
+    `;
+    return;
+  }
+
+  const termo = valor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const termoCompacto = termo.replace(/[^a-z0-9]/g, "");
+
+  const resultados = base.filter((item) => {
+    const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca : [];
+    const texto = [item.modelo, item.marca, item.linha, item.tipo].concat(codigos).filter(Boolean).join(" ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const compacto = texto.replace(/[^a-z0-9]/g, "");
+    return texto.includes(termo) || compacto.includes(termoCompacto);
+  });
+
+  if (!resultados.length) {
+    acervoInfo.innerHTML = `
+      <h2>Equipamento não cadastrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${valor}</div>
+      <div class="info-row">Nenhum equipamento cadastrado contém esse termo.</div>
+    `;
+    return;
+  }
+
+  if (typeof window.renderAcervoItem === "function") {
+    acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
+  }
+};
+</script>
 
 </body>
-</html>
+</
