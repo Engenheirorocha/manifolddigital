@@ -492,5 +492,268 @@ window.acervoTecnico = [
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Elgin oficial - página do produto e portal oficial de manuais",
     status: "Cadastro por nome comercial oficial. Próxima etapa: detalhar código exato da etiqueta quando disponível no manual."
+  }),
+
+  /* LOTE 4 - ELECTROLUX */
+  acervoItem({
+    marca: "Electrolux",
+    modelo: "JI24F / JE24F - Color Adapt Inverter 24.000 BTU Frio",
+    codigoBusca: ["JI24F", "JE24F", "JI24F JE24F", "COLOR ADAPT JI24F", "COLOR ADAPT JE24F", "ELECTROLUX JI24F", "ELECTROLUX JE24F"],
+    linha: "Color Adapt Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "24.000 BTU/h",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://content.electrolux.com.br/brasil/electrolux/emanuelle_ago_23/inverter/v2/jije24f-frio-v2/index.html",
+    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
+    fonte: "Electrolux oficial - página do produto/manual e central oficial de guias e manuais",
+    status: "Cadastro por modelo JI24F/JE24F. Usar central oficial para confirmar manual mais atual pelo código exato."
+  }),
+  acervoItem({
+    marca: "Electrolux",
+    modelo: "JI24R / JE24R - Color Adapt Inverter 24.000 BTU Quente/Frio",
+    codigoBusca: ["JI24R", "JE24R", "JI24R JE24R", "COLOR ADAPT JI24R", "COLOR ADAPT JE24R", "ELECTROLUX JI24R", "ELECTROLUX JE24R"],
+    linha: "Color Adapt Inverter",
+    tipo: "Split Hi Wall Inverter Quente/Frio",
+    capacidade: "24.000 BTU/h",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://content.electrolux.com.br/brasil/electrolux/emanuelle_ago_23/inverter/v2/jije24r-quentefrio/index.html",
+    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
+    fonte: "Electrolux oficial - página do produto/manual e central oficial de guias e manuais",
+    status: "Cadastro por modelo JI24R/JE24R. Usar central oficial para confirmar manual mais atual pelo código exato."
+  }),
+  acervoItem({
+    marca: "Electrolux",
+    modelo: "YI18F / YE18F - Inverter 18.000 BTU Frio",
+    codigoBusca: ["YI18F", "YE18F", "YI18F YE18F", "ELECTROLUX YI18F", "ELECTROLUX YE18F"],
+    linha: "Split Inverter Electrolux",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "18.000 BTU/h",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    manualInstalacao: "https://content.electrolux.com.br/brasil/electrolux/emanuelle_21_10_24/yi_ye18f/index.html",
+    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
+    fonte: "Electrolux oficial - página do produto/manual e central oficial de guias e manuais",
+    status: "Cadastro por modelo YI18F/YE18F. Usar central oficial para confirmar manual mais atual pelo código exato."
+  }),
+
+  /* LOTE 4 - PHILCO */
+  acervoItem({
+    marca: "Philco",
+    modelo: "PH9000IFM / PH9000IQFM / PH12000IFM / PH12000IQFM - Inverter",
+    codigoBusca: ["PH9000IFM", "PH9000IQFM", "PH12000IFM", "PH12000IQFM", "PH9000", "PH12000", "PHILCO PH9000IFM", "PHILCO PH12000IFM"],
+    linha: "Condicionadores de Ar Inverter Philco",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 / 12.000 BTU/h conforme código",
+    manualInstalacao: "https://suporte.philco.com.br/sfc/servlet.shepherd/document/download/0692T00000EbDP3QAN",
+    manualManutencao: "https://suporte.philco.com.br/",
+    fonte: "Philco oficial - Manual de Operação e Instalação Unificado",
+    status: "Cadastro por modelos PH9000/PH12000 IFM/IQFM. Validar código completo da etiqueta."
+  }),
+  acervoItem({
+    marca: "Philco",
+    modelo: "PAC9000IQFM9 - Inverter Quente/Frio",
+    codigoBusca: ["PAC9000IQFM9", "PAC9000", "PAC9000IQFM", "PHILCO PAC9000IQFM9"],
+    linha: "PAC Inverter Philco",
+    tipo: "Split Hi Wall Inverter Quente/Frio",
+    capacidade: "9.000 BTU/h",
+    manualInstalacao: "https://suporte.philco.com.br/sfc/servlet.shepherd/document/download/0692T00000Eb4HEQAZ",
+    manualManutencao: "https://suporte.philco.com.br/",
+    fonte: "Philco oficial - documento de suporte do modelo PAC9000IQFM9",
+    status: "Cadastro por código PAC9000IQFM9. Validar etiqueta e ficha técnica do produto."
+  }),
+  acervoItem({
+    marca: "Philco",
+    modelo: "PAC24000IFM12W - Inverter Frio",
+    codigoBusca: ["PAC24000IFM12W", "PAC24000IFM", "PAC24000", "PHILCO PAC24000IFM12W"],
+    linha: "PAC Inverter Philco",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "24.000 BTU/h",
+    manualInstalacao: "https://suporte.britania.com.br/hc/pt-br/articles/45657028460820-Documento-para-o-produto-Ar-Condicionado-PAC24000IFM12W",
+    manualManutencao: "https://suporte.philco.com.br/",
+    fonte: "Suporte oficial Britânia/Philco - documento do produto PAC24000IFM12W",
+    status: "Cadastro por código PAC24000IFM12W. Validar manual/ficha técnica no portal oficial do grupo."
+  }),
+
+  /* LOTE 4 - BRITÂNIA */
+  acervoItem({
+    marca: "Britânia",
+    modelo: "PH9000FM3 - Split Frio",
+    codigoBusca: ["PH9000FM3", "PH9000FM", "BRITANIA PH9000FM3", "BRITÂNIA PH9000FM3"],
+    linha: "Split Britânia",
+    tipo: "Split Hi Wall",
+    capacidade: "9.000 BTU/h",
+    manualInstalacao: "https://suporte.britania.com.br/hc/pt-br/articles/45658106882324-Documento-para-o-produto-Ar-Condicionado-Split-PH9000FM3",
+    manualManutencao: "https://suporte.britania.com.br/",
+    fonte: "Britânia oficial - documento do produto com manual e ficha técnica",
+    status: "Cadastro por código PH9000FM3. Validar manual/ficha técnica no artigo oficial."
+  }),
+  acervoItem({
+    marca: "Britânia",
+    modelo: "BAC24000IQFM15 - Inverter Quente/Frio",
+    codigoBusca: ["BAC24000IQFM15", "BAC24000", "BAC24000IQFM", "BRITANIA BAC24000IQFM15", "BRITÂNIA BAC24000IQFM15"],
+    linha: "BAC Inverter Britânia",
+    tipo: "Split Hi Wall Inverter Quente/Frio",
+    capacidade: "24.000 BTU/h",
+    manualInstalacao: "https://suporte.britania.com.br/hc/pt-br/articles/45657835553940-Documentos-para-o-Ar-Condicionado-BAC24000IQFM15",
+    manualManutencao: "https://suporte.britania.com.br/",
+    fonte: "Britânia oficial - documentos do produto BAC24000IQFM15",
+    status: "Cadastro por código BAC24000IQFM15. Validar manual/ficha técnica no artigo oficial."
+  }),
+  acervoItem({
+    marca: "Britânia",
+    modelo: "EAS9000IF - Split Inverter Frio",
+    codigoBusca: ["EAS9000IF", "EAS9000", "BRITANIA EAS9000IF", "BRITÂNIA EAS9000IF"],
+    linha: "EAS Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 BTU/h",
+    manualInstalacao: "https://suporte.britania.com.br/hc/pt-br/articles/45656681959316-Documentos-para-o-Ar-Condicionado-EAS9000IF",
+    manualManutencao: "https://suporte.britania.com.br/",
+    fonte: "Britânia oficial - documentos do produto EAS9000IF",
+    status: "Cadastro por código EAS9000IF. Validar manual/ficha técnica no artigo oficial."
+  }),
+
+  /* LOTE 4 - AGRATTO */
+  acervoItem({
+    marca: "Agratto",
+    modelo: "ZICST9F-02 / ZICST9QF-02 - ZEN Inverter 9.000 BTU",
+    codigoBusca: ["ZICST9F-02", "ZICST9QF-02", "ZICST9F", "ZICST9QF", "ZEN INVERTER 9000 AGRATTO"],
+    linha: "ZEN Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 BTU/h",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    fonte: "Agratto oficial - página residencial ZEN Inverter",
+    status: "Cadastro por códigos ZICST. Validar documentos disponíveis no produto oficial."
+  }),
+  acervoItem({
+    marca: "Agratto",
+    modelo: "ZICST12F-02 / ZICST12QF-02 - ZEN Inverter 12.000 BTU",
+    codigoBusca: ["ZICST12F-02", "ZICST12QF-02", "ZICST12F", "ZICST12QF", "ZEN INVERTER 12000 AGRATTO"],
+    linha: "ZEN Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    fonte: "Agratto oficial - página residencial ZEN Inverter",
+    status: "Cadastro por códigos ZICST. Validar documentos disponíveis no produto oficial."
+  }),
+  acervoItem({
+    marca: "Agratto",
+    modelo: "ZICST24F-02 / ZICST24QF-02 - ZEN Inverter 24.000 BTU",
+    codigoBusca: ["ZICST24F-02", "ZICST24QF-02", "ZICST24F", "ZICST24QF", "ZEN INVERTER 24000 AGRATTO"],
+    linha: "ZEN Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "24.000 BTU/h",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
+    fonte: "Agratto oficial - página residencial ZEN Inverter",
+    status: "Cadastro por códigos ZICST. Validar documentos disponíveis no produto oficial."
+  }),
+  acervoItem({
+    marca: "Agratto",
+    modelo: "LCST9F-02I / LCST12F-02I / LCST18F-02I / LCST24F-02I / LCST30F-02I - LIV Inverter TOP Frio",
+    codigoBusca: ["LCST9F-02I", "LCST12F-02I", "LCST18F-02I", "LCST24F-02I", "LCST30F-02I", "LIV INVERTER TOP FRIO", "AGRATTO LIV TOP FRIO"],
+    linha: "LIV Inverter TOP",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 / 12.000 / 18.000 / 24.000 / 30.000 BTU/h conforme código",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado/residencial",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado/residencial",
+    fonte: "Agratto oficial - página residencial com linha LIV Inverter TOP",
+    status: "Cadastro por códigos LCST. Validar produto específico e documentos oficiais."
+  }),
+  acervoItem({
+    marca: "Agratto",
+    modelo: "LCI36F-02 / LCI55F-02 - Cassete Inverter Frio",
+    codigoBusca: ["LCI36F-02", "LCI55F-02", "LCI36F", "LCI55F", "CASSETE AGRATTO INVERTER", "AGRATTO LCI36F", "AGRATTO LCI55F"],
+    linha: "Cassete Inverter",
+    tipo: "Cassete Inverter Frio",
+    capacidade: "36.000 / 55.000 BTU/h conforme código",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado",
+    fonte: "Agratto oficial - página de ar-condicionado comercial leve/cassete",
+    status: "Cadastro por códigos LCI. Validar produto específico e documentos oficiais."
+  }),
+  acervoItem({
+    marca: "Agratto",
+    modelo: "LPTI36KF / LPTI55KF - Piso Teto Inverter Frio",
+    codigoBusca: ["LPTI36KF", "LPTI55KF", "PISO TETO AGRATTO INVERTER", "AGRATTO LPTI36KF", "AGRATTO LPTI55KF"],
+    linha: "Piso Teto Inverter",
+    tipo: "Piso Teto Inverter Frio",
+    capacidade: "36.000 / 55.000 BTU/h conforme código",
+    manualInstalacao: "https://www.agratto.com.br/ar-condicionado",
+    manualManutencao: "https://www.agratto.com.br/ar-condicionado",
+    fonte: "Agratto oficial - página de ar-condicionado comercial leve/piso teto",
+    status: "Cadastro por códigos LPTI. Validar produto específico e documentos oficiais."
+  }),
+
+  /* LOTE 4 - TCL / HISENSE / HITACHI */
+  acervoItem({
+    marca: "TCL",
+    modelo: "TAC-12CSA2-INV - Série A2 Inverter",
+    codigoBusca: ["TAC-12CSA2-INV", "TAC12CSA2INV", "TAC 12CSA2 INV", "TCL TAC-12CSA2-INV", "SERIE A2 INVERTER TCL"],
+    linha: "Série A2 Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.tcl.com/br/pt/support-airconditioner/model-tv/tac-12csa2-inv",
+    manualManutencao: "https://www.tcl.com/br/pt/support",
+    fonte: "TCL oficial - suporte do modelo TAC-12CSA2-INV",
+    status: "Cadastro por modelo oficial TCL. Usar página oficial para baixar documentos disponíveis."
+  }),
+  acervoItem({
+    marca: "TCL",
+    modelo: "Piso Teto Inverter TCL",
+    codigoBusca: ["PISO TETO INVERTER TCL", "TCL PISO TETO INVERTER", "SPLIT PISO TETO INVERTER TCL"],
+    linha: "Piso Teto Inverter",
+    tipo: "Piso Teto Inverter",
+    capacidade: "Validar modelo/código no produto oficial",
+    manualInstalacao: "https://www.tcl.com/br/pt/air-conditioners/piso-teto-inverter",
+    manualManutencao: "https://www.tcl.com/br/pt/support",
+    fonte: "TCL oficial - página Piso Teto Inverter",
+    status: "Cadastro por família comercial. Próxima etapa: detalhar códigos exatos da etiqueta."
+  }),
+  acervoItem({
+    marca: "Hisense",
+    modelo: "Hi-Efficiency Split Inverter",
+    codigoBusca: ["HI EFFICIENCY HISENSE", "HI-EFFICIENCY HISENSE", "SPLIT HISENSE INVERTER", "HISENSE SPLIT INVERTER"],
+    linha: "Hi-Efficiency / Split Inverter",
+    tipo: "Split Hi Wall Inverter",
+    manualInstalacao: "https://www.hisense.com.br/wp-content/uploads/2026/02/hi-efficiency-manual.pdf",
+    manualManutencao: "https://www.hisense.com.br/ar-condicionado",
+    fonte: "Hisense oficial - manual de instalação e página oficial de ar-condicionado",
+    status: "Cadastro por família. O manual informa aplicação geral por linha; validar código exato da etiqueta."
+  }),
+  acervoItem({
+    marca: "Hisense",
+    modelo: "Split Hisense - Manual de uso e instalação",
+    codigoBusca: ["SPLIT_MANUAL HISENSE", "SPLIT HISENSE MANUAL", "AR CONDICIONADO HISENSE SPLIT"],
+    linha: "Split Hisense",
+    tipo: "Split Hi Wall",
+    manualInstalacao: "https://www.hisense.com.br/wp-content/uploads/2026/02/split_manual-1.pdf",
+    manualManutencao: "https://www.hisense.com.br/ar-condicionado",
+    fonte: "Hisense oficial - manual de instruções de uso e instalação",
+    status: "Cadastro por manual oficial geral da linha Split. Próxima etapa: detalhar por código exato."
+  }),
+  acervoItem({
+    marca: "Hitachi",
+    modelo: "SCI24B3IV / RCI24B3IV / RAA24B3IV - airCore 600 Cassette 24.000 BTU",
+    codigoBusca: ["SCI24B3IV", "RCI24B3IV", "RAA24B3IV", "AIRCORE 600 24", "HITACHI SCI24B3IV", "HITACHI RCI24B3IV"],
+    linha: "airCore 600",
+    tipo: "Cassette 4 Vias / Comercial Split DC Inverter",
+    capacidade: "24.000 BTU/h",
+    manualInstalacao: "https://documentation.hitachiaircon.com/br/pt/pac/sci-spc-rci-rpc-b3iv-raa-b3iv/download/R0000015361_JCH",
+    manualManutencao: "https://www.hitachiaircon.com/br/downloads/aircore-600",
+    fonte: "Hitachi oficial - documentação técnica airCore 600",
+    status: "Cadastro por conjunto/unidades airCore 600. Validar combinação interna/externa."
+  }),
+  acervoItem({
+    marca: "Hitachi",
+    modelo: "SPC36B3IV / RPC36B3IV / RAA36B3IV - airCore 600 Piso Teto 36.000 BTU",
+    codigoBusca: ["SPC36B3IV", "RPC36B3IV", "RAA36B3IV", "AIRCORE 600 36", "HITACHI SPC36B3IV", "HITACHI RPC36B3IV"],
+    linha: "airCore 600",
+    tipo: "Piso Teto / Comercial Split DC Inverter",
+    capacidade: "36.000 BTU/h",
+    manualInstalacao: "https://documentation.hitachiaircon.com/br/pt/pac/sci-spc-rci-rpc-b3iv-raa-b3iv/download/R0000015361_JCH",
+    manualManutencao: "https://www.hitachiaircon.com/br/downloads/aircore-600",
+    fonte: "Hitachi oficial - documentação técnica airCore 600",
+    status: "Cadastro por conjunto/unidades airCore 600. Validar combinação interna/externa."
   })
 ];
