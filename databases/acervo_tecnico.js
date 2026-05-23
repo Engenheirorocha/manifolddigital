@@ -1,5 +1,5 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   ACERVO TECNICO - ETAPA 3/4 SEGURA
+   ACERVO TECNICO - ETAPA 4/4 FINAL SEGURA
 
    INSTRUCAO:
    1. Apagar tudo em databases/acervo_tecnico.js
@@ -17,10 +17,13 @@
    - CONFIAVEL_NAO_OFICIAL = verde
    - INFORMACAO_SUGERIDA = branco
 
-   ETAPA 3/4 SEGURA:
-   - Mantem a base da Etapa 2.
-   - Adiciona 5 reforcos com cuidado:
-     York / Johnson Controls, Mitsubishi Electric, Rheem, Comfee e Fontaine.
+   ETAPA 4/4 FINAL SEGURA:
+   - Mantem a base da Etapa 3 segura.
+   - Adiciona reforcos finais de cobertura:
+     Carrier legado, Midea Piso Teto/Cassete, Gree comercial leve,
+     Consul Janela, Philco Portatil, LG linhas complementares,
+     Samsung linhas complementares, Elgin comercial leve,
+     Komeco comercial leve, Daikin comercial e Hitachi comercial.
    - Sem funcoes dentro do banco.
    - Sem palavras como "sugerida" ou "campo" no campo global fonte.
 */
@@ -643,5 +646,206 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", tensao: "OFICIAL" }
+  },
+
+  /* =========================================================
+     ETAPA 4/4 - REFORCOS FINAIS, INSERIDOS COM SEGURANCA
+     ========================================================= */
+
+  {
+    marca: "Carrier / Springer Carrier",
+    modelo: "Carrier Springer Split Hi Wall Piso Teto Cassete Legado",
+    codigoBusca: ["CARRIER", "SPRINGER CARRIER", "SPRINGER", "CARRIER SPLIT", "CARRIER HI WALL", "CARRIER PISO TETO", "CARRIER CASSETE", "CARRIER CASSETTE", "CARRIER 42", "CARRIER 38", "SPRINGER 42", "SPRINGER 38"],
+    linha: "Split / Piso Teto / Cassete legado",
+    tipo: "Split Hi Wall / Piso Teto / Cassete conforme modelo",
+    manualInstalacao: "https://www.carrierdobrasil.com.br/",
+    manualManutencao: "https://www.carrierdobrasil.com.br/",
+    fonte: "Base tecnica HVAC PRO - Carrier Springer legado",
+    fonteTipo: "CONFIAVEL_NAO_OFICIAL",
+    nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
+    status: "CONFIAVEL_NAO_OFICIAL",
+    confiancaCampos: { marca: "CONFIAVEL_NAO_OFICIAL", modelo: "CONFIAVEL_NAO_OFICIAL", linha: "CONFIAVEL_NAO_OFICIAL", tipo: "CONFIAVEL_NAO_OFICIAL" }
+  },
+
+  {
+    marca: "Midea",
+    modelo: "Midea Piso Teto Inverter 36000 48000 60000 BTU",
+    codigoBusca: ["MIDEA PISO TETO", "PISO TETO MIDEA", "MIDEA PISO TETO INVERTER", "MIDEA 36000", "MIDEA 48000", "MIDEA 60000", "42ZQ", "38ZQ", "42Q", "38Q"],
+    linha: "Piso Teto Inverter",
+    tipo: "Split Piso Teto",
+    capacidade: "36.000 / 48.000 / 60.000 BTU/h conforme modelo",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Midea Piso Teto",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
+
+  {
+    marca: "Midea",
+    modelo: "Midea Cassete Inverter 24000 36000 48000 60000 BTU",
+    codigoBusca: ["MIDEA CASSETE", "MIDEA CASSETTE", "CASSETE MIDEA", "CASSETTE MIDEA", "MIDEA 24000 CASSETE", "MIDEA 36000 CASSETE", "MIDEA 48000 CASSETE", "MIDEA 60000 CASSETE", "42BQ", "38CQ"],
+    linha: "Cassete Inverter",
+    tipo: "Split Cassete",
+    capacidade: "24.000 / 36.000 / 48.000 / 60.000 BTU/h conforme modelo",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Midea Cassete",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
+  },
+
+  {
+    marca: "Gree",
+    modelo: "Gree Piso Teto Cassete e MultiSplit G-Max",
+    codigoBusca: ["GREE PISO TETO", "GREE CASSETE", "GREE CASSETTE", "GREE MULTISPLIT", "GREE MULTI SPLIT", "GREE G-MAX", "G-MAX MULTISPLIT", "PISO TETO GREE", "CASSETE GREE", "CASSETTE GREE", "MULTI SPLIT GREE"],
+    linha: "Piso Teto / Cassete / G-Max Multisplit",
+    tipo: "Comercial leve / Multi Split conforme linha",
+    manualInstalacao: "https://gree.com.br/manuais/",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Gree Comercial Leve",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Gree",
+    modelo: "Gree Janela Portatil G-Top G-Classic G-Linea",
+    codigoBusca: ["GREE JANELA", "JANELA GREE", "GREE PORTATIL", "GREE PORTÁTIL", "PORTATIL GREE", "PORTÁTIL GREE", "G-TOP", "G CLASSIC", "G-CLASSIC", "G-LINEA", "G LINEA"],
+    linha: "Janela / Portatil / G-Top / G-Classic / G-Linea",
+    tipo: "Janela / Portatil / Split Hi Wall conforme linha",
+    manualInstalacao: "https://gree.com.br/manuais/",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Base tecnica HVAC PRO - Gree linhas complementares",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Consul",
+    modelo: "Consul Janela Inverter e Janela Convencional",
+    codigoBusca: ["CONSUL JANELA", "JANELA CONSUL", "CONSUL JANELA INVERTER", "CONSUL JANELA 7500", "CONSUL JANELA 10000", "CONSUL JANELA 12000", "CCB07", "CCK07", "CCN10", "CCN12"],
+    linha: "Janela / Janela Inverter",
+    tipo: "Ar-condicionado de janela",
+    manualInstalacao: "https://www.consul.com.br/eletrodomesticos/ar-condicionado/ar-condicionado-janela",
+    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    fonte: "Base tecnica HVAC PRO - Consul Janela",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Philco",
+    modelo: "Philco Portatil PAC12000F5 e Linha Portatil",
+    codigoBusca: ["PHILCO PORTATIL", "PHILCO PORTÁTIL", "PORTATIL PHILCO", "PORTÁTIL PHILCO", "PAC12000F5", "PAC11000F5", "PHILCO 12000 PORTATIL", "PHILCO 11000 PORTATIL"],
+    linha: "Portatil",
+    tipo: "Ar-condicionado portatil",
+    manualInstalacao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    manualManutencao: "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    fonte: "Base tecnica HVAC PRO - Philco Portatil",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "LG",
+    modelo: "LG Dual Inverter AI Voice Artcool Multi Split Portatil",
+    codigoBusca: ["LG DUAL INVERTER AI", "LG DUAL INVERTER VOICE", "LG ARTCOOL", "ARTCOOL", "LG MULTI SPLIT", "LG MULTISPLIT", "LG PORTATIL", "LG PORTÁTIL", "LG 9000", "LG 18000", "LG 24000", "LG 30000"],
+    linha: "Dual Inverter / Artcool / Multi Split / Portatil",
+    tipo: "Split Hi Wall / Multi Split / Portatil conforme modelo",
+    manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
+    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
+    fonte: "Base tecnica HVAC PRO - LG linhas complementares",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Samsung",
+    modelo: "Samsung WindFree PowerVolt Digital Inverter e WindFree Connect",
+    codigoBusca: ["SAMSUNG WINDFREE", "WINDFREE POWER VOLT", "WINDFREE POWERVOLT", "SAMSUNG DIGITAL INVERTER", "SAMSUNG WIND FREE", "SAMSUNG CONNECT", "AR09", "AR12", "AR18", "AR24", "SAMSUNG 9000", "SAMSUNG 18000", "SAMSUNG 24000"],
+    linha: "WindFree / Digital Inverter / PowerVolt",
+    tipo: "Split Hi Wall Inverter",
+    manualInstalacao: "https://www.samsung.com/br/support/",
+    manualManutencao: "https://www.samsung.com/br/support/",
+    fonte: "Base tecnica HVAC PRO - Samsung linhas complementares",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Elgin",
+    modelo: "Elgin Cassete Piso Teto Eco Inverter",
+    codigoBusca: ["ELGIN CASSETE", "ELGIN CASSETTE", "CASSETE ELGIN", "CASSETTE ELGIN", "ELGIN PISO TETO", "PISO TETO ELGIN", "ELGIN 36000", "ELGIN 48000", "ELGIN 60000"],
+    linha: "Cassete / Piso Teto Eco Inverter",
+    tipo: "Comercial leve",
+    manualInstalacao: "https://www.elgin.com.br/manuals",
+    manualManutencao: "https://www.elgin.com.br/manuals",
+    fonte: "Base tecnica HVAC PRO - Elgin comercial leve",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Komeco",
+    modelo: "Komeco KOP Piso Teto KOC Cassete KOHV Hi Wall",
+    codigoBusca: ["KOMECO PISO TETO", "KOMECO CASSETE", "KOMECO CASSETTE", "KOMECO KOP", "KOMECO KOC", "KOMECO KOHV", "KOP", "KOC", "KOHV", "KOMECO COMERCIAL"],
+    linha: "Piso Teto / Cassete / Hi Wall",
+    tipo: "Comercial leve / Split Hi Wall conforme modelo",
+    manualInstalacao: "https://www.komeco.com.br/portaltecnico/",
+    manualManutencao: "https://www.komeco.com.br/portaltecnico/",
+    fonte: "Base tecnica HVAC PRO - Komeco linhas complementares",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Daikin",
+    modelo: "Daikin SkyAir Cassete Multi Split VRV VRF",
+    codigoBusca: ["DAIKIN SKYAIR", "SKYAIR", "DAIKIN CASSETE", "DAIKIN CASSETTE", "DAIKIN MULTI SPLIT", "DAIKIN MULTISPLIT", "DAIKIN VRV", "DAIKIN VRF", "DAIKIN COMERCIAL"],
+    linha: "SkyAir / Multi Split / VRV",
+    tipo: "Cassete / Multi Split / VRV conforme sistema",
+    manualInstalacao: "https://www.daikin.com.br/profissionais/downloads",
+    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
+    fonte: "Base tecnica HVAC PRO - Daikin comercial",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
+  },
+
+  {
+    marca: "Hitachi",
+    modelo: "Hitachi Mini VRF Set Free Sigma Utopia airCore Splitao Rooftop Chiller",
+    codigoBusca: ["HITACHI MINI VRF", "HITACHI VRF", "HITACHI SET FREE", "SET FREE SIGMA", "HITACHI UTOPIA", "HITACHI AIRCORE", "HITACHI SPLITAO", "HITACHI SPLITÃO", "HITACHI ROOFTOP", "HITACHI CHILLER", "HITACHI AIR365"],
+    linha: "Mini VRF / Set Free / Utopia / airCore / Splitao / Chiller",
+    tipo: "Sistema comercial conforme linha",
+    manualInstalacao: "https://www.hitachiaircon.com/br/produtos",
+    manualManutencao: "https://documentation.hitachiaircon.com/br/pt",
+    fonte: "Base tecnica HVAC PRO - Hitachi comercial",
+    fonteTipo: "FABRICANTE_OFICIAL",
+    nivelConfianca: "OFICIAL",
+    status: "OFICIAL",
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   }
 ];
