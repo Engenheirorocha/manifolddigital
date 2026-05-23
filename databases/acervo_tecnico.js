@@ -18,7 +18,9 @@ const errorCategories = window.errorCategories || [];
 const brandsByCategory = window.brandsByCategory || {};
 const modelsByBrand = window.modelsByBrand || {};
 const errorCodesByModel = window.errorCodesByModel || {};
-const acervoTecnico = window.acervoTecnico || [];
+function getAcervoTecnicoData() {
+  return Array.isArray(window.acervoTecnico) ? window.acervoTecnico : [];
+}
 
 let cards = [];
 let current = 0;
@@ -102,11 +104,11 @@ function acervoSourceTokens(item, fieldKey) {
   const values = [
     fontesCampos[fieldKey],
     confiancaCampos[fieldKey],
-    item?.fonteTipo,
-    item?.nivelConfianca,
-    item?.fonte,
-    item?.observacaoFonte,
-    item?.status
+    item && item.fonteTipo ? item.fonteTipo : "",
+    item && item.nivelConfianca ? item.nivelConfianca : "",
+    item && item.fonte ? item.fonte : "",
+    item && item.observacaoFonte ? item.observacaoFonte : "",
+    item && item.status ? item.status : ""
   ];
 
   return values.map((v) => normalizeSearchText(v)).filter(Boolean);
@@ -942,7 +944,8 @@ function searchAcervoTecnico() {
     return;
   }
 
-  const resultados = acervoTecnico.filter((item) => acervoMatchesSearch(item, input.value));
+  const baseAcervo = getAcervoTecnicoData();
+  const resultados = baseAcervo.filter((item) => acervoMatchesSearch(item, input.value));
 
   if (!resultados.length) {
     acervoInfo.innerHTML = `
