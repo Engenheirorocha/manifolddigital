@@ -1,11 +1,10 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   Acervo Técnico Oficial
-   Consulta por modelo/código da máquina.
+   Acervo Técnico Oficial - Lote 1
 
-   Regra:
+   Regra do banco:
    - Usar somente fonte oficial do fabricante.
-   - Não inventar corrente, capacitor, tubulação ou placa.
-   - Quando o manual oficial não informar, mostrar:
+   - Não inventar dados técnicos.
+   - Quando o manual oficial não informar, usar:
      "Não informado no manual oficial"
      ou
      "Validar etiqueta/manual".
@@ -14,23 +13,237 @@
 window.acervoTecnico = [
   {
     marca: "Midea",
-    modelo: "Exemplo técnico",
-    codigoBusca: ["EXEMPLO", "TESTE", "MIDEIA", "MIDEA"],
-    linha: "Modelo de teste do Acervo Técnico",
-    tipo: "Split / equipamento de referência",
-    capacidade: "Não informado no manual oficial",
+    modelo: "Xtreme Save AI Connect R32",
+    codigoBusca: [
+      "MIDEA",
+      "MIDEIA",
+      "XTREME SAVE",
+      "XTREME SAVE AI CONNECT",
+      "AGVCJ",
+      "R32",
+      "42AGVCJ",
+      "38AGVCJ"
+    ],
+    linha: "Xtreme Save AI Connect",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar etiqueta/manual conforme código exato da unidade",
     anoFabricacao: "Validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    correnteNominal: "Não informado no manual oficial",
+    fluidoRefrigerante: "R32",
+    correnteNominal: "Não informado no manual oficial para todos os modelos da linha; validar tabela/etiqueta do modelo exato",
     superaquecimento: "Validar procedimento técnico do fabricante",
     subresfriamento: "Validar procedimento técnico do fabricante",
     capacitor: "Não informado no manual oficial",
     placaEletronica: "Não informado no manual oficial",
-    tubulacaoAlta: "Não informado no manual oficial",
-    tubulacaoBaixa: "Não informado no manual oficial",
-    manualInstalacao: "Não cadastrado ainda",
-    manualManutencao: "Não cadastrado ainda",
-    fonte: "Base inicial do módulo Acervo Técnico",
-    status: "Registro de teste para validar a busca antes de inserir manuais reais"
+    tubulacaoAlta: "Validar tabela do modelo/capacidade no manual oficial",
+    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
+    fonte: "Midea oficial - conteúdo/manual do fabricante",
+    status: "Cadastro inicial oficial. Dados variam conforme código exato da evaporadora/condensadora; validar etiqueta/manual."
+  },
+  {
+    marca: "Midea",
+    modelo: "Multi Inverter / FreeMatch",
+    codigoBusca: [
+      "MIDEA",
+      "MIDEIA",
+      "MULTI INVERTER",
+      "FREEMATCH",
+      "FREE MATCH",
+      "42AGMSB",
+      "42MGMSB",
+      "40KVAQ",
+      "40KVBQ",
+      "42BQ"
+    ],
+    linha: "Multi Inverter / FreeMatch",
+    tipo: "Multi Split Inverter / Hi Wall / Cassette / Built In conforme combinação",
+    capacidade: "Validar combinação de unidades no manual oficial",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar tabela elétrica do manual oficial e etiqueta da unidade externa",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Não informado no manual oficial para todos os conjuntos",
+    placaEletronica: "Não informado no manual oficial",
+    tubulacaoAlta: "Validar tabela de tubulação por combinação/capacidade no manual oficial",
+    tubulacaoBaixa: "Validar tabela de tubulação por combinação/capacidade no manual oficial",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
+    fonte: "Midea oficial - Manual de Instalação, Operação e Manutenção",
+    status: "Fonte oficial destinada a técnicos qualificados. Validar combinação exata das unidades antes do serviço."
+  },
+  {
+    marca: "Gree",
+    modelo: "G-Diamond Auto Inverter",
+    codigoBusca: [
+      "GREE",
+      "G DIAMOND",
+      "G-DIAMOND",
+      "G-DIAMOND AUTO INVERTER",
+      "DIAMOND AUTO",
+      "AUTO INVERTER",
+      "R32"
+    ],
+    linha: "G-Diamond Auto Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar etiqueta/manual conforme código exato",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "R32 quando aplicável ao modelo indicado no manual oficial",
+    correnteNominal: "Validar tabela técnica/etiqueta da unidade",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Não informado no manual oficial para todos os modelos da linha",
+    placaEletronica: "Não informado no manual oficial",
+    tubulacaoAlta: "Validar tabela do modelo/capacidade no manual oficial",
+    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
+    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
+    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
+    fonte: "Gree oficial - Manual G-Diamond Auto Inverter",
+    status: "Cadastro inicial oficial. Manual reúne operação/instalação/manutenção; validar etiqueta do equipamento."
+  },
+  {
+    marca: "Gree",
+    modelo: "G-Diamond Top",
+    codigoBusca: [
+      "GREE",
+      "G DIAMOND TOP",
+      "G-DIAMOND TOP",
+      "DIAMOND TOP"
+    ],
+    linha: "G-Diamond Top",
+    tipo: "Split Hi Wall",
+    capacidade: "Validar etiqueta/manual conforme código exato",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar tabela técnica/etiqueta da unidade",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Não informado no manual oficial",
+    placaEletronica: "Não informado no manual oficial",
+    tubulacaoAlta: "Validar tabela do modelo/capacidade no manual oficial",
+    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
+    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-DIAMOND-TOP-Rev-000-full.pdf",
+    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-DIAMOND-TOP-Rev-000-full.pdf",
+    fonte: "Gree oficial - Manual G-Diamond Top",
+    status: "Cadastro inicial oficial. Validar código exato da máquina antes de usar dados técnicos."
+  },
+  {
+    marca: "Gree",
+    modelo: "Materiais Técnicos Gree",
+    codigoBusca: [
+      "GREE",
+      "MANUAIS GREE",
+      "MATERIAIS TECNICOS GREE",
+      "MATERIAIS TÉCNICOS GREE",
+      "G TOP",
+      "G-DIAMOND",
+      "G-PRIME",
+      "G-LINEA",
+      "G-CLASSIC",
+      "PISO TETO GREE",
+      "CASSETE GREE"
+    ],
+    linha: "Portal oficial de materiais técnicos Gree",
+    tipo: "Portal oficial de consulta por linha/modelo",
+    capacidade: "Validar no manual específico da linha/modelo",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar manual específico e etiqueta da unidade",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Validar manual específico da linha/modelo",
+    placaEletronica: "Validar manual específico da linha/modelo",
+    tubulacaoAlta: "Validar manual específico da linha/modelo",
+    tubulacaoBaixa: "Validar manual específico da linha/modelo",
+    manualInstalacao: "https://gree.com.br/manuais/",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Gree oficial - página de materiais técnicos",
+    status: "Portal oficial usado como índice quando o técnico pesquisar uma linha Gree ainda não detalhada no banco."
+  },
+  {
+    marca: "LG",
+    modelo: "Portal oficial de manuais LG Ar-Condicionado",
+    codigoBusca: [
+      "LG",
+      "DUAL INVERTER",
+      "LG DUAL INVERTER",
+      "ARTCOOL",
+      "LG MANUAL",
+      "LG MANUAIS",
+      "LG AR CONDICIONADO"
+    ],
+    linha: "Portal oficial LG de manuais e downloads",
+    tipo: "Portal oficial de consulta por modelo",
+    capacidade: "Validar pelo código exato no portal LG",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar manual do modelo exato e etiqueta da unidade",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Validar manual do modelo exato",
+    placaEletronica: "Validar manual do modelo exato",
+    tubulacaoAlta: "Validar manual do modelo exato",
+    tubulacaoBaixa: "Validar manual do modelo exato",
+    manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
+    manualManutencao: "https://www.lg.com/br/business/manual/",
+    fonte: "LG oficial - suporte/manuais e LG Business manual download",
+    status: "Portal oficial. Próxima etapa: cadastrar códigos LG específicos com links e dados por modelo."
+  },
+  {
+    marca: "Samsung",
+    modelo: "WindFree 12000 BTU Frio AR12MVPXAWKNAZ",
+    codigoBusca: [
+      "SAMSUNG",
+      "WINDFREE",
+      "WIND FREE",
+      "AR12MVPXAWKNAZ",
+      "AR12MVPX",
+      "12000 BTU SAMSUNG"
+    ],
+    linha: "WindFree",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar manual/etiqueta do modelo exato",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Não informado no manual oficial",
+    placaEletronica: "Não informado no manual oficial",
+    tubulacaoAlta: "Validar manual/etiqueta do modelo exato",
+    tubulacaoBaixa: "Validar manual/etiqueta do modelo exato",
+    manualInstalacao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
+    manualManutencao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
+    fonte: "Samsung oficial - página de suporte do modelo com baixar manual",
+    status: "Link oficial do modelo. Usar página oficial para baixar o manual mais atual disponível."
+  },
+  {
+    marca: "Samsung",
+    modelo: "WindFree AI 12000 BTU Frio Wi-Fi AR12DYFABWKNAZ",
+    codigoBusca: [
+      "SAMSUNG",
+      "WINDFREE AI",
+      "WIND FREE AI",
+      "AR12DYFABWKNAZ",
+      "AR12DYFAB",
+      "12000 BTU SAMSUNG WIFI"
+    ],
+    linha: "WindFree AI",
+    tipo: "Split Hi Wall Inverter Wi-Fi",
+    capacidade: "12.000 BTU/h",
+    anoFabricacao: "Validar etiqueta/manual",
+    fluidoRefrigerante: "Validar etiqueta/manual",
+    correnteNominal: "Validar manual/etiqueta do modelo exato",
+    superaquecimento: "Validar procedimento técnico do fabricante",
+    subresfriamento: "Validar procedimento técnico do fabricante",
+    capacitor: "Não informado no manual oficial",
+    placaEletronica: "Não informado no manual oficial",
+    tubulacaoAlta: "Validar manual/etiqueta do modelo exato",
+    tubulacaoBaixa: "Validar manual/etiqueta do modelo exato",
+    manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
+    manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
+    fonte: "Samsung oficial - página de suporte do modelo com baixar manual",
+    status: "Link oficial do modelo. Usar página oficial para baixar o manual mais atual disponível."
   }
 ];
