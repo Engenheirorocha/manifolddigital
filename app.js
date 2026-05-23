@@ -1,6 +1,6 @@
 /* HVAC PRO - app.js
-   Versao com Acervo Tecnico ativo.
-   Mantem: Home, carrossel principal, Gases, Erros/Defeitos e busca do Acervo.
+   ARQUIVO COMPLETO
+   Home + carrossel principal + Gases + Erros/Defeitos + Acervo Tecnico com busca ativa.
 */
 
 const gasData = window.gasData || {};
@@ -146,10 +146,15 @@ function openScreen(id) {
     const erros = document.getElementById("erros");
     if (erros) erros.scrollTop = 0;
 
-    document.getElementById("typeStep").style.display = "block";
-    document.getElementById("brandStep").style.display = "none";
-    document.getElementById("modelStep").style.display = "none";
-    document.getElementById("codeStep").style.display = "none";
+    const typeStep = document.getElementById("typeStep");
+    const brandStep = document.getElementById("brandStep");
+    const modelStep = document.getElementById("modelStep");
+    const codeStep = document.getElementById("codeStep");
+
+    if (typeStep) typeStep.style.display = "block";
+    if (brandStep) brandStep.style.display = "none";
+    if (modelStep) modelStep.style.display = "none";
+    if (codeStep) codeStep.style.display = "none";
 
     renderCategoryCarousel();
   }
@@ -894,4 +899,4 @@ function initApp() {
   renderAcervoIntro();
 }
 
-window.addEventListener("load", init
+window.addEventListener("load", initApp);
