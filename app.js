@@ -834,24 +834,127 @@ function renderCodeInfo() {
 
 /* ACERVO TÉCNICO */
 
-function acervoMatchesSearch(item, searchValue) {
-  if (!item) return false;
+function getAcervoSearchTextParts(item) {
+  const codigos = Array.isArray(item && item.codigoBusca) ? item.codigoBusca : [];
+
+  return {
+    codigos: codigos.filter(Boolean),
+    modelo: item && item.modelo ? item.modelo : "",
+    marca: item && item.marca ? item.marca : "",
+    linha: item && item.linha ? item.linha : "",
+    tipo: item && item.tipo ? item.tipo : ""
+  };
+}
+
+function getAcervoSearchRank(item, searchValue) {
+  if (!item) return 99;
 
   const rawSearch = normalizeSearchText(searchValue);
   const compactSearch = normalizeAcervoCode(searchValue);
 
-  if (compactSearch.length < 2) return false;
+  if (compactSearch.length < 2) return 99;
 
-  const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca : [];
-  const termos = [item.modelo, item.marca, item.linha, item.tipo].concat(codigos).filter(Boolean);
+  const parts = getAcervoSearchTextParts(item);
 
-  return termos.some((term) => {
-    const rawTerm = normalizeSearchText(term);
-    const compactTerm = normalizeAcervoCode(term);
-    if (!compactTerm) return false;
+  const codigos = parts.codigos.map((codigo) => ({
+    raw: normalizeSearchText(codigo),
+    compact: normalizeAcervoCode(codigo)
+  })).filter((codigo) => codigo.compact);
 
-    return rawTerm.includes(rawSearch) || rawSearch.includes(rawTerm) || compactTerm.includes(compactSearch) || compactSearch.includes(compactTerm);
-  });
+  const modeloRaw = normalizeSearchText(parts.modelo);
+  const modeloCompact = normalizeAcervoCode(parts.modelo);
+
+  const marcaRaw = normalizeSearchText(parts.marca);
+  const marcaCompact = normalizeAcervoCode(parts.marca);
+
+  const linhaRaw = normalizeSearchText(parts.linha);
+  const linhaCompact = normalizeAcervoCode(parts.linha);
+
+  const tipoRaw = normalizeSearchText(parts.tipo);
+  const tipoCompact = normalizeAcervoCode(parts.tipo);
+
+  /* 0 = codigo exato.
+     Exemplo: PAC12QC precisa ganhar de 12QC.
+  */
+  if (codigos.some((codigo) => codigo.compact === compactSearch || codigo.raw === rawSearch)) {
+    return 0;
+  }
+
+  /* 1 = modelo exato. */
+  if (modeloCompact === compactSearch || modeloRaw === rawSearch) {
+    return 1;
+  }
+
+  /* 2 = codigo comeca com a busca.
+     Exemplo: CBK12 encontra CBK12EBBCJ e CBK12DBXCJ.
+  */
+  if (codigos.some((codigo) => codigo.compact.startsWith(compactSearch) || codigo.raw.startsWith(rawSearch))) {
+    return 2;
+  }
+
+  /* 3 = modelo comeca com a busca. */
+  if (
+    (modeloCompact && modeloCompact.startsWith(compactSearch)) ||
+    (modeloRaw && modeloRaw.startsWith(rawSearch))
+  ) {
+    return 3;
+  }
+
+  /* 4 = codigo contem a busca.
+     Importante: aqui NAO usamos compactSearch.includes(codigo.compact),
+     porque isso causava o erro PAC12QC retornar Britania 12QC.
+  */
+  if (codigos.some((codigo) => codigo.compact.includes(compactSearch) || codigo.raw.includes(rawSearch))) {
+    return 4;
+  }
+
+  /* 5 = modelo/marca/linha/tipo contem a busca. */
+  const genericTerms = [
+    { raw: modeloRaw, compact: modeloCompact },
+    { raw: marcaRaw, compact: marcaCompact },
+    { raw: linhaRaw, compact: linhaCompact },
+    { raw: tipoRaw, compact: tipoCompact }
+  ];
+
+  if (genericTerms.some((term) => {
+    if (!term.compact) return false;
+    return term.raw.includes(rawSearch) || term.compact.includes(compactSearch);
+  })) {
+    return 5;
+  }
+
+  return 99;
+}
+
+function getAcervoSearchResults(baseAcervo, searchValue) {
+  const ranked = baseAcervo
+    .map((item, index) => ({
+      item,
+      index,
+      rank: getAcervoSearchRank(item, searchValue)
+    }))
+    .filter((result) => result.rank < 99)
+    .sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return a.index - b.index;
+    });
+
+  if (!ranked.length) return [];
+
+  const bestRank = ranked[0].rank;
+
+  /* Quando existe codigo exato ou inicio de codigo, mostra so o grupo mais preciso.
+     Isso evita um codigo completo puxar familia errada.
+  */
+  if (bestRank <= 4) {
+    return ranked.filter((result) => result.rank === bestRank).map((result) => result.item);
+  }
+
+  return ranked.map((result) => result.item);
+}
+
+function acervoMatchesSearch(item, searchValue) {
+  return getAcervoSearchRank(item, searchValue) < 99;
 }
 
 function renderAcervoIntro() {
@@ -889,7 +992,7 @@ function searchAcervoTecnico() {
     return;
   }
 
-  const resultados = baseAcervo.filter((item) => acervoMatchesSearch(item, input.value));
+  const resultados = getAcervoSearchResults(baseAcervo, input.value);
 
   if (!resultados.length) {
     acervoInfo.innerHTML = `
