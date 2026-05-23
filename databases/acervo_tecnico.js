@@ -512,6 +512,159 @@ window.acervoTecnico = [
   }),
 
   /* =========================
+     MIDEA - VERDE CONFIÁVEL NÃO OFICIAL
+     Fonte: catálogo comercial técnico Midea hospedado em distribuidor técnico.
+     Estes campos complementam as entradas oficiais com dados de instalação.
+     ========================= */
+
+  acervoItem({
+    marca: "Midea",
+    modelo: "42AGVCJ09M5 / 38AGVCJ09M5 - Xtreme Save AI Connect 9.000 BTU - Dados técnicos",
+    codigoBusca: ["42AGVCJ09M5 TECNICO", "38AGVCJ09M5 TECNICO", "42AGVCJ09M5", "38AGVCJ09M5", "AGVCJ09 TECNICO", "XTREME SAVE AI CONNECT 9000 TECNICO"],
+    linha: "Xtreme Save AI Connect",
+    tipo: "Split Hi Wall Inverter Frio",
+    capacidade: "9.000 BTU/h",
+    tensao: "220V",
+    fluidoRefrigerante: "R32",
+    cargaGas: "320 g até 5 m",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    comprimentoMaximo: "25 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/midea/catalogo-comercial-hw-inverter-xtreme-save-ai-connect.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
+    fonte: "Catálogo comercial técnico Midea Xtreme Save AI Connect hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "cargaGas", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"], VERDE),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "cargaGas", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"], C_VERDE)
+  }),
+
+  acervoItem({
+    marca: "Midea",
+    modelo: "42AGVCJ12M5 / 38AGVCJ12M5 - Xtreme Save AI Connect 12.000 BTU - Dados técnicos",
+    codigoBusca: ["42AGVCJ12M5 TECNICO", "38AGVCJ12M5 TECNICO", "42AGVCJ12M5", "38AGVCJ12M5", "AGVCJ12 TECNICO", "XTREME SAVE AI CONNECT 12000 TECNICO"],
+    linha: "Xtreme Save AI Connect",
+    tipo: "Split Hi Wall Inverter Frio",
+    capacidade: "12.000 BTU/h",
+    tensao: "220V",
+    fluidoRefrigerante: "R32",
+    cargaGas: "440 g até 5 m",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    comprimentoMaximo: "25 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/midea/catalogo-comercial-hw-inverter-xtreme-save-ai-connect.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
+    fonte: "Catálogo comercial técnico Midea Xtreme Save AI Connect hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "cargaGas", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"], VERDE),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "cargaGas", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"], C_VERDE)
+  }),
+
+  /* =========================
+     GREE - VERDE CONFIÁVEL NÃO OFICIAL
+     Fonte: catálogo comercial G-Diamond Auto Inverter hospedado em distribuidor técnico.
+     ========================= */
+
+  acervoItem({
+    marca: "Gree",
+    modelo: "GWC09ACA-D6DNA1A / GWH09ACA-D6DNA1A - G-Diamond Auto 9.000 BTU",
+    codigoBusca: ["GWC09ACA-D6DNA1A", "GWH09ACA-D6DNA1A", "GWC09ACA", "GWH09ACA", "GDIAMOND 9000 TECNICO", "G-DIAMOND 9000 TECNICO"],
+    linha: "G-Diamond Auto Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 BTU/h",
+    tensao: "220V / 60Hz / 1F",
+    fluidoRefrigerante: "R32",
+    cargaGas: "550 g até 5 m",
+    correnteNominal: "6 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    comprimentoMaximo: "15 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/gree/catalogo-gdiamond-auto-inverter.pdf",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Catálogo comercial técnico Gree G-Diamond Auto Inverter hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
+  }),
+
+  acervoItem({
+    marca: "Gree",
+    modelo: "GWC12ACC-D6DNA1A / GWH12ACC-D6DNA1A - G-Diamond Auto 12.000 BTU",
+    codigoBusca: ["GWC12ACC-D6DNA1A", "GWH12ACC-D6DNA1A", "GWC12ACC", "GWH12ACC", "GDIAMOND 12000 TECNICO", "G-DIAMOND 12000 TECNICO"],
+    linha: "G-Diamond Auto Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    tensao: "220V / 60Hz / 1F",
+    fluidoRefrigerante: "R32",
+    cargaGas: "630 g até 5 m",
+    correnteNominal: "10,6 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "1/2 pol.",
+    comprimentoMaximo: "20 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/gree/catalogo-gdiamond-auto-inverter.pdf",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Catálogo comercial técnico Gree G-Diamond Auto Inverter hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
+  }),
+
+  acervoItem({
+    marca: "Gree",
+    modelo: "GWC18ACD-D6DNA1C / GWH18ACD-D6DNA1C - G-Diamond Auto 18.000 BTU",
+    codigoBusca: ["GWC18ACD-D6DNA1C", "GWH18ACD-D6DNA1C", "GWC18ACD", "GWH18ACD", "GDIAMOND 18000 TECNICO", "G-DIAMOND 18000 TECNICO"],
+    linha: "G-Diamond Auto Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "18.000 BTU/h",
+    tensao: "220V / 60Hz / 1F",
+    fluidoRefrigerante: "R32",
+    cargaGas: "940 g até 5 m",
+    correnteNominal: "13,5 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "1/2 pol.",
+    comprimentoMaximo: "25 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/gree/catalogo-gdiamond-auto-inverter.pdf",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Catálogo comercial técnico Gree G-Diamond Auto Inverter hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
+  }),
+
+  acervoItem({
+    marca: "Gree",
+    modelo: "GWC24ACE-D6DNA1B / GWH24ACE-D6DNA1B - G-Diamond Auto 24.000 BTU",
+    codigoBusca: ["GWC24ACE-D6DNA1B", "GWH24ACE-D6DNA1B", "GWC24ACE", "GWH24ACE", "GDIAMOND 24000 TECNICO", "G-DIAMOND 24000 TECNICO"],
+    linha: "G-Diamond Auto Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "24.000 BTU/h",
+    tensao: "220V / 60Hz / 1F",
+    fluidoRefrigerante: "R32",
+    cargaGas: "1100 g até 5 m",
+    correnteNominal: "13,5 A",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "1/2 pol.",
+    comprimentoMaximo: "25 m",
+    desnivelMaximo: "10 m",
+    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/gree/catalogo-gdiamond-auto-inverter.pdf",
+    manualManutencao: "https://gree.com.br/manuais/",
+    fonte: "Catálogo comercial técnico Gree G-Diamond Auto Inverter hospedado em distribuidor técnico",
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
+  }),
+
+  /* =========================
      KOMECO / OUTRAS OFICIAIS
      ========================= */
 
