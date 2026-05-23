@@ -48,7 +48,7 @@ window.acervoTecnico = [
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
 
     /* Campo global limpo, sem palavras de cor/confiança. */
-    fonte: "Ficha de teste LG S4-Q12JA315 para validar cor por campo",
+    fonte: "Teste tecnico LG S4-Q12JA315 - validacao de cores individuais",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
