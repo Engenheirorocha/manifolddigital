@@ -1,6 +1,18 @@
 /* HVAC PRO - app.js
    ARQUIVO COMPLETO
-   Home + carrossel principal + Gases + Erros/Defeitos + Acervo Tecnico com busca ativa.
+
+   Módulos:
+   - Home + carrossel principal
+   - Gases
+   - Erros/Defeitos
+   - Acervo Técnico
+
+   Acervo Técnico:
+   - Busca por modelo/código da etiqueta.
+   - Aceita código com ou sem hífen, espaço, barra e pontos.
+   - Ficha técnica limpa: campo sem dado confiável fica oculto.
+   - AZUL = dado oficial: fabricante, manual oficial, ficha oficial, INMETRO/ENCE ou etiqueta validada.
+   - VERDE = dado confiável, mas não oficial direto: distribuidor técnico autorizado ou fonte técnica vinculada.
 */
 
 const gasData = window.gasData || {};
@@ -14,7 +26,6 @@ let cards = [];
 let current = 0;
 let startX = 0;
 let endX = 0;
-
 let catCurrent = 0;
 let brandCurrent = 0;
 let modelCurrent = 0;
@@ -28,13 +39,162 @@ function normalizeSearchText(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function normalizeAcervoCodeText(value) {
+  return normalizeSearchText(value).replace(/[^a-z0-9]/g, "");
+}
+
 function safeValue(value, fallback) {
   return value || fallback || "Não informado no manual oficial";
 }
 
+function hasConcreteAcervoValue(value) {
+  const raw = String(value || "");
+  const text = normalizeSearchText(raw);
+  if (!text) return false;
+
+  return /\d/.test(raw) ||
+    text.includes("btu") ||
+    text.includes("r32") ||
+    text.includes("r410a") ||
+    text.includes("r22") ||
+    text.includes("127v") ||
+    text.includes("220v") ||
+    text.includes("380v") ||
+    text.includes("pol") ||
+    text.includes("mm") ||
+    text.includes("kg") ||
+    text.includes(" g") ||
+    text.includes("g/");
+}
+
+function isWeakAcervoValue(value) {
+  const text = normalizeSearchText(value);
+
+  if (!text) return true;
+  if (text === "-") return true;
+  if (text === "nao aplicavel") return true;
+  if (text === "nao se aplica") return true;
+
+  if (hasConcreteAcervoValue(value)) return false;
+
+  if (text.includes("nao informado")) return true;
+  if (text.includes("não informado")) return true;
+  if (text.includes("validar etiqueta")) return true;
+  if (text.includes("validar manual")) return true;
+  if (text.includes("validar procedimento")) return true;
+  if (text.includes("validar tabela")) return true;
+  if (text.includes("validar modelo")) return true;
+  if (text.includes("validar codigo")) return true;
+  if (text.includes("validar código")) return true;
+  if (text.includes("validar combinacao")) return true;
+  if (text.includes("validar combinação")) return true;
+  if (text.includes("nao cadastrado")) return true;
+  if (text.includes("não cadastrado")) return true;
+  if (text.includes("confirmar no site")) return true;
+  if (text.includes("confirmar no manual")) return true;
+  if (text.includes("confirmar no fabricante")) return true;
+
+  return false;
+}
+
+function getAcervoSourceText(item, fieldKey) {
+  const fontesCampos = item && item.fontesCampos ? item.fontesCampos : null;
+  const confiancaCampos = item && item.confiancaCampos ? item.confiancaCampos : null;
+
+  const fieldSource = fontesCampos && fontesCampos[fieldKey] ? fontesCampos[fieldKey] : "";
+  const fieldTrust = confiancaCampos && confiancaCampos[fieldKey] ? confiancaCampos[fieldKey] : "";
+
+  return normalizeSearchText([
+    fieldSource,
+    fieldTrust,
+    item?.fonteTipo,
+    item?.nivelConfianca,
+    item?.fonte,
+    item?.observacaoFonte,
+    item?.status
+  ].join(" "));
+}
+
+function acervoDataClass(item, fieldKey) {
+  const source = getAcervoSourceText(item, fieldKey);
+
+  const isOfficial =
+    source.includes("fabricante") ||
+    source.includes("oficial") ||
+    source.includes("manual oficial") ||
+    source.includes("ficha tecnica oficial") ||
+    source.includes("ficha técnica oficial") ||
+    source.includes("pagina oficial") ||
+    source.includes("página oficial") ||
+    source.includes("inmetro") ||
+    source.includes("ence") ||
+    source.includes("etiqueta") ||
+    source.includes("placa de identificacao") ||
+    source.includes("placa de identificação") ||
+    source.includes("confirmado_manual_oficial") ||
+    source.includes("confirmado_ficha_tecnica_oficial") ||
+    source.includes("confirmado_ficha_técnica_oficial") ||
+    source.includes("confirmado_inmetro") ||
+    source.includes("confirmado_etiqueta") ||
+    source.includes("confirmado_suporte_oficial") ||
+    source.includes("fabricante_oficial");
+
+  const isTrustedNonOfficial =
+    source.includes("distribuidor") ||
+    source.includes("autorizado") ||
+    source.includes("catalogo tecnico") ||
+    source.includes("catálogo técnico") ||
+    source.includes("fonte tecnica") ||
+    source.includes("fonte técnica") ||
+    source.includes("nao oficial") ||
+    source.includes("não oficial") ||
+    source.includes("distribuidor_tecnico_autorizado") ||
+    source.includes("distribuidor_técnico_autorizado");
+
+  if (isTrustedNonOfficial && !isOfficial) return "green";
+  if (isOfficial) return "blue";
+
+  // Padrão seguro: se temos o dado e não há marcação clara, exibimos em azul porque a base aceita apenas fontes confiáveis.
+  return "blue";
+}
+
+function renderAcervoField(label, value, item, fieldKey) {
+  if (isWeakAcervoValue(value)) return "";
+
+  const colorClass = acervoDataClass(item, fieldKey);
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong class="${colorClass}">${value}</strong>
+    </div>
+  `;
+}
+
+function renderAcervoTextField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      ${value}
+    </div>
+  `;
+}
+
+function renderAcervoManual(label, value, text) {
+  if (!value || !String(value).startsWith("http")) return "";
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <a href="${value}" target="_blank" rel="noopener">${text}</a>
+    </div>
+  `;
+}
+
 function updateCarousel() {
   cards = document.querySelectorAll(".card");
-
   if (!cards.length) return;
 
   cards.forEach((card, index) => {
@@ -45,26 +205,18 @@ function updateCarousel() {
     const farLeft = (current - 2 + cards.length) % cards.length;
     const farRight = (current + 2) % cards.length;
 
-    if (index === current) {
-      card.classList.add("center");
-    } else if (index === left) {
-      card.classList.add("left");
-    } else if (index === right) {
-      card.classList.add("right");
-    } else if (index === farLeft) {
-      card.classList.add("far-left");
-    } else if (index === farRight) {
-      card.classList.add("far-right");
-    } else {
-      card.classList.add("hidden");
-    }
+    if (index === current) card.classList.add("center");
+    else if (index === left) card.classList.add("left");
+    else if (index === right) card.classList.add("right");
+    else if (index === farLeft) card.classList.add("far-left");
+    else if (index === farRight) card.classList.add("far-right");
+    else card.classList.add("hidden");
   });
 }
 
 function next() {
   cards = document.querySelectorAll(".card");
   if (!cards.length) return;
-
   current = (current + 1) % cards.length;
   updateCarousel();
 }
@@ -72,7 +224,6 @@ function next() {
 function prev() {
   cards = document.querySelectorAll(".card");
   if (!cards.length) return;
-
   current = (current - 1 + cards.length) % cards.length;
   updateCarousel();
 }
@@ -117,7 +268,6 @@ function setupMainSwipe() {
   carousel.addEventListener("touchend", (event) => {
     endX = event.changedTouches[0].clientX;
     const diff = endX - startX;
-
     if (diff > 45) prev();
     if (diff < -45) next();
   });
@@ -130,12 +280,9 @@ function openScreen(id) {
 
   const screen = document.getElementById(id);
   if (!screen) return;
-
   screen.classList.add("active");
 
-  if (id === "home") {
-    updateCarousel();
-  }
+  if (id === "home") updateCarousel();
 
   if (id === "gases") {
     const gases = document.getElementById("gases");
@@ -164,9 +311,7 @@ function openScreen(id) {
     if (acervo) acervo.scrollTop = 0;
 
     const acervoSearch = document.getElementById("acervoSearch");
-    if (acervoSearch && !acervoSearch.value.trim()) {
-      renderAcervoIntro();
-    }
+    if (acervoSearch && !acervoSearch.value.trim()) renderAcervoIntro();
   }
 }
 
@@ -176,7 +321,6 @@ function renderGas(name) {
   const key = String(name || "").toUpperCase();
   const gas = gasData[key];
   const gasInfo = document.getElementById("gasInfo");
-
   if (!gasInfo) return;
 
   if (!gas) {
@@ -210,29 +354,18 @@ function renderGas(name) {
     <div class="info-row"><span>Campo:</span><br>${gas.campo || "-"}</div>
     <div class="info-row">
       <span>Tabela PT resumida:</span>
-      ${
-        ptRows
-          ? `<table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão</th></tr></thead><tbody>${ptRows}</tbody></table>`
-          : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`
-      }
+      ${ptRows ? `<table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão</th></tr></thead><tbody>${ptRows}</tbody></table>` : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`}
       <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
     </div>
   `;
 }
 
 function selectGas(name, element) {
-  document.querySelectorAll(".gas-chip").forEach((chip) => {
-    chip.classList.remove("active-gas");
-  });
-
-  if (element) {
-    element.classList.add("active-gas");
-  }
+  document.querySelectorAll(".gas-chip").forEach((chip) => chip.classList.remove("active-gas"));
+  if (element) element.classList.add("active-gas");
 
   const gasSearch = document.getElementById("gasSearch");
-  if (gasSearch) {
-    gasSearch.value = name;
-  }
+  if (gasSearch) gasSearch.value = name;
 
   renderGas(name);
 }
@@ -242,9 +375,7 @@ function searchGas() {
   if (!input) return;
 
   const value = input.value.trim();
-  if (value.length >= 2) {
-    renderGas(value);
-  }
+  if (value.length >= 2) renderGas(value);
 }
 
 /* ÍCONES DO MÓDULO ERROS */
@@ -285,9 +416,7 @@ function getCodes() {
   const key = activeBrand() + "|" + activeModel();
   const codes = errorCodesByModel[key];
 
-  if (Array.isArray(codes) && codes.length) {
-    return codes;
-  }
+  if (Array.isArray(codes) && codes.length) return codes;
 
   return [
     {
@@ -331,16 +460,12 @@ function renderCategoryCarousel() {
   const box = document.getElementById("categoryCarousel");
   if (!box) return;
 
-  box.innerHTML = errorCategories
-    .map((cat, index) => {
-      return `
-        <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
-          <div class="cat-icon">${cat.icon}</div>
-          <div class="cat-title">${cat.name}</div>
-        </div>
-      `;
-    })
-    .join("");
+  box.innerHTML = errorCategories.map((cat, index) => `
+    <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-title">${cat.name}</div>
+    </div>
+  `).join("");
 
   updateCategoryCarousel();
 }
@@ -351,32 +476,24 @@ function updateCategoryCarousel() {
 
   catCards.forEach((card, index) => {
     card.className = "category-card";
-
     const left = (catCurrent - 1 + catCards.length) % catCards.length;
     const right = (catCurrent + 1) % catCards.length;
 
-    if (index === catCurrent) {
-      card.classList.add("cat-center");
-    } else if (index === left) {
-      card.classList.add("cat-left");
-    } else if (index === right) {
-      card.classList.add("cat-right");
-    } else {
-      card.classList.add("cat-hidden");
-    }
+    if (index === catCurrent) card.classList.add("cat-center");
+    else if (index === left) card.classList.add("cat-left");
+    else if (index === right) card.classList.add("cat-right");
+    else card.classList.add("cat-hidden");
   });
 }
 
 function nextCategory() {
   if (!errorCategories.length) return;
-
   catCurrent = (catCurrent + 1) % errorCategories.length;
   updateCategoryCarousel();
 }
 
 function prevCategory() {
   if (!errorCategories.length) return;
-
   catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
   updateCategoryCarousel();
 }
@@ -425,16 +542,12 @@ function renderBrandCarousel() {
   const box = document.getElementById("brandCarousel");
   if (!box) return;
 
-  box.innerHTML = brands
-    .map((brand, index) => {
-      return `
-        <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
-          <div class="brand-title">${brand}</div>
-          <div class="brand-sub">${activeCategory()}</div>
-        </div>
-      `;
-    })
-    .join("");
+  box.innerHTML = brands.map((brand, index) => `
+    <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
+      <div class="brand-title">${brand}</div>
+      <div class="brand-sub">${activeCategory()}</div>
+    </div>
+  `).join("");
 
   updateBrandCarousel();
 }
@@ -445,26 +558,19 @@ function updateBrandCarousel() {
 
   brandCards.forEach((card, index) => {
     card.className = "brand-card";
-
     const left = (brandCurrent - 1 + brandCards.length) % brandCards.length;
     const right = (brandCurrent + 1) % brandCards.length;
 
-    if (index === brandCurrent) {
-      card.classList.add("brand-center");
-    } else if (index === left) {
-      card.classList.add("brand-left");
-    } else if (index === right) {
-      card.classList.add("brand-right");
-    } else {
-      card.classList.add("brand-hidden");
-    }
+    if (index === brandCurrent) card.classList.add("brand-center");
+    else if (index === left) card.classList.add("brand-left");
+    else if (index === right) card.classList.add("brand-right");
+    else card.classList.add("brand-hidden");
   });
 }
 
 function nextBrand() {
   const brands = brandsByCategory[activeCategory()] || [];
   if (!brands.length) return;
-
   brandCurrent = (brandCurrent + 1) % brands.length;
   updateBrandCarousel();
 }
@@ -472,7 +578,6 @@ function nextBrand() {
 function prevBrand() {
   const brands = brandsByCategory[activeCategory()] || [];
   if (!brands.length) return;
-
   brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
   updateBrandCarousel();
 }
@@ -485,7 +590,6 @@ function searchBrand() {
   if (value.length < 1) return;
 
   const brands = brandsByCategory[activeCategory()] || [];
-
   const index = brands.findIndex((brand) => {
     const cleanBrand = normalizeSearchText(brand);
     return cleanBrand.includes(value) || value.includes(cleanBrand);
@@ -506,9 +610,7 @@ function selectBrandAndOpenModel(index) {
   document.getElementById("codeStep").style.display = "none";
 
   const modelSearch = document.getElementById("modelSearch");
-  if (modelSearch) {
-    modelSearch.value = "";
-  }
+  if (modelSearch) modelSearch.value = "";
 
   renderModelCarousel();
 }
@@ -525,16 +627,12 @@ function renderModelCarousel() {
   const box = document.getElementById("modelCarousel");
   if (!box) return;
 
-  box.innerHTML = models
-    .map((model, index) => {
-      return `
-        <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
-          <div class="model-title">${model}</div>
-          <div class="model-sub">${brand}</div>
-        </div>
-      `;
-    })
-    .join("");
+  box.innerHTML = models.map((model, index) => `
+    <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
+      <div class="model-title">${model}</div>
+      <div class="model-sub">${brand}</div>
+    </div>
+  `).join("");
 
   updateModelCarousel();
   renderModelInfo();
@@ -546,19 +644,13 @@ function updateModelCarousel() {
 
   modelCards.forEach((card, index) => {
     card.className = "model-card";
-
     const left = (modelCurrent - 1 + modelCards.length) % modelCards.length;
     const right = (modelCurrent + 1) % modelCards.length;
 
-    if (index === modelCurrent) {
-      card.classList.add("model-center");
-    } else if (index === left) {
-      card.classList.add("model-left");
-    } else if (index === right) {
-      card.classList.add("model-right");
-    } else {
-      card.classList.add("model-hidden");
-    }
+    if (index === modelCurrent) card.classList.add("model-center");
+    else if (index === left) card.classList.add("model-left");
+    else if (index === right) card.classList.add("model-right");
+    else card.classList.add("model-hidden");
   });
 
   renderModelInfo();
@@ -567,7 +659,6 @@ function updateModelCarousel() {
 function nextModel() {
   const models = modelsByBrand[activeBrand()] || [];
   if (!models.length) return;
-
   modelCurrent = (modelCurrent + 1) % models.length;
   updateModelCarousel();
 }
@@ -575,7 +666,6 @@ function nextModel() {
 function prevModel() {
   const models = modelsByBrand[activeBrand()] || [];
   if (!models.length) return;
-
   modelCurrent = (modelCurrent - 1 + models.length) % models.length;
   updateModelCarousel();
 }
@@ -601,11 +691,14 @@ function searchModel() {
     modelCurrent = index;
     updateModelCarousel();
   } else {
-    document.getElementById("modelInfo").innerHTML = `
-      <h2>Modelo informado</h2>
-      <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
-      <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
-    `;
+    const modelInfo = document.getElementById("modelInfo");
+    if (modelInfo) {
+      modelInfo.innerHTML = `
+        <h2>Modelo informado</h2>
+        <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+        <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
+      `;
+    }
   }
 }
 
@@ -629,9 +722,7 @@ function selectModelAndOpenCodes(index) {
   document.getElementById("codeStep").style.display = "block";
 
   const codeSearch = document.getElementById("codeSearch");
-  if (codeSearch) {
-    codeSearch.value = "";
-  }
+  if (codeSearch) codeSearch.value = "";
 
   renderCodeCarousel();
 }
@@ -646,16 +737,12 @@ function renderCodeCarousel() {
   const box = document.getElementById("codeCarousel");
   if (!box) return;
 
-  box.innerHTML = codes
-    .map((item) => {
-      return `
-        <div class="code-card">
-          <div class="code-title">${item.code}</div>
-          <div class="code-sub">${item.title}</div>
-        </div>
-      `;
-    })
-    .join("");
+  box.innerHTML = codes.map((item) => `
+    <div class="code-card">
+      <div class="code-title">${item.code}</div>
+      <div class="code-sub">${item.title}</div>
+    </div>
+  `).join("");
 
   updateCodeCarousel();
   renderCodeInfo();
@@ -667,19 +754,13 @@ function updateCodeCarousel() {
 
   codeCards.forEach((card, index) => {
     card.className = "code-card";
-
     const left = (codeCurrent - 1 + codeCards.length) % codeCards.length;
     const right = (codeCurrent + 1) % codeCards.length;
 
-    if (index === codeCurrent) {
-      card.classList.add("code-center");
-    } else if (index === left) {
-      card.classList.add("code-left");
-    } else if (index === right) {
-      card.classList.add("code-right");
-    } else {
-      card.classList.add("code-hidden");
-    }
+    if (index === codeCurrent) card.classList.add("code-center");
+    else if (index === left) card.classList.add("code-left");
+    else if (index === right) card.classList.add("code-right");
+    else card.classList.add("code-hidden");
   });
 
   renderCodeInfo();
@@ -688,7 +769,6 @@ function updateCodeCarousel() {
 function nextCode() {
   const codes = getCodes();
   if (!codes.length) return;
-
   codeCurrent = (codeCurrent + 1) % codes.length;
   updateCodeCarousel();
 }
@@ -696,7 +776,6 @@ function nextCode() {
 function prevCode() {
   const codes = getCodes();
   if (!codes.length) return;
-
   codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
   updateCodeCarousel();
 }
@@ -716,16 +795,7 @@ function searchCode() {
 
   const index = codes.findIndex((item) => {
     const sourceText = formatSourceLevel(item.sourceLevel);
-    const fullText = normalizeSearchText([
-      item.code,
-      item.title,
-      item.cause,
-      item.test,
-      item.solution,
-      item.sourceLevel,
-      sourceText
-    ].join(" "));
-
+    const fullText = normalizeSearchText([item.code, item.title, item.cause, item.test, item.solution, item.sourceLevel, sourceText].join(" "));
     const cleanCode = normalizeSearchText(item.code);
     return fullText.includes(value) || value.includes(cleanCode);
   });
@@ -750,7 +820,6 @@ function renderCodeInfo() {
   const codeInfo = document.getElementById("codeInfo");
   const codes = getCodes();
   const item = codes[codeCurrent];
-
   if (!codeInfo || !item) return;
 
   const sourceText = formatSourceLevel(item.sourceLevel);
@@ -769,22 +838,43 @@ function renderCodeInfo() {
 
 /* ACERVO TÉCNICO */
 
+function acervoMatchesSearch(item, searchValue) {
+  const rawSearch = normalizeSearchText(searchValue);
+  const compactSearch = normalizeAcervoCodeText(searchValue);
+
+  if (compactSearch.length < 2) return false;
+
+  const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca : [];
+  const termos = [item.modelo, ...codigos].filter(Boolean);
+
+  return termos.some((term) => {
+    const rawTerm = normalizeSearchText(term);
+    const compactTerm = normalizeAcervoCodeText(term);
+    if (!compactTerm) return false;
+
+    const rawMatch = rawTerm.includes(rawSearch) || rawSearch.includes(rawTerm);
+    const compactMatch = compactTerm.includes(compactSearch) || compactSearch.includes(compactTerm);
+
+    return rawMatch || compactMatch;
+  });
+}
+
 function renderAcervoIntro() {
   const acervoInfo = document.getElementById("acervoInfo");
   if (!acervoInfo) return;
 
   acervoInfo.innerHTML = `
     <h2>Acervo Técnico</h2>
-    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina no campo acima.</div>
-    <div class="info-row"><span>Objetivo:</span><br>Organizar dados oficiais de manuais, instalação, manutenção, gás, corrente, tubulação, capacitor, placa eletrônica e observações técnicas por modelo.</div>
-    <div class="info-row"><span>Status:</span><br>Busca técnica ativa. Primeiro teste com o modelo de exemplo cadastrado no acervo.</div>
+    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da etiqueta da evaporadora ou condensadora.</div>
+    <div class="info-row"><span>Padrão da ficha:</span><br>O app exibe somente campos com dados técnicos úteis. Campos sem fonte confiável ficam ocultos.</div>
+    <div class="info-row"><span>Azul:</span><br>Dado oficial: fabricante, manual oficial, ficha oficial, INMETRO/ENCE ou etiqueta validada.</div>
+    <div class="info-row"><span>Verde:</span><br>Dado confiável, mas não oficial direto: distribuidor técnico autorizado ou fonte técnica vinculada.</div>
   `;
 }
 
 function searchAcervoTecnico() {
   const input = document.getElementById("acervoSearch");
   const acervoInfo = document.getElementById("acervoInfo");
-
   if (!input || !acervoInfo) return;
 
   const value = normalizeSearchText(input.value);
@@ -794,30 +884,14 @@ function searchAcervoTecnico() {
     return;
   }
 
-  const resultados = acervoTecnico.filter((item) => {
-    const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca.join(" ") : "";
-
-    const texto = normalizeSearchText([
-      item.marca,
-      item.modelo,
-      codigos,
-      item.linha,
-      item.tipo,
-      item.capacidade,
-      item.fluidoRefrigerante,
-      item.fonte,
-      item.status
-    ].join(" "));
-
-    return texto.includes(value);
-  });
+  const resultados = acervoTecnico.filter((item) => acervoMatchesSearch(item, input.value));
 
   if (!resultados.length) {
     acervoInfo.innerHTML = `
-      <h2>Nada encontrado</h2>
+      <h2>Modelo não cadastrado</h2>
       <div class="info-row"><span>Busca:</span><br>${input.value}</div>
-      <div class="info-row">Nenhum modelo cadastrado no Acervo Técnico contém esse termo.</div>
-      <div class="info-row"><span>Dica:</span><br>Digite o código exato da etiqueta ou parte do modelo. Exemplo de teste: EXEMPLO.</div>
+      <div class="info-row">Nenhum modelo/código cadastrado no Acervo Técnico contém esse termo.</div>
+      <div class="info-row"><span>Orientação:</span><br>Confira o código na etiqueta da evaporadora ou condensadora e tente novamente.</div>
     `;
     return;
   }
@@ -826,32 +900,33 @@ function searchAcervoTecnico() {
 }
 
 function renderAcervoItem(item) {
-  const manualInstalacao = item.manualInstalacao && String(item.manualInstalacao).startsWith("http")
-    ? `<a href="${item.manualInstalacao}" target="_blank" rel="noopener">Abrir manual de instalação</a>`
-    : safeValue(item.manualInstalacao, "Não cadastrado ainda");
-
-  const manualManutencao = item.manualManutencao && String(item.manualManutencao).startsWith("http")
-    ? `<a href="${item.manualManutencao}" target="_blank" rel="noopener">Abrir manual de manutenção/técnico</a>`
-    : safeValue(item.manualManutencao, "Não cadastrado ainda");
+  const ficha = [
+    renderAcervoField("Modelo", item.modelo, item, "modelo"),
+    renderAcervoField("Marca", item.marca, item, "marca"),
+    renderAcervoField("Linha", item.linha, item, "linha"),
+    renderAcervoField("Tipo", item.tipo, item, "tipo"),
+    renderAcervoField("Capacidade", item.capacidade, item, "capacidade"),
+    renderAcervoField("Tensão", item.tensao, item, "tensao"),
+    renderAcervoField("Fluido refrigerante", item.fluidoRefrigerante, item, "fluidoRefrigerante"),
+    renderAcervoField("Carga de gás", item.cargaGas, item, "cargaGas"),
+    renderAcervoField("Corrente", item.correnteNominal, item, "correnteNominal"),
+    renderAcervoField("Disjuntor", item.disjuntor, item, "disjuntor"),
+    renderAcervoField("Tubulação líquido / alta", item.tubulacaoAlta, item, "tubulacaoAlta"),
+    renderAcervoField("Tubulação sucção / baixa", item.tubulacaoBaixa, item, "tubulacaoBaixa"),
+    renderAcervoField("Superaquecimento", item.superaquecimento, item, "superaquecimento"),
+    renderAcervoField("Subresfriamento", item.subresfriamento, item, "subresfriamento"),
+    renderAcervoField("Comprimento máximo", item.comprimentoMaximo, item, "comprimentoMaximo"),
+    renderAcervoField("Desnível máximo", item.desnivelMaximo, item, "desnivelMaximo"),
+    renderAcervoField("Carga adicional", item.cargaAdicional, item, "cargaAdicional"),
+    renderAcervoManual("Manual de instalação", item.manualInstalacao, "Abrir manual de instalação"),
+    renderAcervoManual("Manual técnico/manutenção", item.manualManutencao, "Abrir manual técnico/manutenção"),
+    renderAcervoTextField("Fonte", item.fonte)
+  ].join("");
 
   return `
-    <h2>${safeValue(item.marca, "-")} - ${safeValue(item.modelo, "-")}</h2>
-    <div class="info-row"><span>Linha:</span><br>${safeValue(item.linha)}</div>
-    <div class="info-row"><span>Tipo de equipamento:</span><br>${safeValue(item.tipo)}</div>
-    <div class="info-row"><span>Capacidade:</span><br>${safeValue(item.capacidade)}</div>
-    <div class="info-row"><span>Ano/faixa de fabricação:</span><br>${safeValue(item.anoFabricacao, "Validar etiqueta/manual")}</div>
-    <div class="info-row"><span>Fluido refrigerante:</span><br>${safeValue(item.fluidoRefrigerante, "Validar etiqueta/manual")}</div>
-    <div class="info-row"><span>Corrente nominal / trabalho:</span><br>${safeValue(item.correnteNominal)}</div>
-    <div class="info-row"><span>Superaquecimento:</span><br>${safeValue(item.superaquecimento, "Validar procedimento técnico do fabricante")}</div>
-    <div class="info-row"><span>Subresfriamento:</span><br>${safeValue(item.subresfriamento, "Validar procedimento técnico do fabricante")}</div>
-    <div class="info-row"><span>Capacitor:</span><br>${safeValue(item.capacitor)}</div>
-    <div class="info-row"><span>Placa eletrônica:</span><br>${safeValue(item.placaEletronica)}</div>
-    <div class="info-row"><span>Tubulação líquido / alta:</span><br>${safeValue(item.tubulacaoAlta)}</div>
-    <div class="info-row"><span>Tubulação sucção / baixa:</span><br>${safeValue(item.tubulacaoBaixa)}</div>
-    <div class="info-row"><span>Manual de instalação:</span><br>${manualInstalacao}</div>
-    <div class="info-row"><span>Manual de manutenção/técnico:</span><br>${manualManutencao}</div>
-    <div class="info-row"><span>Fonte:</span><br>${safeValue(item.fonte, "Não informado")}</div>
-    <div class="info-row"><span>Status:</span><br>${safeValue(item.status, "Não informado")}</div>
+    <h2>${safeValue(item.modelo, "Equipamento")}</h2>
+    ${ficha}
+    <div class="note">Campos sem dado confiável ficam ocultos. Azul = oficial. Verde = fonte confiável não oficial direta.</div>
   `;
 }
 
@@ -871,7 +946,6 @@ function setupSwipe(id, prevFn, nextFn) {
   element.addEventListener("touchend", (event) => {
     ex = event.changedTouches[0].clientX;
     const diff = ex - sx;
-
     if (diff > 45) prevFn();
     if (diff < -45) nextFn();
   });
@@ -890,9 +964,7 @@ function initApp() {
   setupSwipe("codeCarousel", prevCode, nextCode);
 
   const acervoSearch = document.getElementById("acervoSearch");
-  if (acervoSearch) {
-    acervoSearch.addEventListener("input", searchAcervoTecnico);
-  }
+  if (acervoSearch) acervoSearch.addEventListener("input", searchAcervoTecnico);
 
   renderGas("R410A");
   renderCategoryCarousel();
