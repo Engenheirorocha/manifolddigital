@@ -5,7 +5,6 @@ const cards = document.querySelectorAll(".card");
 let current = 0;
 let startX = 0;
 let endX = 0;
-let lastTap = 0;
 
 let catCurrent = 0;
 let brandCurrent = 0;
@@ -27,7 +26,7 @@ const moduleKeywords = [
   },
   {
     id: "gases",
-    keys: ["gases", "gas", "gás", "refrigerante", "r410", "r22", "r32", "r290"]
+    keys: ["gases", "gas", "gás", "refrigerante", "r410", "r22", "r32", "r404", "r290"]
   },
   {
     id: "modelos",
@@ -67,7 +66,7 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-/* HOME / CARROSSEL */
+/* HOME / CARROSSEL PRINCIPAL */
 
 function updateCarousel() {
   cards.forEach((card, index) => {
@@ -105,15 +104,12 @@ function prev() {
 }
 
 function cardTap(index) {
-  const now = Date.now();
-
-  if (current === index && now - lastTap < 420) {
+  if (index === current) {
     openCurrentModule();
     return;
   }
 
   current = index;
-  lastTap = now;
   updateCarousel();
 }
 
@@ -123,11 +119,15 @@ function openCurrentModule() {
   if (!selectedCard) return;
 
   const moduleId = selectedCard.dataset.module;
+
+  if (!moduleId) return;
+
   openScreen(moduleId);
 }
 
 function searchHome() {
   const input = document.getElementById("homeSearch");
+
   if (!input) return;
 
   const value = normalizeText(input.value);
@@ -166,6 +166,7 @@ if (mainCarousel) {
 
   mainCarousel.addEventListener("touchend", (event) => {
     endX = event.changedTouches[0].clientX;
+
     const diff = endX - startX;
 
     if (diff > 45) prev();
@@ -173,7 +174,7 @@ if (mainCarousel) {
   });
 }
 
-/* TELAS */
+/* TROCA DE TELAS */
 
 function openScreen(id) {
   document.querySelectorAll(".screen").forEach((screen) => {
@@ -190,10 +191,18 @@ function openScreen(id) {
   screen.classList.add("active");
   screen.scrollTop = 0;
 
+  if (id === "home") {
+    updateCarousel();
+  }
+
   if (id === "gases") {
     renderGasList();
+
     const firstGas = Object.keys(getGasData())[0];
-    if (firstGas) renderGas(firstGas);
+
+    if (firstGas) {
+      renderGas(firstGas);
+    }
   }
 
   if (id === "erros") {
@@ -312,16 +321,22 @@ function selectGas(name, element) {
     chip.classList.remove("active-gas");
   });
 
-  if (element) element.classList.add("active-gas");
+  if (element) {
+    element.classList.add("active-gas");
+  }
 
   const gasSearch = document.getElementById("gasSearch");
-  if (gasSearch) gasSearch.value = name;
+
+  if (gasSearch) {
+    gasSearch.value = name;
+  }
 
   renderGas(name);
 }
 
 function searchGas() {
   const input = document.getElementById("gasSearch");
+
   if (!input) return;
 
   const value = input.value.trim();
@@ -331,7 +346,7 @@ function searchGas() {
   }
 }
 
-/* SVG DOS TIPOS DE EQUIPAMENTO */
+/* ÍCONES DOS TIPOS DE EQUIPAMENTO */
 
 function svgSplit() {
   return `
@@ -510,6 +525,7 @@ function updateCategoryCarousel() {
 
 function nextCategory() {
   const categories = getCategories();
+
   if (!categories.length) return;
 
   catCurrent = (catCurrent + 1) % categories.length;
@@ -518,6 +534,7 @@ function nextCategory() {
 
 function prevCategory() {
   const categories = getCategories();
+
   if (!categories.length) return;
 
   catCurrent = (catCurrent - 1 + categories.length) % categories.length;
@@ -526,6 +543,7 @@ function prevCategory() {
 
 function searchErrorType() {
   const input = document.getElementById("errorTypeSearch");
+
   if (!input) return;
 
   const value = normalizeText(input.value);
@@ -628,6 +646,7 @@ function updateBrandCarousel() {
 
 function nextBrand() {
   const brands = getBrandsByCategory()[activeCategory()] || [];
+
   if (!brands.length) return;
 
   brandCurrent = (brandCurrent + 1) % brands.length;
@@ -636,6 +655,7 @@ function nextBrand() {
 
 function prevBrand() {
   const brands = getBrandsByCategory()[activeCategory()] || [];
+
   if (!brands.length) return;
 
   brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
@@ -644,6 +664,7 @@ function prevBrand() {
 
 function searchBrand() {
   const input = document.getElementById("brandSearch");
+
   if (!input) return;
 
   const value = normalizeText(input.value);
@@ -672,7 +693,10 @@ function selectBrandAndOpenModel(index) {
   document.getElementById("codeStep").style.display = "none";
 
   const modelSearch = document.getElementById("modelSearch");
-  if (modelSearch) modelSearch.value = "";
+
+  if (modelSearch) {
+    modelSearch.value = "";
+  }
 
   renderModelCarousel();
 }
@@ -697,6 +721,7 @@ function renderModelCarousel() {
         <div class="model-sub">Cadastre em modelos.js</div>
       </div>
     `;
+
     renderModelInfo();
     return;
   }
@@ -743,6 +768,7 @@ function updateModelCarousel() {
 
 function nextModel() {
   const models = getModelsByBrand()[activeBrand()] || [];
+
   if (!models.length) return;
 
   modelCurrent = (modelCurrent + 1) % models.length;
@@ -751,6 +777,7 @@ function nextModel() {
 
 function prevModel() {
   const models = getModelsByBrand()[activeBrand()] || [];
+
   if (!models.length) return;
 
   modelCurrent = (modelCurrent - 1 + models.length) % models.length;
@@ -759,6 +786,7 @@ function prevModel() {
 
 function searchModel() {
   const input = document.getElementById("modelSearch");
+
   if (!input) return;
 
   const value = normalizeText(input.value);
@@ -797,7 +825,7 @@ function renderModelInfo() {
     <h2>${activeBrand() || "Marca"}</h2>
     <div class="info-row"><span>Tipo:</span><br>${activeCategory() || "-"}</div>
     <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${activeModel() || "-"}</div>
-    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo ou no botão ✓ para ver os códigos de erro.</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo para ver os códigos de erro.</div>
   `;
 }
 
@@ -809,7 +837,10 @@ function selectModelAndOpenCodes(index) {
   document.getElementById("codeStep").style.display = "block";
 
   const codeSearch = document.getElementById("codeSearch");
-  if (codeSearch) codeSearch.value = "";
+
+  if (codeSearch) {
+    codeSearch.value = "";
+  }
 
   renderCodeCarousel();
 }
@@ -867,6 +898,7 @@ function updateCodeCarousel() {
 
 function nextCode() {
   const codes = getCodes();
+
   if (!codes.length) return;
 
   codeCurrent = (codeCurrent + 1) % codes.length;
@@ -875,6 +907,7 @@ function nextCode() {
 
 function prevCode() {
   const codes = getCodes();
+
   if (!codes.length) return;
 
   codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
@@ -883,6 +916,7 @@ function prevCode() {
 
 function searchCode() {
   const input = document.getElementById("codeSearch");
+
   if (!input) return;
 
   const value = normalizeText(input.value);
@@ -934,7 +968,9 @@ function renderTest(testKey, element) {
     card.classList.remove("active");
   });
 
-  if (element) element.classList.add("active");
+  if (element) {
+    element.classList.add("active");
+  }
 
   const testResult = document.getElementById("testResult");
   const testes = getDiagnosticosData().testes || {};
@@ -1129,6 +1165,7 @@ function setupSwipe(id, prevFn, nextFn) {
 
   element.addEventListener("touchend", (event) => {
     ex = event.changedTouches[0].clientX;
+
     const diff = ex - sx;
 
     if (diff > 45) prevFn();
@@ -1143,7 +1180,10 @@ function initApp() {
   renderGasList();
 
   const firstGas = Object.keys(getGasData())[0];
-  if (firstGas) renderGas(firstGas);
+
+  if (firstGas) {
+    renderGas(firstGas);
+  }
 
   renderCategoryCarousel();
 
