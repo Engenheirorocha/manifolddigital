@@ -1,5 +1,6 @@
-   Extraído do HTML principal original.
-   Mantém a lógica existente e adiciona exibição da fonte/base dos erros.
+/* HVAC PRO - app.js
+   Versão estável com Acervo Técnico.
+   Mantém Gases e Erros funcionando e adiciona busca por modelo/código da máquina.
 */
 
 const gasData = window.gasData || {};
@@ -7,17 +8,28 @@ const errorCategories = window.errorCategories || [];
 const brandsByCategory = window.brandsByCategory || {};
 const modelsByBrand = window.modelsByBrand || {};
 const errorCodesByModel = window.errorCodesByModel || {};
+const acervoTecnico = window.acervoTecnico || [];
 
 const cards = document.querySelectorAll(".card");
-
 let current = 0;
 let startX = 0;
 let endX = 0;
-
 let catCurrent = 0;
 let brandCurrent = 0;
 let modelCurrent = 0;
 let codeCurrent = 0;
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function safeValue(value) {
+  return value || "Não informado no manual oficial";
+}
 
 function updateCarousel() {
   cards.forEach((card, index) => {
@@ -28,19 +40,12 @@ function updateCarousel() {
     const farLeft = (current - 2 + cards.length) % cards.length;
     const farRight = (current + 2) % cards.length;
 
-    if (index === current) {
-      card.classList.add("center");
-    } else if (index === left) {
-      card.classList.add("left");
-    } else if (index === right) {
-      card.classList.add("right");
-    } else if (index === farLeft) {
-      card.classList.add("far-left");
-    } else if (index === farRight) {
-      card.classList.add("far-right");
-    } else {
-      card.classList.add("hidden");
-    }
+    if (index === current) card.classList.add("center");
+    else if (index === left) card.classList.add("left");
+    else if (index === right) card.classList.add("right");
+    else if (index === farLeft) card.classList.add("far-left");
+    else if (index === farRight) card.classList.add("far-right");
+    else card.classList.add("hidden");
   });
 }
 
@@ -56,11 +61,9 @@ function prev() {
 
 function searchHome() {
   const input = document.getElementById("homeSearch");
-
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
-
+  const value = normalizeSearchText(input.value);
   if (value.length < 2) return;
 
   const map = [
@@ -68,11 +71,15 @@ function searchHome() {
     { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
     { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
     { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
-    { keys: ["modelos", "modelo", "equipamento"], index: 4 }
+    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
+    { keys: ["acervo", "manual", "manual tecnico", "manual técnico", "catalogo", "catálogo"], index: 5 }
   ];
 
   const found = map.find((item) => {
-    return item.keys.some((key) => key.includes(value) || value.includes(key));
+    return item.keys.some((key) => {
+      const cleanKey = normalizeSearchText(key);
+      return cleanKey.includes(value) || value.includes(cleanKey);
+    });
   });
 
   if (found) {
@@ -82,7 +89,6 @@ function searchHome() {
 }
 
 const carousel = document.getElementById("carousel");
-
 if (carousel) {
   carousel.addEventListener("touchstart", (event) => {
     startX = event.touches[0].clientX;
@@ -90,9 +96,7 @@ if (carousel) {
 
   carousel.addEventListener("touchend", (event) => {
     endX = event.changedTouches[0].clientX;
-
     const diff = endX - startX;
-
     if (diff > 45) prev();
     if (diff < -45) next();
   });
@@ -104,21 +108,20 @@ function openScreen(id) {
   });
 
   const screen = document.getElementById(id);
-
   if (!screen) return;
 
   screen.classList.add("active");
 
-  if (id === "home") {
-    updateCarousel();
-  }
+  if (id === "home") updateCarousel();
 
   if (id === "gases") {
-    document.getElementById("gases").scrollTop = 0;
+    const gases = document.getElementById("gases");
+    if (gases) gases.scrollTop = 0;
   }
 
   if (id === "erros") {
-    document.getElementById("erros").scrollTop = 0;
+    const erros = document.getElementById("erros");
+    if (erros) erros.scrollTop = 0;
 
     document.getElementById("typeStep").style.display = "block";
     document.getElementById("brandStep").style.display = "none";
@@ -126,6 +129,12 @@ function openScreen(id) {
     document.getElementById("codeStep").style.display = "none";
 
     renderCategoryCarousel();
+  }
+
+  if (id === "acervo") {
+    const acervo = document.getElementById("acervo");
+    if (acervo) acervo.scrollTop = 0;
+    renderAcervoIntro();
   }
 }
 
@@ -135,7 +144,6 @@ function renderGas(name) {
   const key = String(name || "").toUpperCase();
   const gas = gasData[key];
   const gasInfo = document.getElementById("gasInfo");
-
   if (!gasInfo) return;
 
   if (!gas) {
@@ -171,15 +179,7 @@ function renderGas(name) {
       <span>Tabela PT resumida:</span>
       ${
         ptRows
-          ? `<table class="pt-table">
-              <thead>
-                <tr>
-                  <th>Temp.</th>
-                  <th>Pressão</th>
-                </tr>
-              </thead>
-              <tbody>${ptRows}</tbody>
-            </table>`
+          ? `<table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão</th></tr></thead><tbody>${ptRows}</tbody></table>`
           : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`
       }
       <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
@@ -192,29 +192,20 @@ function selectGas(name, element) {
     chip.classList.remove("active-gas");
   });
 
-  if (element) {
-    element.classList.add("active-gas");
-  }
+  if (element) element.classList.add("active-gas");
 
   const gasSearch = document.getElementById("gasSearch");
-
-  if (gasSearch) {
-    gasSearch.value = name;
-  }
+  if (gasSearch) gasSearch.value = name;
 
   renderGas(name);
 }
 
 function searchGas() {
   const input = document.getElementById("gasSearch");
-
   if (!input) return;
 
   const value = input.value.trim();
-
-  if (value.length >= 2) {
-    renderGas(value);
-  }
+  if (value.length >= 2) renderGas(value);
 }
 
 /* ÍCONES */
@@ -255,9 +246,7 @@ function getCodes() {
   const key = activeBrand() + "|" + activeModel();
   const codes = errorCodesByModel[key];
 
-  if (Array.isArray(codes) && codes.length) {
-    return codes;
-  }
+  if (Array.isArray(codes) && codes.length) return codes;
 
   return [
     {
@@ -299,7 +288,6 @@ function formatSourceLevel(sourceLevel) {
 
 function renderCategoryCarousel() {
   const box = document.getElementById("categoryCarousel");
-
   if (!box) return;
 
   box.innerHTML = errorCategories
@@ -318,7 +306,6 @@ function renderCategoryCarousel() {
 
 function updateCategoryCarousel() {
   const catCards = document.querySelectorAll(".category-card");
-
   if (!catCards.length) return;
 
   catCards.forEach((card, index) => {
@@ -327,43 +314,37 @@ function updateCategoryCarousel() {
     const left = (catCurrent - 1 + catCards.length) % catCards.length;
     const right = (catCurrent + 1) % catCards.length;
 
-    if (index === catCurrent) {
-      card.classList.add("cat-center");
-    } else if (index === left) {
-      card.classList.add("cat-left");
-    } else if (index === right) {
-      card.classList.add("cat-right");
-    } else {
-      card.classList.add("cat-hidden");
-    }
+    if (index === catCurrent) card.classList.add("cat-center");
+    else if (index === left) card.classList.add("cat-left");
+    else if (index === right) card.classList.add("cat-right");
+    else card.classList.add("cat-hidden");
   });
 }
 
 function nextCategory() {
   if (!errorCategories.length) return;
-
   catCurrent = (catCurrent + 1) % errorCategories.length;
   updateCategoryCarousel();
 }
 
 function prevCategory() {
   if (!errorCategories.length) return;
-
   catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
   updateCategoryCarousel();
 }
 
 function searchErrorType() {
   const input = document.getElementById("errorTypeSearch");
-
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
-
+  const value = normalizeSearchText(input.value);
   if (value.length < 2) return;
 
   const index = errorCategories.findIndex((cat) => {
-    return cat.search.some((term) => term.includes(value) || value.includes(term));
+    return cat.search.some((term) => {
+      const cleanTerm = normalizeSearchText(term);
+      return cleanTerm.includes(value) || value.includes(cleanTerm);
+    });
   });
 
   if (index >= 0) {
@@ -375,7 +356,6 @@ function searchErrorType() {
 function selectTypeAndOpenBrand(index) {
   catCurrent = index;
   brandCurrent = 0;
-
   updateCategoryCarousel();
 
   document.getElementById("typeStep").style.display = "none";
@@ -396,7 +376,6 @@ function backToType() {
 function renderBrandCarousel() {
   const brands = brandsByCategory[activeCategory()] || [];
   const box = document.getElementById("brandCarousel");
-
   if (!box) return;
 
   box.innerHTML = brands
@@ -415,7 +394,6 @@ function renderBrandCarousel() {
 
 function updateBrandCarousel() {
   const brandCards = document.querySelectorAll(".brand-card");
-
   if (!brandCards.length) return;
 
   brandCards.forEach((card, index) => {
@@ -424,49 +402,37 @@ function updateBrandCarousel() {
     const left = (brandCurrent - 1 + brandCards.length) % brandCards.length;
     const right = (brandCurrent + 1) % brandCards.length;
 
-    if (index === brandCurrent) {
-      card.classList.add("brand-center");
-    } else if (index === left) {
-      card.classList.add("brand-left");
-    } else if (index === right) {
-      card.classList.add("brand-right");
-    } else {
-      card.classList.add("brand-hidden");
-    }
+    if (index === brandCurrent) card.classList.add("brand-center");
+    else if (index === left) card.classList.add("brand-left");
+    else if (index === right) card.classList.add("brand-right");
+    else card.classList.add("brand-hidden");
   });
 }
 
 function nextBrand() {
   const brands = brandsByCategory[activeCategory()] || [];
-
   if (!brands.length) return;
-
   brandCurrent = (brandCurrent + 1) % brands.length;
   updateBrandCarousel();
 }
 
 function prevBrand() {
   const brands = brandsByCategory[activeCategory()] || [];
-
   if (!brands.length) return;
-
   brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
   updateBrandCarousel();
 }
 
 function searchBrand() {
   const input = document.getElementById("brandSearch");
-
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
-
+  const value = normalizeSearchText(input.value);
   if (value.length < 1) return;
 
   const brands = brandsByCategory[activeCategory()] || [];
-
   const index = brands.findIndex((brand) => {
-    const cleanBrand = brand.toLowerCase();
+    const cleanBrand = normalizeSearchText(brand);
     return cleanBrand.includes(value) || value.includes(cleanBrand);
   });
 
@@ -485,10 +451,7 @@ function selectBrandAndOpenModel(index) {
   document.getElementById("codeStep").style.display = "none";
 
   const modelSearch = document.getElementById("modelSearch");
-
-  if (modelSearch) {
-    modelSearch.value = "";
-  }
+  if (modelSearch) modelSearch.value = "";
 
   renderModelCarousel();
 }
@@ -503,7 +466,6 @@ function renderModelCarousel() {
   const brand = activeBrand();
   const models = modelsByBrand[brand] || ["Modelo não cadastrado"];
   const box = document.getElementById("modelCarousel");
-
   if (!box) return;
 
   box.innerHTML = models
@@ -523,7 +485,6 @@ function renderModelCarousel() {
 
 function updateModelCarousel() {
   const modelCards = document.querySelectorAll(".model-card");
-
   if (!modelCards.length) return;
 
   modelCards.forEach((card, index) => {
@@ -532,15 +493,10 @@ function updateModelCarousel() {
     const left = (modelCurrent - 1 + modelCards.length) % modelCards.length;
     const right = (modelCurrent + 1) % modelCards.length;
 
-    if (index === modelCurrent) {
-      card.classList.add("model-center");
-    } else if (index === left) {
-      card.classList.add("model-left");
-    } else if (index === right) {
-      card.classList.add("model-right");
-    } else {
-      card.classList.add("model-hidden");
-    }
+    if (index === modelCurrent) card.classList.add("model-center");
+    else if (index === left) card.classList.add("model-left");
+    else if (index === right) card.classList.add("model-right");
+    else card.classList.add("model-hidden");
   });
 
   renderModelInfo();
@@ -548,28 +504,23 @@ function updateModelCarousel() {
 
 function nextModel() {
   const models = modelsByBrand[activeBrand()] || [];
-
   if (!models.length) return;
-
   modelCurrent = (modelCurrent + 1) % models.length;
   updateModelCarousel();
 }
 
 function prevModel() {
   const models = modelsByBrand[activeBrand()] || [];
-
   if (!models.length) return;
-
   modelCurrent = (modelCurrent - 1 + models.length) % models.length;
   updateModelCarousel();
 }
 
 function searchModel() {
   const input = document.getElementById("modelSearch");
-
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
+  const value = normalizeSearchText(input.value);
   const models = modelsByBrand[activeBrand()] || [];
 
   if (value.length < 1) {
@@ -578,7 +529,7 @@ function searchModel() {
   }
 
   const index = models.findIndex((model) => {
-    const cleanModel = model.toLowerCase();
+    const cleanModel = normalizeSearchText(model);
     return cleanModel.includes(value) || value.includes(cleanModel);
   });
 
@@ -596,7 +547,6 @@ function searchModel() {
 
 function renderModelInfo() {
   const modelInfo = document.getElementById("modelInfo");
-
   if (!modelInfo) return;
 
   modelInfo.innerHTML = `
@@ -615,10 +565,7 @@ function selectModelAndOpenCodes(index) {
   document.getElementById("codeStep").style.display = "block";
 
   const codeSearch = document.getElementById("codeSearch");
-
-  if (codeSearch) {
-    codeSearch.value = "";
-  }
+  if (codeSearch) codeSearch.value = "";
 
   renderCodeCarousel();
 }
@@ -631,7 +578,6 @@ function backToModel() {
 function renderCodeCarousel() {
   const codes = getCodes();
   const box = document.getElementById("codeCarousel");
-
   if (!box) return;
 
   box.innerHTML = codes
@@ -651,7 +597,6 @@ function renderCodeCarousel() {
 
 function updateCodeCarousel() {
   const codeCards = document.querySelectorAll(".code-card");
-
   if (!codeCards.length) return;
 
   codeCards.forEach((card, index) => {
@@ -660,15 +605,10 @@ function updateCodeCarousel() {
     const left = (codeCurrent - 1 + codeCards.length) % codeCards.length;
     const right = (codeCurrent + 1) % codeCards.length;
 
-    if (index === codeCurrent) {
-      card.classList.add("code-center");
-    } else if (index === left) {
-      card.classList.add("code-left");
-    } else if (index === right) {
-      card.classList.add("code-right");
-    } else {
-      card.classList.add("code-hidden");
-    }
+    if (index === codeCurrent) card.classList.add("code-center");
+    else if (index === left) card.classList.add("code-left");
+    else if (index === right) card.classList.add("code-right");
+    else card.classList.add("code-hidden");
   });
 
   renderCodeInfo();
@@ -676,28 +616,24 @@ function updateCodeCarousel() {
 
 function nextCode() {
   const codes = getCodes();
-
   if (!codes.length) return;
-
   codeCurrent = (codeCurrent + 1) % codes.length;
   updateCodeCarousel();
 }
 
 function prevCode() {
   const codes = getCodes();
-
   if (!codes.length) return;
-
   codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
   updateCodeCarousel();
 }
 
 function searchCode() {
   const input = document.getElementById("codeSearch");
-
+  const codeInfo = document.getElementById("codeInfo");
   if (!input) return;
 
-  const value = input.value.trim().toLowerCase();
+  const value = normalizeSearchText(input.value);
   const codes = getCodes();
 
   if (value.length < 1) {
@@ -706,15 +642,34 @@ function searchCode() {
   }
 
   const index = codes.findIndex((item) => {
-    const cleanCode = String(item.code || "").toLowerCase();
-    const cleanTitle = String(item.title || "").toLowerCase();
+    const sourceText = formatSourceLevel(item.sourceLevel);
+    const fullText = normalizeSearchText([
+      item.code,
+      item.title,
+      item.cause,
+      item.test,
+      item.solution,
+      item.sourceLevel,
+      sourceText
+    ].join(" "));
 
-    return cleanCode.includes(value) || cleanTitle.includes(value) || value.includes(cleanCode);
+    const cleanCode = normalizeSearchText(item.code);
+    return fullText.includes(value) || value.includes(cleanCode);
   });
 
   if (index >= 0) {
     codeCurrent = index;
     updateCodeCarousel();
+    return;
+  }
+
+  if (codeInfo) {
+    codeInfo.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum defeito deste modelo contém esse termo.</div>
+      <div class="info-row"><span>Dica:</span><br>Tente buscar por código, sensor, comunicação, compressor, ventilador, baixa carga, alta pressão, dreno ou placa.</div>
+    `;
   }
 }
 
@@ -722,7 +677,6 @@ function renderCodeInfo() {
   const codeInfo = document.getElementById("codeInfo");
   const codes = getCodes();
   const item = codes[codeCurrent];
-
   if (!codeInfo || !item) return;
 
   const sourceText = formatSourceLevel(item.sourceLevel);
@@ -739,11 +693,95 @@ function renderCodeInfo() {
   `;
 }
 
+/* ACERVO TÉCNICO */
+
+function renderAcervoIntro() {
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!acervoInfo) return;
+
+  acervoInfo.innerHTML = `
+    <h2>Acervo Técnico</h2>
+    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina para consultar dados técnicos refinados.</div>
+    <div class="info-row"><span>O que será exibido:</span><br>Máquina, linha, fluido refrigerante, corrente, superaquecimento, subresfriamento, capacitor, placa eletrônica, tubulações e manuais oficiais quando cadastrados.</div>
+    <div class="info-row"><span>Regra:</span><br>Quando o manual oficial não informar algum dado, o app mostrará “Não informado no manual oficial” ou “Validar etiqueta/manual”.</div>
+  `;
+}
+
+function searchAcervoTecnico() {
+  const input = document.getElementById("acervoSearch");
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!input || !acervoInfo) return;
+
+  const value = normalizeSearchText(input.value);
+
+  if (value.length < 2) {
+    renderAcervoIntro();
+    return;
+  }
+
+  const resultados = acervoTecnico.filter((item) => {
+    const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca.join(" ") : "";
+
+    const texto = normalizeSearchText([
+      item.marca,
+      item.modelo,
+      codigos,
+      item.linha,
+      item.tipo,
+      item.capacidade,
+      item.fluidoRefrigerante
+    ].join(" "));
+
+    return texto.includes(value);
+  });
+
+  if (!resultados.length) {
+    acervoInfo.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum modelo cadastrado no Acervo Técnico contém esse termo.</div>
+      <div class="info-row"><span>Dica:</span><br>Digite o código exato da etiqueta da máquina ou parte do modelo.</div>
+    `;
+    return;
+  }
+
+  acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
+}
+
+function renderAcervoItem(item) {
+  const manualInstalacao = item.manualInstalacao && item.manualInstalacao.startsWith("http")
+    ? `<a href="${item.manualInstalacao}" target="_blank" rel="noopener">Abrir manual de instalação</a>`
+    : safeValue(item.manualInstalacao);
+
+  const manualManutencao = item.manualManutencao && item.manualManutencao.startsWith("http")
+    ? `<a href="${item.manualManutencao}" target="_blank" rel="noopener">Abrir manual de manutenção/técnico</a>`
+    : safeValue(item.manualManutencao);
+
+  return `
+    <h2>${safeValue(item.marca)} - ${safeValue(item.modelo)}</h2>
+    <div class="info-row"><span>Linha:</span><br>${safeValue(item.linha)}</div>
+    <div class="info-row"><span>Tipo de equipamento:</span><br>${safeValue(item.tipo)}</div>
+    <div class="info-row"><span>Capacidade:</span><br>${safeValue(item.capacidade)}</div>
+    <div class="info-row"><span>Ano/faixa de fabricação:</span><br>${safeValue(item.anoFabricacao)}</div>
+    <div class="info-row"><span>Fluido refrigerante:</span><br>${safeValue(item.fluidoRefrigerante)}</div>
+    <div class="info-row"><span>Corrente nominal / ideal de trabalho:</span><br>${safeValue(item.correnteNominal)}</div>
+    <div class="info-row"><span>Superaquecimento:</span><br>${safeValue(item.superaquecimento)}</div>
+    <div class="info-row"><span>Subresfriamento:</span><br>${safeValue(item.subresfriamento)}</div>
+    <div class="info-row"><span>Capacitor:</span><br>${safeValue(item.capacitor)}</div>
+    <div class="info-row"><span>Placa eletrônica:</span><br>${safeValue(item.placaEletronica)}</div>
+    <div class="info-row"><span>Tubulação líquido / alta:</span><br>${safeValue(item.tubulacaoAlta)}</div>
+    <div class="info-row"><span>Tubulação sucção / baixa:</span><br>${safeValue(item.tubulacaoBaixa)}</div>
+    <div class="info-row"><span>Manual de instalação:</span><br>${manualInstalacao}</div>
+    <div class="info-row"><span>Manual de manutenção/técnico:</span><br>${manualManutencao}</div>
+    <div class="info-row"><span>Fonte:</span><br>${safeValue(item.fonte)}</div>
+    <div class="info-row"><span>Status:</span><br>${safeValue(item.status)}</div>
+  `;
+}
+
 /* SWIPE DOS CARROSSÉIS INTERNOS */
 
 function setupSwipe(id, prevFn, nextFn) {
   const element = document.getElementById(id);
-
   if (!element) return;
 
   let sx = 0;
@@ -755,9 +793,7 @@ function setupSwipe(id, prevFn, nextFn) {
 
   element.addEventListener("touchend", (event) => {
     ex = event.changedTouches[0].clientX;
-
     const diff = ex - sx;
-
     if (diff > 45) prevFn();
     if (diff < -45) nextFn();
   });
