@@ -1,5 +1,5 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   CORRECAO ESTRUTURAL - BUSCA POR CODIGO EXATO
+   ETAPA 2/3 - ENRIQUECIMENTO COM BUSCA EXATA
 
    INSTRUCAO:
    1. Abra databases/acervo_tecnico.js
@@ -8,9 +8,10 @@
    4. Commit changes
    5. Abra o app com ?v=6000
 
-   O QUE FOI CORRIGIDO:
-   - Codigo exato de etiqueta agora aponta para ficha individual.
-   - Gree, Midea, Elgin, Komeco, LG, Samsung, Consul, Electrolux, Philco, TCL, Agratto, Daikin e Hitachi foram separados por codigo/potencia quando havia codigo claro.
+   O QUE FOI FEITO:
+   - Mantida a correcao de busca por codigo exato.
+   - Adicionada Etapa 2/3 com mais fichas individuais.
+   - Consul, Electrolux, Philco, Britania, TCL, Agratto, Daikin, Hitachi, Hisense e EOS ganharam reforcos.
    - Cadastro generico de familia continua existindo somente para busca por marca/linha, sem roubar busca de codigo exato.
    - Sem funcoes, sem bloco extra, sem mexer no app.js.
 */
@@ -830,5 +831,340 @@ window.acervoTecnico = [
     "nivelConfianca": "OFICIAL",
     "status": "OFICIAL",
     "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "tensao": "OFICIAL" }
-  }
-];
+  },
+
+  /* =========================================================
+     ETAPA 2/3 - REFORCO DE BUSCA EXATA E DADOS TECNICOS
+     ========================================================= */
+
+  {
+    "marca": "Consul",
+    "modelo": "Consul CBK12DBXCJ Triple Inverter Cobre Frio 12000 BTU",
+    "codigoBusca": ["CBK12DBXCJ", "CBK12DB", "CONSUL CBK12DBXCJ", "CONSUL TRIPLE INVERTER", "CONSUL 12000 TRIPLE"],
+    "linha": "Triple Inverter Cobre Frio",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia conforme rotacao do compressor e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
+    "observacaoTecnica": "Validar fluido, carga, corrente, disjuntor e tubulacao na etiqueta da condensadora.",
+    "manualInstalacao": "https://www.consul.com.br/ar-condicionado-split-consul-triple-inverter-cobre-frio-12000-btus-cbk12dbxcj/p",
+    "manualManutencao": "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    "fonte": "Base tecnica HVAC PRO - Consul CBK12DBXCJ",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Consul",
+    "modelo": "Consul Janela CCB07 7500 BTU",
+    "codigoBusca": ["CCB07", "CONSUL CCB07", "CONSUL JANELA 7500", "JANELA CONSUL 7500"],
+    "linha": "Janela",
+    "tipo": "Ar-condicionado de janela",
+    "capacidade": "7500 BTU/h",
+    "correnteNominal": "Validar etiqueta do modelo exato",
+    "correnteTrabalho": "Convencional: medir em regime estabilizado e comparar com etiqueta",
+    "capacitor": "Pode usar capacitor conforme projeto; validar esquema eletrico do modelo exato",
+    "observacaoTecnica": "Em janela, conferir tensao, corrente e capacitor diretamente na etiqueta e no esquema eletrico do equipamento.",
+    "manualInstalacao": "https://www.consul.com.br/eletrodomesticos/ar-condicionado/ar-condicionado-janela",
+    "manualManutencao": "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    "fonte": "Base tecnica HVAC PRO - Consul Janela CCB07",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteNominal": "INFORMACAO_SUGERIDA", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Consul",
+    "modelo": "Consul Janela CCN10 10000 BTU",
+    "codigoBusca": ["CCN10", "CONSUL CCN10", "CONSUL JANELA 10000", "JANELA CONSUL 10000"],
+    "linha": "Janela",
+    "tipo": "Ar-condicionado de janela",
+    "capacidade": "10000 BTU/h",
+    "correnteNominal": "Validar etiqueta do modelo exato",
+    "correnteTrabalho": "Convencional: medir em regime estabilizado e comparar com etiqueta",
+    "capacitor": "Pode usar capacitor conforme projeto; validar esquema eletrico do modelo exato",
+    "observacaoTecnica": "Em janela, conferir tensao, corrente e capacitor diretamente na etiqueta e no esquema eletrico do equipamento.",
+    "manualInstalacao": "https://www.consul.com.br/eletrodomesticos/ar-condicionado/ar-condicionado-janela",
+    "manualManutencao": "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    "fonte": "Base tecnica HVAC PRO - Consul Janela CCN10",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteNominal": "INFORMACAO_SUGERIDA", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Electrolux",
+    "modelo": "Electrolux JI12R / JE12R Color Adapt Inverter 12000 BTU Quente Frio",
+    "codigoBusca": ["JI12R", "JE12R", "JI12R/JE12R", "ELECTROLUX JI12R", "ELECTROLUX JE12R", "ELECTROLUX COLOR ADAPT 12000"],
+    "linha": "Color Adapt Inverter",
+    "tipo": "Split Hi Wall Inverter Quente/Frio",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "observacaoTecnica": "Validar carga de fluido, corrente e tubulacao na etiqueta da unidade externa.",
+    "manualInstalacao": "https://loja.electrolux.com.br/ar-condicionado-split-electrolux-inverter-12000-btus-color-adapt-quente-frio-ji12r-je12r/p",
+    "manualManutencao": "https://cuida.electrolux.com.br/guias-e-manuais",
+    "fonte": "Base tecnica HVAC PRO - Electrolux JI12R JE12R",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Electrolux",
+    "modelo": "Electrolux Piso Teto / Cassete Comercial Leve - busca por linha",
+    "codigoBusca": ["ELECTROLUX PISO TETO", "PISO TETO ELECTROLUX", "ELECTROLUX CASSETE", "ELECTROLUX CASSETTE", "ELECTROLUX COMERCIAL", "ELECTROLUX 36000", "ELECTROLUX 48000", "ELECTROLUX 60000"],
+    "linha": "Piso Teto / Cassete / Comercial leve",
+    "tipo": "Comercial leve",
+    "correnteTrabalho": "Comercial leve: corrente varia por capacidade, modo de operacao e carga termica",
+    "capacitor": "Validar esquema eletrico do modelo exato",
+    "manualInstalacao": "https://cuida.electrolux.com.br/guias-e-manuais",
+    "manualManutencao": "https://cuida.electrolux.com.br/guias-e-manuais",
+    "fonte": "Base tecnica HVAC PRO - Electrolux comercial leve",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Philco",
+    "modelo": "Philco PAC12QC Split Inverter 12000 BTU",
+    "codigoBusca": ["PAC12QC", "PHILCO PAC12QC", "PHILCO SPLIT INVERTER 12000", "PHILCO 12000"],
+    "linha": "Split Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia conforme rotacao do compressor e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "observacaoTecnica": "Validar fluido, carga, disjuntor e tubulacao na etiqueta da condensadora.",
+    "manualInstalacao": "https://www.philco.com.br/ar-condicionado-split-12000-pac12qc/p",
+    "manualManutencao": "https://www.philco.com.br/ar-condicionado-split-12000-pac12qc/p",
+    "fonte": "Base tecnica HVAC PRO - Philco PAC12QC",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Philco",
+    "modelo": "Philco Portatil PAC12000F5 12000 BTU",
+    "codigoBusca": ["PAC12000F5", "PHILCO PAC12000F5", "PHILCO PORTATIL 12000", "PHILCO PORTÁTIL 12000"],
+    "linha": "Portatil",
+    "tipo": "Ar-condicionado portatil",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Portatil: medir em regime estabilizado e comparar com etiqueta",
+    "capacitor": "Validar esquema eletrico do modelo exato",
+    "observacaoTecnica": "Em portatil, verificar exaustao, dreno, limpeza e etiqueta antes de diagnosticar baixa eficiencia.",
+    "manualInstalacao": "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    "manualManutencao": "https://www.philco.com.br/climatizacao/ar-condicionado/portatil",
+    "fonte": "Base tecnica HVAC PRO - Philco PAC12000F5",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA", "observacaoTecnica": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Britania",
+    "modelo": "Britania Prime Air Inverter 9000 BTU - busca por codigo/capacidade",
+    "codigoBusca": ["BRITANIA 9000", "BRITÂNIA 9000", "PRIME AIR 9000", "BRITANIA PRIME AIR 9000", "BRITANIA INVERTER 9000"],
+    "linha": "Prime Air Split Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "9000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por rotacao e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "manualManutencao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "fonte": "Base tecnica HVAC PRO - Britania Prime Air 9000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Britania",
+    "modelo": "Britania Prime Air Inverter 18000 BTU - busca por codigo/capacidade",
+    "codigoBusca": ["BRITANIA 18000", "BRITÂNIA 18000", "PRIME AIR 18000", "BRITANIA PRIME AIR 18000", "BRITANIA INVERTER 18000"],
+    "linha": "Prime Air Split Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "18000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por rotacao e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "manualManutencao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "fonte": "Base tecnica HVAC PRO - Britania Prime Air 18000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Britania",
+    "modelo": "Britania Prime Air Inverter 24000 BTU - busca por codigo/capacidade",
+    "codigoBusca": ["BRITANIA 24000", "BRITÂNIA 24000", "PRIME AIR 24000", "BRITANIA PRIME AIR 24000", "BRITANIA INVERTER 24000"],
+    "linha": "Prime Air Split Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "24000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por rotacao e carga termica",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "manualManutencao": "https://www.britania.com.br/climatizacao/ar-condicionado",
+    "fonte": "Base tecnica HVAC PRO - Britania Prime Air 24000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "TCL",
+    "modelo": "TCL Serie A2 Inverter TAC-12CSA2-INV 12000 BTU",
+    "codigoBusca": ["TAC-12CSA2-INV", "TAC12CSA2INV", "TCL A2 12000", "TCL 12000", "TCL INVERTER 12000"],
+    "linha": "Serie A2 Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia conforme carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.tcl.com/br/pt/air-conditioners/series-a2-inverter",
+    "manualManutencao": "https://www.tcl.com/br/pt/air-conditioners/series-a2-inverter",
+    "fonte": "Base tecnica HVAC PRO - TCL Serie A2 12000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "TCL",
+    "modelo": "TCL Serie A2 Inverter TAC-18CSA2-INV 18000 BTU",
+    "codigoBusca": ["TAC-18CSA2-INV", "TAC18CSA2INV", "TCL A2 18000", "TCL 18000", "TCL INVERTER 18000"],
+    "linha": "Serie A2 Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "18000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia conforme carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.tcl.com/br/pt/air-conditioners/series-a2-inverter",
+    "manualManutencao": "https://www.tcl.com/br/pt/air-conditioners/series-a2-inverter",
+    "fonte": "Base tecnica HVAC PRO - TCL Serie A2 18000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Agratto",
+    "modelo": "Agratto LIV Inverter TOP LCST09F 9000 BTU Frio",
+    "codigoBusca": ["LCST09F", "LCST09F-02I", "LCST09F02I", "AGRATTO LIV 9000", "AGRATTO 9000", "AGRATTO INVERTER 9000"],
+    "linha": "LIV Inverter TOP",
+    "tipo": "Split Hi Wall Inverter Frio",
+    "capacidade": "9000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.agratto.com.br/ar-condicionado/residencial/liv",
+    "manualManutencao": "https://www.agratto.com.br/ar-condicionado/residencial/liv",
+    "fonte": "Base tecnica HVAC PRO - Agratto LIV 9000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Agratto",
+    "modelo": "Agratto LIV Inverter TOP LCST18F 18000 BTU Frio",
+    "codigoBusca": ["LCST18F", "LCST18F-02I", "LCST18F02I", "AGRATTO LIV 18000", "AGRATTO 18000", "AGRATTO INVERTER 18000"],
+    "linha": "LIV Inverter TOP",
+    "tipo": "Split Hi Wall Inverter Frio",
+    "capacidade": "18000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.agratto.com.br/ar-condicionado/residencial/liv",
+    "manualManutencao": "https://www.agratto.com.br/ar-condicionado/residencial/liv",
+    "fonte": "Base tecnica HVAC PRO - Agratto LIV 18000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Hisense",
+    "modelo": "Hisense Hi-Smart Inverter 9000 BTU - busca por capacidade",
+    "codigoBusca": ["HISENSE 9000", "HISENSE HI SMART 9000", "HI-SMART 9000", "HISENSE INVERTER 9000"],
+    "linha": "Hi-Smart Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "9000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.hisense.com.br/ar-condicionado/split-hi-smart/",
+    "manualManutencao": "https://www.hisense.com.br/ar-condicionado/split-hi-smart/",
+    "fonte": "Base tecnica HVAC PRO - Hisense Hi-Smart 9000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "Hisense",
+    "modelo": "Hisense Hi-Smart Inverter 12000 BTU - busca por capacidade",
+    "codigoBusca": ["HISENSE 12000", "HISENSE HI SMART 12000", "HI-SMART 12000", "HISENSE INVERTER 12000"],
+    "linha": "Hi-Smart Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "12000 BTU/h",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://www.hisense.com.br/ar-condicionado/split-hi-smart/",
+    "manualManutencao": "https://www.hisense.com.br/ar-condicionado/split-hi-smart/",
+    "fonte": "Base tecnica HVAC PRO - Hisense Hi-Smart 12000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "EOS",
+    "modelo": "EOS Master Inverter R32 9000 BTU",
+    "codigoBusca": ["EOS 9000", "EOS MASTER 9000", "EOS MASTER INVERTER 9000", "EOS R32 9000"],
+    "linha": "Master Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "9000 BTU/h",
+    "fluidoRefrigerante": "R32",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://eos.com.br/ar-condicionado-eos-master-inverter/",
+    "manualManutencao": "https://eos.com.br/downloads/",
+    "fonte": "Base tecnica HVAC PRO - EOS Master 9000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO_SUGERIDA" }
+  },
+
+  {
+    "marca": "EOS",
+    "modelo": "EOS Master Inverter R32 12000 BTU",
+    "codigoBusca": ["EOS 12000", "EOS MASTER 12000", "EOS MASTER INVERTER 12000", "EOS R32 12000"],
+    "linha": "Master Inverter",
+    "tipo": "Split Hi Wall Inverter",
+    "capacidade": "12000 BTU/h",
+    "fluidoRefrigerante": "R32",
+    "correnteTrabalho": "Inverter: corrente varia por carga termica e modo de operacao",
+    "capacitor": "Inverter: validar placa/diagrama do modelo exato",
+    "manualInstalacao": "https://eos.com.br/ar-condicionado-eos-master-inverter/",
+    "manualManutencao": "https://eos.com.br/downloads/",
+    "fonte": "Base tecnica HVAC PRO - EOS Master 12000",
+    "fonteTipo": "FABRICANTE_OFICIAL",
+    "nivelConfianca": "OFICIAL",
+    "status": "OFICIAL",
+    "confiancaCampos": { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL", "correnteTrabalho": "INFORMACAO_SUGERIDA", "capacitor": "INFORMACAO
