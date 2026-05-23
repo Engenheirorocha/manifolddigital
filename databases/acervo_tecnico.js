@@ -1,20 +1,32 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   ARQUIVO DE RESTAURACAO FUNCIONAL
+   DADOS TECNICOS - ETAPA 1/3
 
    INSTRUCAO:
    1. Abra databases/acervo_tecnico.js
    2. Apague TUDO
    3. Cole este arquivo inteiro
    4. Commit changes
-   5. Abra o app com ?v=5800
+   5. Abra o app com ?v=5900
 
-   IMPORTANTE:
-   - NAO mexer no app.js
-   - NAO mexer no index.html
-   - NAO mexer no style.css
-   - Este arquivo NAO tem funcoes
-   - Este arquivo NAO tem bloco extra depois do array
+   NAO MEXER:
+   - app.js
+   - index.html
+   - style.css
+
+   REGRAS:
+   - Sem funcoes dentro do banco.
+   - Sem bloco extra depois do array.
    - Estrutura simples e estavel: window.acervoTecnico = [ ... ];
+   - Cada dado tecnico tem sua propria confianca em confiancaCampos.
+
+   CORES:
+   - OFICIAL = azul
+   - CONFIAVEL_NAO_OFICIAL = verde
+   - INFORMACAO_SUGERIDA = branco
+
+   ETAPA 1/3:
+   Enriquecimento tecnico dos modelos principais:
+   Midea, Gree, LG, Samsung, Elgin e Komeco.
 */
 
 window.acervoTecnico = [
@@ -28,10 +40,17 @@ window.acervoTecnico = [
     tensao: "220V",
     fluidoRefrigerante: "R32",
     cargaGas: "9000: 320 g ate 5 m | 12000: 440 g ate 5 m",
+    correnteNominal: "Validar etiqueta da unidade externa AGVCJ",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    disjuntor: "Validar tabela do manual e instalacao eletrica local",
+    capacitor: "Inverter: nao considerar capacitor de partida do compressor como item padrao; validar diagrama/placa do modelo",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "25 m",
     desnivelMaximo: "10 m",
+    superaquecimento: "Validar procedimento no manual tecnico ou etiqueta do equipamento",
+    subresfriamento: "Validar procedimento no manual tecnico ou etiqueta do equipamento",
+    observacaoTecnica: "Usar vacuo, balanca e carga por peso. Conferir etiqueta da condensadora antes de completar fluido.",
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     fonte: "Base tecnica HVAC PRO - Midea Xtreme Save AI Connect",
@@ -39,18 +58,10 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL",
-      tensao: "OFICIAL",
-      fluidoRefrigerante: "OFICIAL",
-      cargaGas: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
-      comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "OFICIAL",
+      cargaGas: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA",
+      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL",
+      superaquecimento: "INFORMACAO_SUGERIDA", subresfriamento: "INFORMACAO_SUGERIDA", observacaoTecnica: "CONFIAVEL_NAO_OFICIAL"
     }
   },
 
@@ -63,13 +74,16 @@ window.acervoTecnico = [
     capacidade: "9000 / 12000 / 18000 / 24000 BTU/h conforme modelo",
     tensao: "220V",
     fluidoRefrigerante: "R32",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-inverter-24000-btus-xtremesave-quente-e-frio-midea.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-inverter-24000-btus-xtremesave-quente-e-frio-midea.pdf",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    capacitor: "Inverter: nao considerar capacitor de partida do compressor como item padrao; validar diagrama/placa do modelo",
+    observacaoTecnica: "Validar carga de fluido, corrente, disjuntor e tubulacao na etiqueta do conjunto evaporadora/condensadora.",
+    manualInstalacao: "https://www.midea.com/content/dam/midea-aem/br/climatizacao/hiwall/xtreme-white-novo/Manual%20de%20usu%C3%A1rio_Xtreme%20Save%20Connect.pdf",
+    manualManutencao: "https://www.midea.com/content/dam/midea-aem/br/climatizacao/hiwall/xtreme-white-novo/Manual%20de%20usu%C3%A1rio_Xtreme%20Save%20Connect.pdf",
     fonte: "Base tecnica HVAC PRO - Midea Xtreme Save Connect",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "tensao": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", fluidoRefrigerante: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -78,13 +92,17 @@ window.acervoTecnico = [
     codigoBusca: ["MIDEA MULTI", "MULTI INVERTER", "FREEMATCH", "FREE MATCH", "42AGMSB", "42MGMSB", "40KVAQ", "40KVBQ", "42BQ", "MIDEA MULTISPLIT"],
     linha: "Multi Inverter / FreeMatch",
     tipo: "Multi Split Inverter / Hi Wall / Cassete / Built-in conforme combinacao",
+    fluidoRefrigerante: "Validar modelo exato no manual da unidade externa",
+    correnteTrabalho: "Sistema multi inverter: corrente varia conforme combinacao de evaporadoras e carga termica",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
+    observacaoTecnica: "Para multi split, conferir combinacao permitida de evaporadoras, carga adicional e comprimento por circuito no manual.",
     manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-multisplit-instalacao.pdf",
     fonte: "Base tecnica HVAC PRO - Midea Multi Inverter FreeMatch",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", fluidoRefrigerante: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "OFICIAL" }
   },
 
   {
@@ -94,13 +112,15 @@ window.acervoTecnico = [
     linha: "Piso Teto Inverter",
     tipo: "Split Piso Teto",
     capacidade: "36000 / 48000 / 60000 BTU/h conforme modelo",
+    correnteTrabalho: "Inverter/comercial leve: medir em operacao estabilizada e validar etiqueta",
+    capacitor: "Validar esquema eletrico do modelo exato",
     manualInstalacao: "https://conteudo.midea.com.br/manuais/",
     manualManutencao: "https://conteudo.midea.com.br/manuais/",
     fonte: "Base tecnica HVAC PRO - Midea Piso Teto",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -114,10 +134,16 @@ window.acervoTecnico = [
     fluidoRefrigerante: "R32",
     cargaGas: "9000: 550 g | 12000: 630 g | 18000: 940 g | 24000: 1100 g",
     correnteNominal: "9000: 6 A | 12000: 10,6 A | 18000: 13,5 A | 24000: 13,5 A",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura ambiente e carga termica",
+    disjuntor: "Validar tabela do manual e instalacao eletrica local",
+    capacitor: "Inverter: nao considerar capacitor de partida do compressor como item padrao; validar diagrama/placa do modelo",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "9000: 3/8 pol. | 12000/18000/24000: 1/2 pol.",
     comprimentoMaximo: "9000: 15 m | 12000: 20 m | 18000/24000: 25 m",
     desnivelMaximo: "10 m",
+    superaquecimento: "Validar procedimento no manual tecnico ou pela leitura em operacao estabilizada",
+    subresfriamento: "Validar procedimento no manual tecnico ou pela leitura em operacao estabilizada",
+    observacaoTecnica: "Antes de completar fluido, confirmar carga na etiqueta e verificar vazamento. Priorizar carga por peso.",
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     fonte: "Base tecnica HVAC PRO - Gree G-Diamond Auto Inverter",
@@ -125,19 +151,9 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL",
-      fluidoRefrigerante: "OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL",
-      cargaGas: "CONFIAVEL_NAO_OFICIAL",
-      correnteNominal: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
-      comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL",
+      tensao: "CONFIAVEL_NAO_OFICIAL", cargaGas: "CONFIAVEL_NAO_OFICIAL", correnteNominal: "CONFIAVEL_NAO_OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA",
+      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL", superaquecimento: "INFORMACAO_SUGERIDA", subresfriamento: "INFORMACAO_SUGERIDA", observacaoTecnica: "CONFIAVEL_NAO_OFICIAL"
     }
   },
 
@@ -147,13 +163,16 @@ window.acervoTecnico = [
     codigoBusca: ["GREE G PRIME", "G-PRIME", "G-PRIME INVERTER", "G-PRIME INVERTER COMPACT", "G PRIME INVERTER COMPACT", "GREE G-PRIME COMPACT"],
     linha: "G-Prime Inverter Compact",
     tipo: "Split Hi Wall Inverter",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura ambiente e carga termica",
+    capacitor: "Inverter: validar placa/diagrama antes de substituir componente",
+    observacaoTecnica: "Para carga, bitola, disjuntor e corrente nominal, validar tabela do manual G-Prime do codigo exato.",
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
     fonte: "Base tecnica HVAC PRO - Gree G-Prime Inverter Compact",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -162,13 +181,15 @@ window.acervoTecnico = [
     codigoBusca: ["GREE PISO TETO", "GREE CASSETE", "GREE CASSETTE", "GREE MULTISPLIT", "GREE MULTI SPLIT", "GREE G-MAX", "G-MAX MULTISPLIT", "PISO TETO GREE", "CASSETE GREE", "CASSETTE GREE", "MULTI SPLIT GREE"],
     linha: "Piso Teto / Cassete / G-Max Multisplit",
     tipo: "Comercial leve / Multi Split conforme linha",
+    correnteTrabalho: "Comercial leve/multisplit: corrente varia por combinacao, modo e carga termica",
+    capacitor: "Validar esquema eletrico do modelo exato",
     manualInstalacao: "https://gree.com.br/manuais/",
     manualManutencao: "https://gree.com.br/manuais/",
     fonte: "Base tecnica HVAC PRO - Gree Comercial Leve",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -180,8 +201,13 @@ window.acervoTecnico = [
     capacidade: "12000 BTU/h",
     tensao: "220V",
     fluidoRefrigerante: "R410A",
+    correnteNominal: "Validar etiqueta da unidade externa S4-Q12JA315",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    disjuntor: "Validar manual do codigo exato e instalacao local",
+    capacitor: "Inverter: nao considerar capacitor de partida do compressor como item padrao; validar placa/diagrama do modelo",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
+    observacaoTecnica: "Para fluido, carga, bitola e disjuntor, priorizar etiqueta da unidade externa ou manual do codigo exato.",
     manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-split/s4-q12ja315/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "Base tecnica HVAC PRO - LG S4-Q12JA315",
@@ -189,15 +215,8 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL",
-      tensao: "OFICIAL",
-      fluidoRefrigerante: "INFORMACAO_SUGERIDA",
-      tubulacaoAlta: "INFORMACAO_SUGERIDA",
-      tubulacaoBaixa: "INFORMACAO_SUGERIDA"
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL",
+      fluidoRefrigerante: "INFORMACAO_SUGERIDA", correnteNominal: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", tubulacaoAlta: "INFORMACAO_SUGERIDA", tubulacaoBaixa: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA"
     }
   },
 
@@ -209,13 +228,16 @@ window.acervoTecnico = [
     tipo: "Split Hi Wall Inverter Quente/Frio",
     capacidade: "12000 BTU/h",
     tensao: "220V",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
+    observacaoTecnica: "Validar carga de fluido, bitolas, corrente e disjuntor no manual do codigo exato.",
     manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-residencial-inverter/s4-w12ja31a/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "Base tecnica HVAC PRO - LG S4-W12JA31A",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "tensao": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -224,13 +246,15 @@ window.acervoTecnico = [
     codigoBusca: ["LG DUAL INVERTER AI", "LG DUAL INVERTER VOICE", "LG ARTCOOL", "ARTCOOL", "LG MULTI SPLIT", "LG MULTISPLIT", "LG PORTATIL", "LG PORTÁTIL", "LG 9000", "LG 18000", "LG 24000", "LG 30000"],
     linha: "Dual Inverter / Artcool / Multi Split / Portatil",
     tipo: "Split Hi Wall / Multi Split / Portatil conforme modelo",
+    correnteTrabalho: "Corrente varia por capacidade e tecnologia; validar etiqueta do modelo exato",
+    capacitor: "Validar diagrama eletrico do modelo exato",
     manualInstalacao: "https://www.lg.com/br/suporte/manuais-sistema/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "Base tecnica HVAC PRO - LG linhas complementares",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -240,13 +264,18 @@ window.acervoTecnico = [
     linha: "WindFree",
     tipo: "Split Hi Wall Inverter",
     capacidade: "12000 BTU/h",
+    correnteNominal: "Validar etiqueta da unidade externa AR12MVPXAWKNAZ",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    disjuntor: "Validar manual do codigo exato e instalacao local",
+    capacitor: "Inverter: nao considerar capacitor de partida do compressor como item padrao; validar placa/diagrama do modelo",
+    observacaoTecnica: "Usar suporte Samsung pelo codigo exato para confirmar manual, carga de fluido e dados eletricos.",
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     fonte: "Base tecnica HVAC PRO - Samsung AR12MVPXAWKNAZ",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", correnteNominal: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -256,13 +285,16 @@ window.acervoTecnico = [
     linha: "WindFree AI",
     tipo: "Split Hi Wall Inverter Wi-Fi",
     capacidade: "12000 BTU/h",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
+    observacaoTecnica: "Validar fluido, carga, corrente e disjuntor no suporte Samsung pelo codigo do modelo.",
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     fonte: "Base tecnica HVAC PRO - Samsung AR12DYFABWKNAZ",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", observacaoTecnica: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -272,13 +304,15 @@ window.acervoTecnico = [
     linha: "WindFree",
     tipo: "Split Hi Wall Inverter",
     capacidade: "12000 BTU/h",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12DXFAAWKXAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12DXFAAWKXAZ/",
     fonte: "Base tecnica HVAC PRO - Samsung AR12DXFAAWKXAZ",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -287,13 +321,15 @@ window.acervoTecnico = [
     codigoBusca: ["SAMSUNG WINDFREE", "WINDFREE POWER VOLT", "WINDFREE POWERVOLT", "SAMSUNG DIGITAL INVERTER", "SAMSUNG WIND FREE", "SAMSUNG CONNECT", "AR09", "AR12", "AR18", "AR24", "SAMSUNG 9000", "SAMSUNG 18000", "SAMSUNG 24000"],
     linha: "WindFree / Digital Inverter / PowerVolt",
     tipo: "Split Hi Wall Inverter",
+    correnteTrabalho: "Corrente varia por capacidade e tecnologia; validar etiqueta do modelo exato",
+    capacitor: "Validar placa/diagrama do modelo exato",
     manualInstalacao: "https://www.samsung.com/br/support/",
     manualManutencao: "https://www.samsung.com/br/support/",
     fonte: "Base tecnica HVAC PRO - Samsung linhas complementares",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -305,12 +341,16 @@ window.acervoTecnico = [
     capacidade: "12000 BTU/h",
     tensao: "220V / monofasico",
     fluidoRefrigerante: "R32",
+    cargaGas: "Validar etiqueta da condensadora HJFE/HJFC 12",
     correnteNominal: "6,7 A corrente maxima",
+    correnteTrabalho: "Inverter: medir em operacao estabilizada e comparar com etiqueta",
     disjuntor: "10 A",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "15 m",
     desnivelMaximo: "7 m",
+    observacaoTecnica: "Equipamento com R32; observar area minima, ventilacao e seguranca para fluido inflamavel.",
     manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-12000-btus-frio-wifi-220v/p",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Base tecnica HVAC PRO - Elgin Eco Inverter II",
@@ -318,19 +358,9 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL",
-      fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL",
-      correnteNominal: "CONFIAVEL_NAO_OFICIAL",
-      disjuntor: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
-      comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL",
+      tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", cargaGas: "INFORMACAO_SUGERIDA", correnteNominal: "CONFIAVEL_NAO_OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "CONFIAVEL_NAO_OFICIAL", capacitor: "INFORMACAO_SUGERIDA",
+      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL", observacaoTecnica: "CONFIAVEL_NAO_OFICIAL"
     }
   },
 
@@ -343,12 +373,16 @@ window.acervoTecnico = [
     capacidade: "9000 BTU/h",
     tensao: "220V",
     fluidoRefrigerante: "R32",
+    cargaGas: "Validar etiqueta da condensadora HJFE/HJFC 09",
     correnteNominal: "7,3 A corrente maxima",
+    correnteTrabalho: "Inverter: medir em operacao estabilizada e comparar com etiqueta",
     disjuntor: "10 A",
+    capacitor: "Inverter: validar placa/diagrama do modelo exato antes de substituir componente",
     tubulacaoAlta: "1/4 pol.",
     tubulacaoBaixa: "3/8 pol.",
     comprimentoMaximo: "15 m",
     desnivelMaximo: "7 m",
+    observacaoTecnica: "Equipamento com R32; observar area minima, ventilacao e seguranca para fluido inflamavel.",
     manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-9000-btus-frio-wifi-220v/p",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Base tecnica HVAC PRO - Elgin Eco Inverter II 9000",
@@ -356,19 +390,9 @@ window.acervoTecnico = [
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
     confiancaCampos: {
-      marca: "OFICIAL",
-      modelo: "OFICIAL",
-      linha: "OFICIAL",
-      tipo: "OFICIAL",
-      capacidade: "OFICIAL",
-      tensao: "CONFIAVEL_NAO_OFICIAL",
-      fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL",
-      correnteNominal: "CONFIAVEL_NAO_OFICIAL",
-      disjuntor: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL",
-      tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL",
-      comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL",
-      desnivelMaximo: "CONFIAVEL_NAO_OFICIAL"
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL",
+      tensao: "CONFIAVEL_NAO_OFICIAL", fluidoRefrigerante: "CONFIAVEL_NAO_OFICIAL", cargaGas: "INFORMACAO_SUGERIDA", correnteNominal: "CONFIAVEL_NAO_OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "CONFIAVEL_NAO_OFICIAL", capacitor: "INFORMACAO_SUGERIDA",
+      tubulacaoAlta: "CONFIAVEL_NAO_OFICIAL", tubulacaoBaixa: "CONFIAVEL_NAO_OFICIAL", comprimentoMaximo: "CONFIAVEL_NAO_OFICIAL", desnivelMaximo: "CONFIAVEL_NAO_OFICIAL", observacaoTecnica: "CONFIAVEL_NAO_OFICIAL"
     }
   },
 
@@ -378,13 +402,15 @@ window.acervoTecnico = [
     codigoBusca: ["ELGIN CASSETE", "ELGIN CASSETTE", "CASSETE ELGIN", "CASSETTE ELGIN", "ELGIN PISO TETO", "PISO TETO ELGIN", "ELGIN 36000", "ELGIN 48000", "ELGIN 60000"],
     linha: "Cassete / Piso Teto Eco Inverter",
     tipo: "Comercial leve",
+    correnteTrabalho: "Comercial leve: corrente varia por capacidade, modo e carga termica",
+    capacitor: "Validar esquema eletrico do modelo exato",
     manualInstalacao: "https://www.elgin.com.br/manuals",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Base tecnica HVAC PRO - Elgin comercial leve",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -395,15 +421,23 @@ window.acervoTecnico = [
     tipo: "Split Hi Wall Inverter",
     capacidade: "9000 BTU/h",
     fluidoRefrigerante: "A2L baixa inflamabilidade conforme manual da linha",
-    tubulacaoAlta: "Descarga: 1/4 pol. (6,35 mm)",
-    tubulacaoBaixa: "Succao: 1/2 pol. (12,7 mm)",
+    cargaGas: "Validar etiqueta da unidade externa KOHI 09",
+    correnteNominal: "Validar etiqueta do conjunto KOHI 09QC 1HV",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    disjuntor: "Validar tabela eletrica do manual e instalacao local",
+    capacitor: "Inverter: validar manual tecnico/diagrama antes de substituir componente",
+    tubulacaoAlta: "Conforme tabela oficial da linha KOHI; validar modelo exato",
+    tubulacaoBaixa: "Conforme tabela oficial da linha KOHI; validar modelo exato",
+    observacaoTecnica: "Manual da linha KOHI informa fluido A2L e tabela de tubulacoes por modelo; confirmar codigo antes da instalacao.",
     manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
     manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
     fonte: "Base tecnica HVAC PRO - Komeco KOHI 09",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL", "tubulacaoAlta": "OFICIAL", "tubulacaoBaixa": "OFICIAL" }
+    confiancaCampos: {
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL", cargaGas: "INFORMACAO_SUGERIDA", correnteNominal: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", tubulacaoAlta: "OFICIAL", tubulacaoBaixa: "OFICIAL", observacaoTecnica: "OFICIAL"
+    }
   },
 
   {
@@ -414,15 +448,23 @@ window.acervoTecnico = [
     tipo: "Split Hi Wall Inverter",
     capacidade: "12000 BTU/h",
     fluidoRefrigerante: "A2L baixa inflamabilidade conforme manual da linha",
-    tubulacaoAlta: "Descarga: 3/8 pol. (9,52 mm)",
-    tubulacaoBaixa: "Succao: 1/4 pol. (6,35 mm)",
+    cargaGas: "Validar etiqueta da unidade externa KOHI 12",
+    correnteNominal: "Validar etiqueta do conjunto KOHI 12QC 1HV",
+    correnteTrabalho: "Inverter: corrente varia conforme rotacao do compressor, temperatura e carga termica",
+    disjuntor: "Validar tabela eletrica do manual e instalacao local",
+    capacitor: "Inverter: validar manual tecnico/diagrama antes de substituir componente",
+    tubulacaoAlta: "Conforme tabela oficial da linha KOHI; validar modelo exato",
+    tubulacaoBaixa: "Conforme tabela oficial da linha KOHI; validar modelo exato",
+    observacaoTecnica: "Manual da linha KOHI informa fluido A2L e tabela de tubulacoes por modelo; confirmar codigo antes da instalacao.",
     manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
     manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
     fonte: "Base tecnica HVAC PRO - Komeco KOHI 12",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL", "tubulacaoAlta": "OFICIAL", "tubulacaoBaixa": "OFICIAL" }
+    confiancaCampos: {
+      marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL", cargaGas: "INFORMACAO_SUGERIDA", correnteNominal: "INFORMACAO_SUGERIDA", correnteTrabalho: "INFORMACAO_SUGERIDA", disjuntor: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA", tubulacaoAlta: "OFICIAL", tubulacaoBaixa: "OFICIAL", observacaoTecnica: "OFICIAL"
+    }
   },
 
   {
@@ -431,13 +473,15 @@ window.acervoTecnico = [
     codigoBusca: ["KOMECO PISO TETO", "KOMECO CASSETE", "KOMECO CASSETTE", "KOMECO KOP", "KOMECO KOC", "KOMECO KOHV", "KOP", "KOC", "KOHV", "KOMECO COMERCIAL"],
     linha: "Piso Teto / Cassete / Hi Wall",
     tipo: "Comercial leve / Split Hi Wall conforme modelo",
+    correnteTrabalho: "Comercial leve: corrente varia por capacidade, modo e carga termica",
+    capacitor: "Validar esquema eletrico do modelo exato",
     manualInstalacao: "https://www.komeco.com.br/portaltecnico/",
     manualManutencao: "https://www.komeco.com.br/portaltecnico/",
     fonte: "Base tecnica HVAC PRO - Komeco linhas complementares",
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", correnteTrabalho: "INFORMACAO_SUGERIDA", capacitor: "INFORMACAO_SUGERIDA" }
   },
 
   {
@@ -454,7 +498,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -469,7 +513,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -485,7 +529,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
 
   {
@@ -500,7 +544,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -517,7 +561,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "tensao": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL" }
   },
 
   {
@@ -533,7 +577,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
 
   {
@@ -549,7 +593,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
 
   {
@@ -566,7 +610,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -581,7 +625,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -598,7 +642,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -614,7 +658,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
 
   {
@@ -631,7 +675,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "tensao": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", tensao: "OFICIAL" }
   },
 
   {
@@ -646,7 +690,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -663,7 +707,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -680,7 +724,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -695,7 +739,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -710,7 +754,7 @@ window.acervoTecnico = [
     fonteTipo: "CONFIAVEL_NAO_OFICIAL",
     nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
     status: "CONFIAVEL_NAO_OFICIAL",
-    confiancaCampos: { "marca": "CONFIAVEL_NAO_OFICIAL", "modelo": "CONFIAVEL_NAO_OFICIAL", "linha": "CONFIAVEL_NAO_OFICIAL", "tipo": "CONFIAVEL_NAO_OFICIAL" }
+    confiancaCampos: { marca: "CONFIAVEL_NAO_OFICIAL", modelo: "CONFIAVEL_NAO_OFICIAL", linha: "CONFIAVEL_NAO_OFICIAL", tipo: "CONFIAVEL_NAO_OFICIAL" }
   },
 
   {
@@ -726,7 +770,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -743,7 +787,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL", "fluidoRefrigerante": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL", fluidoRefrigerante: "OFICIAL" }
   },
 
   {
@@ -758,7 +802,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -773,7 +817,7 @@ window.acervoTecnico = [
     fonteTipo: "CONFIAVEL_NAO_OFICIAL",
     nivelConfianca: "CONFIAVEL_NAO_OFICIAL",
     status: "CONFIAVEL_NAO_OFICIAL",
-    confiancaCampos: { "marca": "CONFIAVEL_NAO_OFICIAL", "modelo": "CONFIAVEL_NAO_OFICIAL", "linha": "CONFIAVEL_NAO_OFICIAL", "tipo": "CONFIAVEL_NAO_OFICIAL" }
+    confiancaCampos: { marca: "CONFIAVEL_NAO_OFICIAL", modelo: "CONFIAVEL_NAO_OFICIAL", linha: "CONFIAVEL_NAO_OFICIAL", tipo: "CONFIAVEL_NAO_OFICIAL" }
   },
 
   {
@@ -788,7 +832,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -803,7 +847,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL" }
   },
 
   {
@@ -819,7 +863,7 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "capacidade": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", capacidade: "OFICIAL" }
   },
 
   {
@@ -835,6 +879,6 @@ window.acervoTecnico = [
     fonteTipo: "FABRICANTE_OFICIAL",
     nivelConfianca: "OFICIAL",
     status: "OFICIAL",
-    confiancaCampos: { "marca": "OFICIAL", "modelo": "OFICIAL", "linha": "OFICIAL", "tipo": "OFICIAL", "tensao": "OFICIAL" }
+    confiancaCampos: { marca: "OFICIAL", modelo: "OFICIAL", linha: "OFICIAL", tipo: "OFICIAL", tensao: "OFICIAL" }
   }
 ];
