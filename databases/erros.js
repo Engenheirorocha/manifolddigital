@@ -1,7 +1,7 @@
 /* HVAC PRO - databases/erros.js
-   LOTE 1: Midea, Springer, Carrier, Samsung e LG.
+   LOTE 2: mantém Lote 1 e adiciona Gree, Elgin, Daikin, Fujitsu e Panasonic.
    Base para consulta técnica em campo.
-   Regra: usar fonte oficial quando confirmada; quando não confirmada por manual específico, marcar como VALIDAR_MANUAL_MODELO.
+   Regra: quando não confirmado por manual específico do modelo, marcar como VALIDAR_MANUAL_MODELO.
 */
 
 const defeitosComuns = [
@@ -102,6 +102,8 @@ const defeitosComuns = [
     sourceLevel: "DIAGNOSTICO_CAMPO"
   }
 ];
+
+/* LOTE 1 */
 
 const baseMideaSplit = [
   {
@@ -479,18 +481,294 @@ const baseMideaJanela = [
   }
 ];
 
+/* LOTE 2 */
+
+const baseGree = [
+  {
+    code: "E1",
+    title: "Alta pressão / proteção do sistema",
+    cause: "Proteção por alta pressão, condensação elevada, condensadora suja, ventilador externo fraco ou excesso de fluido.",
+    test: "Verificar pressão de alta, limpeza da condensadora, ventilador externo, recirculação de ar quente e carga de fluido.",
+    solution: "Limpar condensadora, corrigir ventilação, remover obstruções e ajustar carga de fluido conforme etiqueta/manual.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E2",
+    title: "Proteção anticongelamento",
+    cause: "Evaporadora com temperatura muito baixa por filtro sujo, baixa vazão de ar, baixa carga ou sensor com falha.",
+    test: "Verificar filtros, turbina, evaporadora, pressão de sucção, superaquecimento e sensor de serpentina.",
+    solution: "Limpar evaporadora/filtros, corrigir ventilação, verificar carga e substituir sensor se necessário.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E5",
+    title: "Proteção de sobrecorrente",
+    cause: "Corrente elevada por compressor pesado, alimentação instável, pressão alta ou módulo com falha.",
+    test: "Medir corrente, tensão, pressão de trabalho, compressor, ventilação e placa/módulo.",
+    solution: "Corrigir alimentação, ventilação, carga de fluido ou avaliar compressor/placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E6",
+    title: "Comunicação",
+    cause: "Falha de comunicação entre unidade interna e externa.",
+    test: "Verificar cabo de comunicação, bornes, alimentação, aterramento, sequência de ligação e placas.",
+    solution: "Corrigir interligação, reapertar bornes, refazer conexão ou avaliar placas.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "F0",
+    title: "Falta de refrigerante / baixa carga",
+    cause: "Possível vazamento, baixa carga de fluido ou proteção por baixa pressão.",
+    test: "Verificar vazamentos, pressão de sucção, superaquecimento, subresfriamento e temperatura de descarga.",
+    solution: "Corrigir vazamento, fazer vácuo e carregar fluido conforme etiqueta/manual.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "H6",
+    title: "Ventilador interno sem resposta",
+    cause: "Motor interno travado, chicote rompido, sensor Hall sem retorno ou placa com falha.",
+    test: "Verificar turbina, motor, conector, tensão de alimentação, retorno Hall e placa.",
+    solution: "Corrigir turbina/motor/chicote ou substituir placa/motor conforme teste.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  }
+];
+
+const baseElgin = [
+  {
+    code: "E1",
+    title: "Sensor ambiente",
+    cause: "Sensor de temperatura ambiente aberto, em curto, desconectado ou fora da faixa.",
+    test: "Medir resistência NTC, verificar conector e chicote na placa.",
+    solution: "Reconectar, corrigir chicote ou substituir sensor.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E2",
+    title: "Sensor serpentina",
+    cause: "Sensor de serpentina da evaporadora com falha.",
+    test: "Medir resistência do sensor e verificar fixação/conector.",
+    solution: "Substituir sensor se fora da curva ou corrigir conexão.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E3",
+    title: "Ventilador interno",
+    cause: "Motor ventilador interno, capacitor, chicote ou placa com falha.",
+    test: "Verificar motor, capacitor quando houver, alimentação, chicote e placa.",
+    solution: "Corrigir motor/capacitor/chicote ou avaliar placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E5",
+    title: "Comunicação / proteção",
+    cause: "Falha de comunicação entre unidades, alimentação incorreta ou proteção do sistema.",
+    test: "Conferir cabo de comunicação, borneira, tensão, aterramento e placas.",
+    solution: "Corrigir interligação, alimentação ou avaliar placas.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "F0",
+    title: "Proteção / baixa carga",
+    cause: "Possível baixa carga de fluido, proteção por pressão ou falha de sensor conforme linha.",
+    test: "Verificar pressão, vazamento, sensores, superaquecimento e subresfriamento.",
+    solution: "Corrigir vazamento/carga ou sensor conforme diagnóstico.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  }
+];
+
+const baseDaikin = [
+  {
+    code: "U4",
+    title: "Comunicação",
+    cause: "Falha de comunicação entre unidade interna e externa.",
+    test: "Verificar interligação, alimentação, polaridade, bornes, aterramento e placas.",
+    solution: "Corrigir comunicação/interligação ou substituir placa confirmada defeituosa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "A1",
+    title: "Placa da unidade interna",
+    cause: "Anomalia na placa da unidade interna ou falha de controle.",
+    test: "Verificar alimentação, fusível, conectores, sensores e sinais da placa interna.",
+    solution: "Corrigir alimentação/conexões ou avaliar substituição/reparo da placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "A3",
+    title: "Dreno / nível de água",
+    cause: "Falha no sistema de drenagem, boia, bomba de dreno ou nível de água.",
+    test: "Verificar bandeja, boia, bomba de dreno, tubulação, queda e obstruções.",
+    solution: "Limpar dreno, corrigir instalação, testar bomba e boia.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "A5",
+    title: "Proteção da serpentina",
+    cause: "Proteção anticongelamento ou alta temperatura na serpentina.",
+    test: "Verificar filtros, evaporadora, ventilador, carga de fluido, sensor e fluxo de ar.",
+    solution: "Corrigir fluxo de ar, limpeza, carga de fluido ou sensor.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "L5",
+    title: "Sobrecorrente inverter",
+    cause: "Sobrecorrente no compressor, placa inverter ou alimentação.",
+    test: "Medir compressor, corrente, tensão, barramento DC e placa inverter.",
+    solution: "Corrigir alimentação ou avaliar compressor/placa inverter.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "E7",
+    title: "Ventilador externo",
+    cause: "Falha no motor ventilador externo, chicote, hélice ou placa externa.",
+    test: "Verificar motor externo, conector, tensão, hélice travada e placa.",
+    solution: "Corrigir motor, chicote, hélice ou placa externa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  }
+];
+
+const baseFujitsu = [
+  {
+    code: "COM",
+    title: "Erro de comunicação",
+    cause: "Falha de comunicação entre placas interna e externa.",
+    test: "Verificar cabo de interligação, bornes, tensão, aterramento e placa.",
+    solution: "Corrigir interligação, alimentação ou avaliar placas.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "SENSOR",
+    title: "Erro de sensor",
+    cause: "Sensor ambiente, sensor de serpentina ou sensor externo fora da faixa.",
+    test: "Medir sensores NTC, verificar conectores, chicote e fixação.",
+    solution: "Substituir sensor defeituoso ou corrigir conexão.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "FAN",
+    title: "Erro ventilador",
+    cause: "Motor ventilador interno/externo com falha, retorno ausente ou placa sem comando.",
+    test: "Verificar motor, chicote, alimentação, hélice/turbina e retorno de rotação.",
+    solution: "Corrigir motor/chicote ou avaliar placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "TIMER",
+    title: "Erro indicado por LEDs",
+    cause: "Alguns modelos Fujitsu indicam erro por combinação de LEDs, não por código alfanumérico simples.",
+    test: "Contar piscadas dos LEDs Operation/Timer/Economy e comparar com manual do modelo.",
+    solution: "Aplicar diagnóstico conforme tabela específica do manual do modelo.",
+    sourceLevel: "OFICIAL_FUJITSU_MANUAL_LED"
+  }
+];
+
+const basePanasonic = [
+  {
+    code: "H11",
+    title: "Comunicação",
+    cause: "Falha de comunicação entre unidade interna e externa.",
+    test: "Verificar cabo de comunicação, bornes, alimentação, aterramento e placas.",
+    solution: "Corrigir interligação, alimentação ou avaliar placas.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "H14",
+    title: "Sensor ambiente interno",
+    cause: "Sensor de temperatura ambiente interno com falha.",
+    test: "Medir resistência NTC, verificar conector e chicote.",
+    solution: "Substituir sensor ou corrigir conexão.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "H15",
+    title: "Sensor compressor / externo",
+    cause: "Sensor da unidade externa ou compressor com falha conforme linha.",
+    test: "Verificar sensor externo, chicote, conexão e placa.",
+    solution: "Substituir sensor ou corrigir chicote/placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "H19",
+    title: "Ventilador interno",
+    cause: "Falha no motor ventilador interno ou retorno de rotação.",
+    test: "Verificar motor, conector, tensão, turbina travada e placa.",
+    solution: "Corrigir motor, chicote, turbina ou placa.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "H23",
+    title: "Sensor serpentina interna",
+    cause: "Sensor de serpentina interna com falha.",
+    test: "Medir sensor NTC, verificar fixação e conector.",
+    solution: "Substituir sensor ou corrigir chicote.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "F91",
+    title: "Ciclo de refrigeração",
+    cause: "Falha no ciclo de refrigeração, baixa carga, compressor, válvula ou obstrução.",
+    test: "Verificar pressões, superaquecimento, subresfriamento, vazamento, compressor e válvula.",
+    solution: "Corrigir vazamento/carga, restrição ou componente do ciclo conforme diagnóstico.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  },
+  {
+    code: "F95",
+    title: "Alta pressão / proteção externa",
+    cause: "Pressão elevada, condensadora suja, ventilador externo fraco ou sobrecarga térmica.",
+    test: "Verificar pressão de alta, limpeza da condensadora, ventilador externo e carga.",
+    solution: "Limpar condensadora, corrigir ventilação e carga de fluido.",
+    sourceLevel: "VALIDAR_MANUAL_MODELO"
+  }
+];
+
+const baseMideaJanela = [
+  {
+    code: "E1",
+    title: "Sensor ambiente",
+    cause: "Sensor de temperatura do ambiente com defeito.",
+    test: "Desligar e religar. Se persistir, medir sensor e verificar conector.",
+    solution: "Substituir sensor ou encaminhar para assistência/SAC.",
+    sourceLevel: "OFICIAL_MIDEA_PORTATIL_REFERENCIA"
+  },
+  {
+    code: "E2",
+    title: "Sensor evaporador",
+    cause: "Sensor de temperatura do evaporador com defeito.",
+    test: "Medir sensor do evaporador e verificar conector/chicote.",
+    solution: "Substituir sensor ou corrigir conexão.",
+    sourceLevel: "OFICIAL_MIDEA_PORTATIL_REFERENCIA"
+  },
+  {
+    code: "E4",
+    title: "Mostrador / painel",
+    cause: "Mostrador do painel de operação com defeito.",
+    test: "Verificar painel, cabo flat, alimentação e placa.",
+    solution: "Corrigir conexão ou substituir painel/placa.",
+    sourceLevel: "OFICIAL_MIDEA_PORTATIL_REFERENCIA"
+  },
+  {
+    code: "P1",
+    title: "Bandeja inferior / dreno cheio",
+    cause: "Bandeja inferior do dreno cheia.",
+    test: "Verificar acúmulo de água, dreno e mangueira.",
+    solution: "Drenar água da bandeja inferior e corrigir escoamento.",
+    sourceLevel: "OFICIAL_MIDEA_PORTATIL_REFERENCIA"
+  }
+];
+
 const perfisPorMarca = {
   "Midea": baseMideaSplit,
   "Springer": baseSpringer,
   "Carrier": baseCarrier,
   "Samsung": [...baseSamsungOficial, ...baseSamsungTecnica],
   "LG": baseLG,
+  "Gree": baseGree,
+  "Elgin": baseElgin,
+  "Daikin": baseDaikin,
+  "Fujitsu": baseFujitsu,
+  "Panasonic": basePanasonic,
 
-  "Gree": [],
-  "Elgin": [],
-  "Daikin": [],
-  "Fujitsu": [],
-  "Panasonic": [],
   "Philco": [],
   "Electrolux": [],
   "Consul": [],
@@ -556,7 +834,6 @@ const especificosPorModelo = {
     },
     ...baseCarrier
   ],
-
   "Carrier|Inverter Carrier": baseCarrier,
   "Carrier|Piso Teto Space": baseCarrier,
   "Carrier|Cassete Carrier": baseCarrier,
@@ -581,7 +858,6 @@ const especificosPorModelo = {
     ...baseSamsungOficial,
     ...baseSamsungTecnica
   ],
-
   "Samsung|Digital Inverter": [...baseSamsungOficial, ...baseSamsungTecnica],
   "Samsung|Max Plus": [...baseSamsungOficial, ...baseSamsungTecnica],
   "Samsung|Cassete 4 Vias": [...baseSamsungOficial, ...baseSamsungTecnica],
@@ -597,12 +873,32 @@ const especificosPorModelo = {
     },
     ...baseLG
   ],
-
   "LG|ArtCool": baseLG,
   "LG|Voice": baseLG,
   "LG|UV Nano": baseLG,
   "LG|Cassete Inverter": baseLG,
-  "LG|Piso Teto Inverter": baseLG
+  "LG|Piso Teto Inverter": baseLG,
+
+  "Gree|Eco Garden": baseGree,
+  "Gree|G-Top": baseGree,
+  "Gree|G-Diamond": baseGree,
+  "Gree|Cassete Gree": baseGree,
+
+  "Elgin|Eco Inverter": baseElgin,
+  "Elgin|Hi Wall Eco": baseElgin,
+  "Elgin|Piso Teto Elgin": baseElgin,
+
+  "Daikin|Advance": baseDaikin,
+  "Daikin|EcoSwing": baseDaikin,
+  "Daikin|Cassete SkyAir": baseDaikin,
+  "Daikin|Piso Teto Daikin": baseDaikin,
+
+  "Fujitsu|Hi Wall Inverter": baseFujitsu,
+  "Fujitsu|Cassete Fujitsu": baseFujitsu,
+  "Fujitsu|Piso Teto Fujitsu": baseFujitsu,
+
+  "Panasonic|Econavi": basePanasonic,
+  "Panasonic|Inverter Panasonic": basePanasonic
 };
 
 function juntarSemDuplicar(listaPrincipal, listaExtra) {
