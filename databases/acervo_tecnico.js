@@ -1,16 +1,17 @@
 /* HVAC PRO - app.js
-   ARQUIVO COMPLETO
+   ARQUIVO COMPLETO DE RECUPERAÇÃO
 
-   CORREÇÃO FINAL DAS CORES DO ACERVO:
-   - O app agora decide a cor por fonteTipo/nivelConfianca de forma explícita.
-   - VERDE tem prioridade sobre AZUL.
-   - BRANCO tem prioridade sobre VERDE e AZUL.
-   - A cor é aplicada por inline style, então não depende do style.css.
+   Objetivo desta versão:
+   - Recuperar a busca do Acervo Técnico.
+   - Não depender de cache.
+   - Não depender do style.css para cores.
+   - Não quebrar Gases, Erros/Defeitos e carrosséis.
 
-   CORES:
-   AZUL  = oficial
-   VERDE = confiável não oficial
-   BRANCO = informação sugerida
+   Acervo Técnico:
+   - AZUL = dado oficial.
+   - VERDE = dado confiável não oficial.
+   - BRANCO = informação sugerida.
+   - Campo vazio/sem utilidade fica oculto.
 */
 
 const gasData = window.gasData || {};
@@ -18,9 +19,6 @@ const errorCategories = window.errorCategories || [];
 const brandsByCategory = window.brandsByCategory || {};
 const modelsByBrand = window.modelsByBrand || {};
 const errorCodesByModel = window.errorCodesByModel || {};
-function getAcervoTecnicoData() {
-  return Array.isArray(window.acervoTecnico) ? window.acervoTecnico : [];
-}
 
 let cards = [];
 let current = 0;
@@ -30,6 +28,13 @@ let catCurrent = 0;
 let brandCurrent = 0;
 let modelCurrent = 0;
 let codeCurrent = 0;
+
+function getAcervoTecnicoData() {
+  if (Array.isArray(window.acervoTecnico)) {
+    return window.acervoTecnico;
+  }
+  return [];
+}
 
 function normalizeSearchText(value) {
   return String(value || "")
@@ -97,108 +102,91 @@ function isWeakAcervoValue(value) {
   return false;
 }
 
-function acervoSourceTokens(item, fieldKey) {
+function acervoSourceText(item, fieldKey) {
   const fontesCampos = item && item.fontesCampos ? item.fontesCampos : {};
   const confiancaCampos = item && item.confiancaCampos ? item.confiancaCampos : {};
 
-  const values = [
-    fontesCampos[fieldKey],
-    confiancaCampos[fieldKey],
+  return normalizeSearchText([
+    fontesCampos[fieldKey] || "",
+    confiancaCampos[fieldKey] || "",
     item && item.fonteTipo ? item.fonteTipo : "",
     item && item.nivelConfianca ? item.nivelConfianca : "",
     item && item.fonte ? item.fonte : "",
     item && item.observacaoFonte ? item.observacaoFonte : "",
     item && item.status ? item.status : ""
-  ];
-
-  return values.map((v) => normalizeSearchText(v)).filter(Boolean);
+  ].join(" "));
 }
 
 function acervoDataLevel(item, fieldKey) {
-  const tokens = acervoSourceTokens(item, fieldKey);
-  const joined = tokens.join(" | ");
+  const source = acervoSourceText(item, fieldKey);
 
-  // 1) BRANCO primeiro: informação sugerida sempre vence.
-  const suggestedKeys = [
-    "informacao_sugerida",
-    "informação_sugerida",
-    "informacao sugerida",
-    "informação sugerida",
-    "sugerida",
-    "sugestiva",
-    "sugerido",
-    "sugestivo",
-    "fonte_internet",
-    "internet",
-    "fonte_usuario",
-    "fonte usuário",
-    "usuario",
-    "usuário",
-    "relato",
-    "campo nao confirmado",
-    "campo não confirmado",
-    "nao_confirmada",
-    "não_confirmada",
-    "nao confirmada",
-    "não confirmada"
-  ];
+  const isSuggested =
+    source.includes("informacao_sugerida") ||
+    source.includes("informação_sugerida") ||
+    source.includes("informacao sugerida") ||
+    source.includes("informação sugerida") ||
+    source.includes("sugerida") ||
+    source.includes("sugestiva") ||
+    source.includes("sugerido") ||
+    source.includes("sugestivo") ||
+    source.includes("internet") ||
+    source.includes("usuario") ||
+    source.includes("usuário") ||
+    source.includes("relato") ||
+    source.includes("nao_confirmada") ||
+    source.includes("não_confirmada") ||
+    source.includes("nao confirmada") ||
+    source.includes("não confirmada");
 
-  if (suggestedKeys.some((key) => joined.includes(key))) return "suggested";
+  if (isSuggested) return "suggested";
 
-  // 2) VERDE antes de azul: "NAO_OFICIAL" contém "OFICIAL", então verde precisa vir antes.
-  const trustedKeys = [
-    "distribuidor_tecnico_autorizado",
-    "distribuidor técnico autorizado",
-    "distribuidor tecnico autorizado",
-    "distribuidor_técnico_autorizado",
-    "distribuidor autorizado",
-    "distribuidor",
-    "autorizado",
-    "catalogo tecnico",
-    "catálogo técnico",
-    "fonte_tecnica_confiavel_nao_oficial",
-    "fonte técnica confiável não oficial",
-    "fonte tecnica confiavel nao oficial",
-    "nao_oficial",
-    "não_oficial",
-    "nao oficial",
-    "não oficial",
-    "nao-oficial",
-    "não-oficial",
-    "confiavel nao oficial",
-    "confiável não oficial"
-  ];
+  const isTrustedNonOfficial =
+    source.includes("distribuidor_tecnico_autorizado") ||
+    source.includes("distribuidor_técnico_autorizado") ||
+    source.includes("distribuidor tecnico autorizado") ||
+    source.includes("distribuidor técnico autorizado") ||
+    source.includes("distribuidor autorizado") ||
+    source.includes("distribuidor") ||
+    source.includes("autorizado") ||
+    source.includes("catalogo tecnico") ||
+    source.includes("catálogo técnico") ||
+    source.includes("fonte_tecnica_confiavel_nao_oficial") ||
+    source.includes("fonte técnica confiável não oficial") ||
+    source.includes("fonte tecnica confiavel nao oficial") ||
+    source.includes("nao_oficial") ||
+    source.includes("não_oficial") ||
+    source.includes("nao oficial") ||
+    source.includes("não oficial") ||
+    source.includes("confiavel nao oficial") ||
+    source.includes("confiável não oficial");
 
-  if (trustedKeys.some((key) => joined.includes(key))) return "trusted";
+  if (isTrustedNonOfficial) return "trusted";
 
-  // 3) AZUL oficial.
-  const officialKeys = [
-    "fabricante_oficial",
-    "fabricante oficial",
-    "fabricante",
-    "manual oficial",
-    "pagina oficial",
-    "página oficial",
-    "ficha tecnica oficial",
-    "ficha técnica oficial",
-    "suporte oficial",
-    "inmetro",
-    "ence",
-    "etiqueta",
-    "placa de identificacao",
-    "placa de identificação",
-    "confirmado_manual_oficial",
-    "confirmado_fonte_oficial",
-    "confirmado_ficha_tecnica_oficial",
-    "confirmado_suporte_oficial",
-    "confirmado_inmetro",
-    "confirmado_etiqueta",
-    "oficial"
-  ];
+  const isOfficial =
+    source.includes("fabricante_oficial") ||
+    source.includes("fabricante oficial") ||
+    source.includes("fabricante") ||
+    source.includes("manual oficial") ||
+    source.includes("pagina oficial") ||
+    source.includes("página oficial") ||
+    source.includes("ficha tecnica oficial") ||
+    source.includes("ficha técnica oficial") ||
+    source.includes("suporte oficial") ||
+    source.includes("inmetro") ||
+    source.includes("ence") ||
+    source.includes("etiqueta") ||
+    source.includes("placa de identificacao") ||
+    source.includes("placa de identificação") ||
+    source.includes("confirmado_manual_oficial") ||
+    source.includes("confirmado_fonte_oficial") ||
+    source.includes("confirmado_ficha_tecnica_oficial") ||
+    source.includes("confirmado_suporte_oficial") ||
+    source.includes("confirmado_inmetro") ||
+    source.includes("confirmado_etiqueta") ||
+    source.includes("oficial");
 
-  if (officialKeys.some((key) => joined.includes(key))) return "official";
+  if (isOfficial) return "official";
 
-  // Se chegou aqui, é dado sem classificação explícita. Para segurança visual, tratar como sugerido branco.
   return "suggested";
 }
 
@@ -225,7 +213,7 @@ function renderAcervoField(label, value, item, fieldKey) {
     <div class="info-row">
       <span>${label}:</span><br>
       <strong class="acervo-${level}" style="color:${color} !important;">${value}</strong>
-      <small style="display:block;opacity:.72;margin-top:4px;color:${color};">${title}</small>
+      <small style="display:block;opacity:.75;margin-top:4px;color:${color};">${title}</small>
     </div>
   `;
 }
@@ -898,23 +886,22 @@ function renderCodeInfo() {
 /* ACERVO TÉCNICO */
 
 function acervoMatchesSearch(item, searchValue) {
+  if (!item) return false;
+
   const rawSearch = normalizeSearchText(searchValue);
   const compactSearch = normalizeAcervoCodeText(searchValue);
 
   if (compactSearch.length < 2) return false;
 
   const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca : [];
-  const termos = [item.modelo, ...codigos].filter(Boolean);
+  const termos = [item.modelo, item.marca, item.linha, item.tipo].concat(codigos).filter(Boolean);
 
   return termos.some((term) => {
     const rawTerm = normalizeSearchText(term);
     const compactTerm = normalizeAcervoCodeText(term);
     if (!compactTerm) return false;
 
-    const rawMatch = rawTerm.includes(rawSearch) || rawSearch.includes(rawTerm);
-    const compactMatch = compactTerm.includes(compactSearch) || compactSearch.includes(compactTerm);
-
-    return rawMatch || compactMatch;
+    return rawTerm.includes(rawSearch) || rawSearch.includes(rawTerm) || compactTerm.includes(compactSearch) || compactSearch.includes(compactTerm);
   });
 }
 
@@ -925,10 +912,9 @@ function renderAcervoIntro() {
   acervoInfo.innerHTML = `
     <h2>Acervo Técnico</h2>
     <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da etiqueta da evaporadora ou condensadora.</div>
-    <div class="info-row"><span>Padrão da ficha:</span><br>O app exibe somente campos com dados técnicos úteis. Campos sem informação útil ficam ocultos.</div>
-    <div class="info-row"><span style="color:#38bdf8;font-weight:800;">Azul:</span><br>Dado oficial: fabricante, manual oficial, ficha oficial, INMETRO/ENCE ou etiqueta validada.</div>
-    <div class="info-row"><span style="color:#22c55e;font-weight:800;">Verde:</span><br>Dado confiável, mas não oficial direto: distribuidor técnico autorizado ou fonte técnica vinculada.</div>
-    <div class="info-row"><span style="color:#ffffff;font-weight:800;">Branco:</span><br>Informação sugerida: internet, usuário ou campo ainda não confirmado. Conferir antes de aplicar em campo.</div>
+    <div class="info-row"><span style="color:#38bdf8;font-weight:800;">Azul:</span><br>Dado oficial.</div>
+    <div class="info-row"><span style="color:#22c55e;font-weight:800;">Verde:</span><br>Dado confiável não oficial.</div>
+    <div class="info-row"><span style="color:#ffffff;font-weight:800;">Branco:</span><br>Informação sugerida.</div>
   `;
 }
 
@@ -945,6 +931,16 @@ function searchAcervoTecnico() {
   }
 
   const baseAcervo = getAcervoTecnicoData();
+
+  if (!baseAcervo.length) {
+    acervoInfo.innerHTML = `
+      <h2>Banco não carregado</h2>
+      <div class="info-row">O arquivo <strong>databases/acervo_tecnico.js</strong> não foi carregado ou está com erro de código.</div>
+      <div class="info-row">Confira se o arquivo existe no GitHub, se foi salvo com commit e se está sendo chamado no index.html antes do app.js.</div>
+    `;
+    return;
+  }
+
   const resultados = baseAcervo.filter((item) => acervoMatchesSearch(item, input.value));
 
   if (!resultados.length) {
@@ -952,7 +948,6 @@ function searchAcervoTecnico() {
       <h2>Modelo não cadastrado</h2>
       <div class="info-row"><span>Busca:</span><br>${input.value}</div>
       <div class="info-row">Nenhum modelo/código cadastrado no Acervo Técnico contém esse termo.</div>
-      <div class="info-row"><span>Orientação:</span><br>Confira o código na etiqueta da evaporadora ou condensadora e tente novamente.</div>
     `;
     return;
   }
@@ -1033,3 +1028,4 @@ function initApp() {
 }
 
 window.addEventListener("load", initApp);
+
