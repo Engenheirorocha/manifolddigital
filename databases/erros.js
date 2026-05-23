@@ -1,5 +1,5 @@
 /* HVAC PRO - databases/erros.js
-   LOTE 3: mantém Lotes 1 e 2 e adiciona Philco, Electrolux, Consul, TCL e Agratto.
+   LOTE 4: mantém Lotes 1, 2 e 3 e adiciona Komeco, Hisense, Hitachi, Trane e York.
    Base para consulta técnica em campo.
    Quando não confirmado por manual específico do modelo, usar VALIDAR_MANUAL_MODELO.
 */
@@ -9,102 +9,18 @@ function erro(code, title, cause, test, solution, sourceLevel) {
 }
 
 const defeitosComuns = [
-  erro(
-    "NAO_GELA",
-    "Não gela / baixo rendimento",
-    "Filtro sujo, evaporadora suja, condensadora obstruída, baixa carga de fluido, restrição, ventilador fraco ou compressor com baixo rendimento.",
-    "Verificar filtros, evaporadora, condensadora, vazão de ar, pressão de trabalho, superaquecimento, subresfriamento e corrente do compressor.",
-    "Limpar filtros e serpentinas, corrigir ventilação, verificar vazamento, fazer vácuo e carga correta quando necessário.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "NAO_LIGA",
-    "Equipamento não liga",
-    "Falta de alimentação, disjuntor desligado, fusível aberto, controle sem bateria, placa sem alimentação ou borne solto.",
-    "Conferir tensão de entrada, disjuntor, tomada/borneira, fusível da placa, controle remoto e conectores.",
-    "Restabelecer alimentação, corrigir conexões, trocar fusível quando aplicável ou avaliar placa eletrônica.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "CONGELA",
-    "Evaporadora congelando",
-    "Baixa vazão de ar, filtro sujo, turbina suja, serpentina obstruída, baixa carga de fluido ou sensor de serpentina com falha.",
-    "Verificar filtros, turbina, evaporadora, velocidade do ventilador, pressão de sucção, superaquecimento e sensor de serpentina.",
-    "Limpar sistema de ar, corrigir ventilação, verificar carga de fluido e substituir sensor defeituoso se necessário.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "VENTILADOR",
-    "Falha no ventilador",
-    "Motor travado, capacitor fraco, turbina/hélice presa, sensor Hall com falha, chicote rompido, conector oxidado ou placa sem comando.",
-    "Girar hélice/turbina manualmente, medir capacitor, verificar alimentação do motor, conector, chicote e retorno de rotação.",
-    "Limpar e destravar conjunto, substituir capacitor, corrigir chicote/conector, trocar motor ou avaliar placa.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "SENSOR",
-    "Falha de sensor",
-    "Sensor NTC aberto, em curto, fora da curva, mal encaixado, oxidado ou com cabo rompido.",
-    "Desligar o equipamento, desconectar sensor da placa, medir resistência e comparar com tabela do fabricante.",
-    "Reconectar, corrigir chicote/conector ou substituir sensor compatível.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "COMUNICACAO",
-    "Falha de comunicação",
-    "Falha entre evaporadora e condensadora por cabo invertido, mau contato, borne frouxo, aterramento ruim, alimentação incorreta ou placa defeituosa.",
-    "Conferir interligação, sequência dos bornes, cabo de comunicação, tensão, aterramento e conectores das placas.",
-    "Corrigir ligação, refazer conexões, reapertar bornes, corrigir alimentação/aterramento ou avaliar placas.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "COMPRESSOR",
-    "Compressor não parte / proteção",
-    "Capacitor defeituoso, compressor travado, bobina aberta, fuga para carcaça, módulo inverter com falha, pressão fora da faixa ou alimentação incorreta.",
-    "Medir tensão, corrente, resistência das bobinas, fuga para carcaça, capacitor quando aplicável, pressão de trabalho e módulo inverter.",
-    "Corrigir alimentação, trocar capacitor, corrigir carga/ventilação, avaliar módulo inverter ou substituir compressor se confirmado defeito.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "ALTA_PRESSAO",
-    "Alta pressão / condensação elevada",
-    "Condensadora suja, ventilador externo fraco, recirculação de ar quente, excesso de fluido, obstrução ou temperatura externa muito alta.",
-    "Verificar limpeza da condensadora, funcionamento do ventilador externo, pressão de alta, subresfriamento e ambiente de instalação.",
-    "Limpar condensadora, corrigir ventilação, remover obstruções, ajustar carga de fluido e corrigir instalação.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "BAIXA_PRESSAO",
-    "Baixa pressão / baixa carga",
-    "Vazamento, baixa carga de fluido, restrição, filtro/capilar obstruído, evaporadora suja ou baixa carga térmica.",
-    "Verificar vazamentos, pressão de sucção, superaquecimento, temperatura de evaporação, filtros e serpentinas.",
-    "Corrigir vazamento, fazer vácuo, carregar fluido na quantidade correta e corrigir restrições/obstruções.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "DRENO",
-    "Vazamento de água / dreno",
-    "Dreno entupido, bandeja suja, mangueira mal posicionada, falta de queda, isolamento ruim ou evaporadora congelando.",
-    "Verificar saída de água, bandeja, inclinação do dreno, mangueira, isolamento e presença de gelo.",
-    "Limpar dreno e bandeja, corrigir queda, reposicionar mangueira, melhorar isolamento e resolver causa de congelamento.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "RUIDO",
-    "Ruído ou vibração",
-    "Turbina suja/desbalanceada, hélice raspando, motor com rolamento ruim, carenagem solta, compressor vibrando ou tubulação encostando.",
-    "Verificar fixação, hélice, turbina, rolamentos, coxins, carenagem, tubulação e vibração em funcionamento.",
-    "Reapertar componentes, limpar turbina, alinhar hélice, corrigir tubulação, trocar motor ou coxins.",
-    "DIAGNOSTICO_CAMPO"
-  ),
-  erro(
-    "PLACA",
-    "Suspeita de placa eletrônica",
-    "Relé queimado, trilha danificada, varistor/fusível aberto, fonte sem saída, falha de comunicação ou comando ausente.",
-    "Verificar alimentação de entrada, fusível, fonte da placa, conectores, sinais de queimado, relés e saída para motores.",
-    "Corrigir alimentação e conexões. Se confirmado defeito interno, reparar ou substituir placa.",
-    "DIAGNOSTICO_CAMPO"
-  )
+  erro("NAO_GELA", "Não gela / baixo rendimento", "Filtro sujo, evaporadora suja, condensadora obstruída, baixa carga de fluido, restrição, ventilador fraco ou compressor com baixo rendimento.", "Verificar filtros, evaporadora, condensadora, vazão de ar, pressão de trabalho, superaquecimento, subresfriamento e corrente do compressor.", "Limpar filtros e serpentinas, corrigir ventilação, verificar vazamento, fazer vácuo e carga correta quando necessário.", "DIAGNOSTICO_CAMPO"),
+  erro("NAO_LIGA", "Equipamento não liga", "Falta de alimentação, disjuntor desligado, fusível aberto, controle sem bateria, placa sem alimentação ou borne solto.", "Conferir tensão de entrada, disjuntor, tomada/borneira, fusível da placa, controle remoto e conectores.", "Restabelecer alimentação, corrigir conexões, trocar fusível quando aplicável ou avaliar placa eletrônica.", "DIAGNOSTICO_CAMPO"),
+  erro("CONGELA", "Evaporadora congelando", "Baixa vazão de ar, filtro sujo, turbina suja, serpentina obstruída, baixa carga de fluido ou sensor de serpentina com falha.", "Verificar filtros, turbina, evaporadora, velocidade do ventilador, pressão de sucção, superaquecimento e sensor de serpentina.", "Limpar sistema de ar, corrigir ventilação, verificar carga de fluido e substituir sensor defeituoso se necessário.", "DIAGNOSTICO_CAMPO"),
+  erro("VENTILADOR", "Falha no ventilador", "Motor travado, capacitor fraco, turbina/hélice presa, sensor Hall com falha, chicote rompido, conector oxidado ou placa sem comando.", "Girar hélice/turbina manualmente, medir capacitor, verificar alimentação do motor, conector, chicote e retorno de rotação.", "Limpar e destravar conjunto, substituir capacitor, corrigir chicote/conector, trocar motor ou avaliar placa.", "DIAGNOSTICO_CAMPO"),
+  erro("SENSOR", "Falha de sensor", "Sensor NTC aberto, em curto, fora da curva, mal encaixado, oxidado ou com cabo rompido.", "Desligar o equipamento, desconectar sensor da placa, medir resistência e comparar com tabela do fabricante.", "Reconectar, corrigir chicote/conector ou substituir sensor compatível.", "DIAGNOSTICO_CAMPO"),
+  erro("COMUNICACAO", "Falha de comunicação", "Falha entre evaporadora e condensadora por cabo invertido, mau contato, borne frouxo, aterramento ruim, alimentação incorreta ou placa defeituosa.", "Conferir interligação, sequência dos bornes, cabo de comunicação, tensão, aterramento e conectores das placas.", "Corrigir ligação, refazer conexões, reapertar bornes, corrigir alimentação/aterramento ou avaliar placas.", "DIAGNOSTICO_CAMPO"),
+  erro("COMPRESSOR", "Compressor não parte / proteção", "Capacitor defeituoso, compressor travado, bobina aberta, fuga para carcaça, módulo inverter com falha, pressão fora da faixa ou alimentação incorreta.", "Medir tensão, corrente, resistência das bobinas, fuga para carcaça, capacitor quando aplicável, pressão de trabalho e módulo inverter.", "Corrigir alimentação, trocar capacitor, corrigir carga/ventilação, avaliar módulo inverter ou substituir compressor se confirmado defeito.", "DIAGNOSTICO_CAMPO"),
+  erro("ALTA_PRESSAO", "Alta pressão / condensação elevada", "Condensadora suja, ventilador externo fraco, recirculação de ar quente, excesso de fluido, obstrução ou temperatura externa muito alta.", "Verificar limpeza da condensadora, funcionamento do ventilador externo, pressão de alta, subresfriamento e ambiente de instalação.", "Limpar condensadora, corrigir ventilação, remover obstruções, ajustar carga de fluido e corrigir instalação.", "DIAGNOSTICO_CAMPO"),
+  erro("BAIXA_PRESSAO", "Baixa pressão / baixa carga", "Vazamento, baixa carga de fluido, restrição, filtro/capilar obstruído, evaporadora suja ou baixa carga térmica.", "Verificar vazamentos, pressão de sucção, superaquecimento, temperatura de evaporação, filtros e serpentinas.", "Corrigir vazamento, fazer vácuo, carregar fluido na quantidade correta e corrigir restrições/obstruções.", "DIAGNOSTICO_CAMPO"),
+  erro("DRENO", "Vazamento de água / dreno", "Dreno entupido, bandeja suja, mangueira mal posicionada, falta de queda, isolamento ruim ou evaporadora congelando.", "Verificar saída de água, bandeja, inclinação do dreno, mangueira, isolamento e presença de gelo.", "Limpar dreno e bandeja, corrigir queda, reposicionar mangueira, melhorar isolamento e resolver causa de congelamento.", "DIAGNOSTICO_CAMPO"),
+  erro("RUIDO", "Ruído ou vibração", "Turbina suja/desbalanceada, hélice raspando, motor com rolamento ruim, carenagem solta, compressor vibrando ou tubulação encostando.", "Verificar fixação, hélice, turbina, rolamentos, coxins, carenagem, tubulação e vibração em funcionamento.", "Reapertar componentes, limpar turbina, alinhar hélice, corrigir tubulação, trocar motor ou coxins.", "DIAGNOSTICO_CAMPO"),
+  erro("PLACA", "Suspeita de placa eletrônica", "Relé queimado, trilha danificada, varistor/fusível aberto, fonte sem saída, falha de comunicação ou comando ausente.", "Verificar alimentação de entrada, fusível, fonte da placa, conectores, sinais de queimado, relés e saída para motores.", "Corrigir alimentação e conexões. Se confirmado defeito interno, reparar ou substituir placa.", "DIAGNOSTICO_CAMPO")
 ];
 
 /* LOTE 1 */
@@ -257,6 +173,52 @@ const baseAgratto = [
   erro("F0", "Baixa carga / proteção", "Possível baixa carga de fluido, vazamento ou proteção por pressão.", "Verificar vazamento, pressão, superaquecimento e subresfriamento.", "Corrigir vazamento, fazer vácuo e carregar fluido conforme etiqueta/manual.", "VALIDAR_MANUAL_MODELO")
 ];
 
+/* LOTE 4 */
+
+const baseKomeco = [
+  erro("E1", "Sensor ambiente", "Sensor ambiente aberto, em curto, desconectado ou fora da faixa.", "Medir sensor NTC, verificar chicote e conector na placa.", "Reconectar, corrigir chicote ou substituir sensor compatível.", "VALIDAR_MANUAL_MODELO"),
+  erro("E2", "Sensor serpentina", "Sensor de serpentina da evaporadora com falha.", "Medir resistência do sensor, verificar fixação e conector.", "Substituir sensor ou corrigir chicote/conector.", "VALIDAR_MANUAL_MODELO"),
+  erro("E3", "Ventilador interno", "Falha no motor ventilador, capacitor, chicote, retorno de rotação ou placa.", "Verificar motor, turbina, capacitor quando houver, chicote, alimentação e retorno.", "Corrigir motor/capacitor/chicote ou avaliar placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("E5", "Proteção do sistema", "Proteção por corrente, pressão, temperatura ou alimentação incorreta.", "Medir tensão, corrente, pressões, ventilação, serpentinas e sensores.", "Corrigir alimentação, ventilação, carga de fluido ou componente indicado.", "VALIDAR_MANUAL_MODELO"),
+  erro("E6", "Comunicação", "Falha de comunicação entre unidade interna e externa.", "Verificar cabo de comunicação, bornes, aterramento, alimentação e placas.", "Corrigir interligação, bornes, aterramento ou avaliar placas.", "VALIDAR_MANUAL_MODELO"),
+  erro("P4", "Proteção inverter / compressor", "Proteção do compressor ou módulo inverter.", "Medir compressor, corrente, tensão DC, barramento, pressões e ventilação.", "Corrigir alimentação, carga/ventilação ou avaliar compressor/módulo.", "VALIDAR_MANUAL_MODELO")
+];
+
+const baseHisense = [
+  erro("FC", "Limpeza de filtro / aviso de manutenção", "Aviso relacionado a filtro sujo ou necessidade de limpeza/manutenção, conforme linha.", "Verificar filtro de ar, serpentina e fluxo de ar.", "Limpar filtro, conferir serpentina e redefinir aviso conforme manual do modelo.", "VALIDAR_MANUAL_MODELO"),
+  erro("E1", "Sensor ambiente / comunicação conforme linha", "Falha de sensor ambiente ou comunicação, dependendo do modelo.", "Verificar sensor NTC, conector, comunicação entre unidades e alimentação.", "Corrigir sensor, conector, interligação ou placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("E4", "Proteção de temperatura / sensor", "Temperatura fora da faixa, sensor com falha ou proteção do sistema.", "Verificar sensores, fluxo de ar, pressão, carga de fluido e serpentinas.", "Corrigir sensor, ventilação, carga ou causa da proteção.", "VALIDAR_MANUAL_MODELO"),
+  erro("E5", "Proteção de sobrecorrente", "Corrente elevada por compressor pesado, pressão alta, alimentação ruim ou placa/módulo com falha.", "Medir corrente, tensão, pressões, ventiladores e compressor.", "Corrigir alimentação, ventilação, carga ou avaliar compressor/placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("E7", "Comunicação", "Falha de comunicação entre unidade interna e externa.", "Verificar cabo de comunicação, bornes, alimentação, aterramento e placas.", "Corrigir interligação, conexões, aterramento ou avaliar placas.", "VALIDAR_MANUAL_MODELO"),
+  erro("F0", "Baixa carga / proteção de refrigerante", "Possível vazamento, baixa carga ou proteção por pressão.", "Verificar vazamento, pressões, superaquecimento, subresfriamento e temperatura de descarga.", "Corrigir vazamento, fazer vácuo e carregar fluido conforme etiqueta/manual.", "VALIDAR_MANUAL_MODELO")
+];
+
+const baseHitachi = [
+  erro("01", "Proteção / comunicação conforme linha", "Falha de controle, comunicação ou proteção indicada pela unidade.", "Verificar alimentação, comunicação, sensores, placas e histórico do erro.", "Corrigir alimentação, comunicação ou componente indicado pelo diagnóstico.", "VALIDAR_MANUAL_MODELO"),
+  erro("03", "Comunicação", "Falha de comunicação entre unidades ou controle.", "Verificar interligação, bornes, alimentação, aterramento e placas.", "Corrigir cabo, conexão, aterramento ou avaliar placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("07", "Proteção compressor / ciclo", "Proteção por corrente, pressão, temperatura ou falha no ciclo de refrigeração.", "Medir corrente, pressões, sensores, compressor, ventiladores e carga de fluido.", "Corrigir carga, ventilação, alimentação ou avaliar compressor/placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("11", "Sensor ambiente", "Sensor de temperatura ambiente com falha.", "Medir sensor NTC, verificar chicote e conector.", "Substituir sensor ou corrigir conexão.", "VALIDAR_MANUAL_MODELO"),
+  erro("12", "Sensor serpentina", "Sensor de serpentina interna ou externa com falha.", "Medir sensor, verificar fixação e chicote.", "Substituir sensor ou corrigir chicote.", "VALIDAR_MANUAL_MODELO"),
+  erro("31", "Alta pressão / proteção externa", "Proteção por pressão elevada ou temperatura externa.", "Verificar condensadora, ventilador externo, pressão de alta e carga de fluido.", "Limpar condensadora, corrigir ventilação e carga.", "VALIDAR_MANUAL_MODELO")
+];
+
+const baseTrane = [
+  erro("E1", "Sensor ambiente unidade interna", "Mau funcionamento do sensor de temperatura ambiente da unidade interna.", "Verificar sensor desconectado, quebrado, mal posicionado ou em curto-circuito.", "Corrigir posição/conector ou substituir sensor.", "OFICIAL_TRANE_U_MATCH"),
+  erro("E2", "Sensor tubulação unidade interna", "Mau funcionamento do sensor de temperatura da tubulação da unidade interna.", "Verificar sensor de tubulação, chicote, conector e curto/circuito aberto.", "Corrigir conexão ou substituir sensor.", "OFICIAL_TRANE_U_MATCH"),
+  erro("E3", "Sensor tubulação externa / proteção conforme linha", "Falha de sensor ou proteção relacionada à unidade externa, conforme modelo.", "Verificar sensores externos, chicotes, conectores, placa e pressões.", "Corrigir sensor/chicote ou componente indicado.", "VALIDAR_MANUAL_MODELO"),
+  erro("E5", "Proteção de sobrecorrente", "Proteção por corrente elevada, alimentação instável, compressor ou placa.", "Medir tensão, corrente, compressor, pressões e ventilação.", "Corrigir alimentação, carga/ventilação ou avaliar compressor/placa.", "VALIDAR_MANUAL_MODELO"),
+  erro("E6", "Comunicação", "Falha de comunicação entre evaporadora e condensadora.", "Verificar cabo de comunicação, bornes, alimentação, aterramento e placas.", "Corrigir interligação, bornes, aterramento ou avaliar placas.", "VALIDAR_MANUAL_MODELO"),
+  erro("F0", "Proteção de refrigerante / baixa pressão", "Possível baixa carga, vazamento ou proteção por pressão.", "Verificar vazamento, pressões, superaquecimento, subresfriamento e sensores.", "Corrigir vazamento, fazer vácuo e carga correta.", "VALIDAR_MANUAL_MODELO")
+];
+
+const baseYork = [
+  erro("E1", "Controle de velocidade do ventilador", "Falha no controle de velocidade do ventilador ou conexão entre motor e placa.", "Verificar motor ventilador, chicote, conector, alimentação e placa de controle.", "Corrigir conexões, motor ou placa conforme medição.", "LISTA_TECNICA_NAO_OFICIAL_VALIDAR"),
+  erro("E2", "Sensor de retorno", "Falha no sensor de retorno, sensor desconectado, aberto ou em curto.", "Verificar sensor de retorno, resistência NTC, chicote e conector.", "Corrigir conexão ou substituir sensor.", "LISTA_TECNICA_NAO_OFICIAL_VALIDAR"),
+  erro("E3", "Sensor serpentina interna", "Falha no sensor da serpentina interna.", "Medir sensor, verificar fixação na serpentina e conector.", "Substituir sensor ou corrigir chicote.", "LISTA_TECNICA_NAO_OFICIAL_VALIDAR"),
+  erro("E5", "Sensor serpentina externa", "Falha no sensor da serpentina externa.", "Medir sensor externo, verificar chicote, conector e placa.", "Substituir sensor ou corrigir conexão.", "LISTA_TECNICA_NAO_OFICIAL_VALIDAR"),
+  erro("E6", "Comunicação / proteção", "Falha de comunicação ou proteção do sistema conforme linha.", "Verificar interligação, alimentação, aterramento, placa interna e externa.", "Corrigir cabeamento, alimentação ou avaliar placas.", "VALIDAR_MANUAL_MODELO")
+];
+
 const baseMideaJanela = [
   erro("E1", "Sensor ambiente", "Sensor de temperatura do ambiente com defeito.", "Desligar e religar. Se persistir, medir sensor e verificar conector.", "Substituir sensor ou encaminhar para assistência/SAC.", "OFICIAL_MIDEA_PORTATIL_REFERENCIA"),
   erro("E2", "Sensor evaporador", "Sensor de temperatura do evaporador com defeito.", "Medir sensor do evaporador e verificar conector/chicote.", "Substituir sensor ou corrigir conexão.", "OFICIAL_MIDEA_PORTATIL_REFERENCIA"),
@@ -280,12 +242,11 @@ const perfisPorMarca = {
   "Consul": baseConsul,
   "TCL": baseTCL,
   "Agratto": baseAgratto,
-
-  "Komeco": [],
-  "Hisense": [],
-  "Hitachi": [],
-  "Trane": [],
-  "York": []
+  "Komeco": baseKomeco,
+  "Hisense": baseHisense,
+  "Hitachi": baseHitachi,
+  "Trane": baseTrane,
+  "York": baseYork
 };
 
 const especificosPorModelo = {
@@ -293,7 +254,6 @@ const especificosPorModelo = {
     erro("E1", "Comunicação", "Falha de comunicação entre evaporadora e condensadora.", "Verificar cabo S, bornes, alimentação e aterramento.", "Corrigir interligação, reapertar bornes e testar placas.", "BASE_APP_ORIGINAL"),
     erro("P4", "Proteção inverter", "Proteção do compressor ou módulo IPM.", "Medir corrente, pressão, tensão DC e bobinas do compressor.", "Corrigir ventilação, alimentação ou avaliar módulo/compressor.", "BASE_APP_ORIGINAL")
   ],
-
   "Midea|AirVolution": baseMideaSplit,
   "Midea|Springer Midea": baseSpringer,
   "Midea|Liva": baseMideaSplit,
@@ -385,7 +345,23 @@ const especificosPorModelo = {
   "TCL|TAC Inverter": baseTCL,
 
   "Agratto|Neo Top": baseAgratto,
-  "Agratto|One Top": baseAgratto
+  "Agratto|One Top": baseAgratto,
+
+  "Komeco|Komeco Inverter": baseKomeco,
+  "Komeco|Piso Teto Komeco": baseKomeco,
+
+  "Hisense|Energy Pro": baseHisense,
+  "Hisense|Hi Wall Inverter": baseHisense,
+
+  "Hitachi|Set Free": baseHitachi,
+  "Hitachi|Cassete Hitachi": baseHitachi,
+  "Hitachi|Piso Teto Hitachi": baseHitachi,
+
+  "Trane|Cassete Trane": baseTrane,
+  "Trane|Piso Teto Trane": baseTrane,
+
+  "York|Cassete York": baseYork,
+  "York|Piso Teto York": baseYork
 };
 
 function juntarSemDuplicar(listaPrincipal, listaExtra) {
