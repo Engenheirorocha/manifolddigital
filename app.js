@@ -1,4 +1,3 @@
-/* HVAC PRO - app.js
    Extraído do HTML principal original.
    Mantém a lógica existente e adiciona exibição da fonte/base dos erros.
 */
