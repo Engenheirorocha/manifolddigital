@@ -755,5 +755,171 @@ window.acervoTecnico = [
     manualManutencao: "https://www.hitachiaircon.com/br/downloads/aircore-600",
     fonte: "Hitachi oficial - documentação técnica airCore 600",
     status: "Cadastro por conjunto/unidades airCore 600. Validar combinação interna/externa."
+  }),
+
+  /* LOTE 5 - EOS */
+  acervoItem({
+    marca: "EOS",
+    modelo: "Master Inverter EOS",
+    codigoBusca: ["MASTER INVERTER EOS", "EOS MASTER INVERTER", "MASTER INVERTER", "EOS INVERTER"],
+    linha: "Master Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar código/capacidade no produto oficial",
+    manualInstalacao: "https://eos.com.br/wp-content/uploads/2025/02/Master-Inverter-EOS_Manual.pdf",
+    manualManutencao: "https://eos.com.br/wp-content/uploads/2025/02/Master-Inverter-EOS_Manual.pdf",
+    fonte: "EOS oficial - Manual Master Inverter",
+    status: "Cadastro por família oficial. Próxima etapa: separar por código/capacidade quando disponível no manual ou etiqueta."
+  }),
+  acervoItem({
+    marca: "EOS",
+    modelo: "Smart Connect Inverter EOS",
+    codigoBusca: ["SMART CONNECT INVERTER EOS", "EOS SMART CONNECT", "SMART CONNECT", "CONDICIONADORES EOS SMART CONNECT"],
+    linha: "Smart Connect Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar código/capacidade no produto oficial",
+    manualInstalacao: "https://eos.com.br/wp-content/uploads/2024/04/Condicionadores-de-Ar-EOS-Manual-Smart-Connect.pdf",
+    manualManutencao: "https://eos.com.br/wp-content/uploads/2024/04/Condicionadores-de-Ar-EOS-Manual-Smart-Connect.pdf",
+    fonte: "EOS oficial - Manual Smart Connect",
+    status: "Cadastro por família oficial. Validar etiqueta e manual específico antes do serviço."
+  }),
+  acervoItem({
+    marca: "EOS",
+    modelo: "Master Inverter Pro Cassete / Piso Teto",
+    codigoBusca: ["MASTER INVERTER PRO", "EOS MASTER INVERTER PRO", "CASSETE EOS MASTER INVERTER PRO", "PISO TETO EOS MASTER INVERTER PRO"],
+    linha: "Master Inverter Pro",
+    tipo: "Cassete / Piso Teto Inverter",
+    capacidade: "Validar código/capacidade no produto oficial",
+    manualInstalacao: "https://eos.com.br/wp-content/uploads/2025/05/MASTER-INVERTER-PRO-MANUAL.pdf",
+    manualManutencao: "https://eos.com.br/wp-content/uploads/2025/05/MASTER-INVERTER-PRO-MANUAL.pdf",
+    fonte: "EOS oficial - Manual Master Inverter Pro Cassete/Piso Teto",
+    status: "Cadastro por família comercial leve. Validar código completo da etiqueta."
+  }),
+  acervoItem({
+    marca: "EOS",
+    modelo: "EAP14IQF - Portátil Inverter 14.000 BTU",
+    codigoBusca: ["EAP14IQF", "EOS EAP14IQF", "PORTATIL INVERTER EOS", "PORTÁTIL INVERTER EOS", "EOS SLIM 14000"],
+    linha: "Portátil Inverter EOS Slim",
+    tipo: "Ar-condicionado portátil inverter",
+    capacidade: "14.000 BTU/h",
+    manualInstalacao: "https://eos.com.br/wp-content/uploads/2025/10/EAP14IQF-Manual.pdf",
+    manualManutencao: "https://eos.com.br/wp-content/uploads/2025/10/EAP14IQF-Manual.pdf",
+    fonte: "EOS oficial - Manual EAP14IQF",
+    status: "Cadastro por código EAP14IQF. Equipamento portátil; validar procedimentos no manual antes do serviço."
+  }),
+  acervoItem({
+    marca: "EOS",
+    modelo: "ECL42M - Climatizador / Linha EOS",
+    codigoBusca: ["ECL42M", "EOS ECL42M", "ECL42M MANUAL"],
+    linha: "Linha EOS ECL",
+    tipo: "Equipamento de climatização EOS",
+    capacidade: "Validar manual/etiqueta do equipamento",
+    manualInstalacao: "https://eos.com.br/wp-content/uploads/2025/03/ECL42M_Manual.pdf",
+    manualManutencao: "https://eos.com.br/wp-content/uploads/2025/03/ECL42M_Manual.pdf",
+    fonte: "EOS oficial - Manual ECL42M",
+    status: "Cadastro por código ECL42M. Validar aplicação exata do produto antes do serviço."
+  }),
+
+  /* LOTE 5 - MIDEA REFINAMENTO */
+  acervoItem({
+    marca: "Midea",
+    modelo: "42EFV / 38TAV - AI AirVolution",
+    codigoBusca: ["42EFV", "38TAV", "42EFV 38TAV", "AI AIRVOLUTION", "AIRVOLUTION MIDEA", "MIDEA AIRVOLUTION"],
+    linha: "AI AirVolution",
+    tipo: "Split Hi Wall",
+    capacidade: "Validar código/capacidade no manual e etiqueta",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
+    fonte: "Midea oficial - Manual Split AI AirVolution 42EFV/38TAV",
+    status: "Cadastro por família/código 42EFV/38TAV. Validar etiqueta e capacidade exata."
+  }),
+  acervoItem({
+    marca: "Midea",
+    modelo: "AFV 127V R-32 - Inverter Connect 12.000 BTU",
+    codigoBusca: ["AFV 127V", "AFV R32", "AFV R-32", "INVERTER CONNECT 12000", "MIDEA AFV", "AR CONDICIONADO 12000 BTUS INVERTER CONNECT FRIO MIDEA"],
+    linha: "Inverter Connect",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    fluidoRefrigerante: "R32",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-12000-btus-inverter-connect-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-12000-btus-inverter-connect-frio-midea.pdf",
+    fonte: "Midea oficial - Manual Inverter Connect 12.000 BTU AFV 127V R-32",
+    status: "Cadastro por família/código AFV. Validar unidade interna/externa e etiqueta."
+  }),
+  acervoItem({
+    marca: "Midea",
+    modelo: "Piso Teto 36.000 BTU Inverter Frio",
+    codigoBusca: ["PISO TETO 36000 MIDEA", "PISO TETO 36000 BTU INVERTER FRIO MIDEA", "MIDEA PISO TETO 36000", "MIDEA 36000 INVERTER PISO TETO"],
+    linha: "Piso Teto Inverter",
+    tipo: "Piso Teto Inverter Frio",
+    capacidade: "36.000 BTU/h",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-36000-btu-inverter-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-36000-btu-inverter-frio-midea.pdf",
+    fonte: "Midea oficial - Manual Piso Teto 36.000 BTU Inverter Frio",
+    status: "Cadastro por família/capacidade. Próxima etapa: separar pelo código exato da etiqueta."
+  }),
+  acervoItem({
+    marca: "Midea",
+    modelo: "Cassete 58.000 BTU 4 Vias Frio - 40KVQD",
+    codigoBusca: ["40KVQD", "MIDEA 40KVQD", "CASSETE 58000 MIDEA", "CASSETE 4 VIAS MIDEA", "AR CONDICIONADO CASSETE 58000 BTUS 4 VIAS FRIO MIDEA"],
+    linha: "Cassete 4 Vias",
+    tipo: "Cassete 4 Vias Frio",
+    capacidade: "58.000 BTU/h",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
+    fonte: "Midea oficial - Manual Cassete 58.000 BTU 4 Vias 40KVQD",
+    status: "Cadastro por código/família 40KVQD. Validar etiqueta antes do serviço."
+  }),
+  acervoItem({
+    marca: "Midea",
+    modelo: "Split Piso Teto 60.000 BTU Inverter Frio R-32",
+    codigoBusca: ["PISO TETO 60000 MIDEA", "PISO TETO 60000 BTU INVERTER FRIO MIDEA", "Viper Midea R-32", "VIPER MIDEA R32", "MIDEA 60000 INVERTER PISO TETO"],
+    linha: "Piso Teto Inverter R-32 / Viper Midea",
+    tipo: "Piso Teto Inverter Frio",
+    capacidade: "60.000 BTU/h",
+    fluidoRefrigerante: "R32",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-60000-btu-inverter-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-60000-btu-inverter-frio-midea.pdf",
+    fonte: "Midea oficial - Manual Piso Teto 60.000 BTU Inverter Frio R-32",
+    status: "Cadastro por família/capacidade. Próxima etapa: separar pelo código exato da etiqueta."
+  }),
+  acervoItem({
+    marca: "Midea",
+    modelo: "Janela 18.000 BTU Mecânico Frio - Silentia R410A",
+    codigoBusca: ["JANELA 18000 MIDEA", "SILENTIA R410A", "SPRINGER MIDEA SILENTIA", "AR CONDICIONADO JANELA 18000 BTU MECANICO FRIO MIDEA"],
+    linha: "Janela Silentia",
+    tipo: "Ar-condicionado Janela Mecânico Frio",
+    capacidade: "18.000 BTU/h",
+    fluidoRefrigerante: "R410A conforme família Silentia indicada no manual",
+    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-janela-18000-btu-mecanico-frio-midea.pdf",
+    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-janela-18000-btu-mecanico-frio-midea.pdf",
+    fonte: "Midea/Springer oficial - Manual Janela 18.000 BTU Silentia R410A",
+    status: "Cadastro por linha/capacidade. Validar etiqueta do equipamento."
+  }),
+
+  /* LOTE 5 - DAIKIN REFINAMENTO */
+  acervoItem({
+    marca: "Daikin",
+    modelo: "Split EcoSwing Smart Gold R-32",
+    codigoBusca: ["ECOSWING SMART GOLD R32", "ECOSWING SMART GOLD R-32", "DAIKIN SMART GOLD", "DAIKIN ECOSWING SMART GOLD", "SMART GOLD R32"],
+    linha: "EcoSwing Smart Gold R-32",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 / 12.000 / 18.000 / 24.000 BTU/h conforme modelo",
+    fluidoRefrigerante: "R32",
+    manualInstalacao: "https://www.daikin.com.br/produto/split-ecoswing-smart-gold-r-32",
+    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
+    fonte: "Daikin oficial - página EcoSwing Smart Gold R-32 e área oficial de downloads",
+    status: "Cadastro por linha oficial. Próxima etapa: separar códigos internos/externos por capacidade."
+  }),
+  acervoItem({
+    marca: "Daikin",
+    modelo: "Split Hi Wall Full Inverter",
+    codigoBusca: ["SPLIT HI WALL FULL INVERTER DAIKIN", "DAIKIN FULL INVERTER", "FULL INVERTER DAIKIN", "HI WALL FULL INVERTER"],
+    linha: "Split Hi Wall Full Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "Validar código/capacidade no produto oficial",
+    manualInstalacao: "https://www.daikin.com.br/lp-produtos/split-hi-wall-full-inverter/",
+    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
+    fonte: "Daikin oficial - página Split Hi Wall Full Inverter e área oficial de downloads",
+    status: "Cadastro por linha oficial. Próxima etapa: separar códigos internos/externos por capacidade."
   })
 ];
