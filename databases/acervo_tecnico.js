@@ -1,7 +1,14 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   Acervo Técnico Oficial - Lote 1
+   Acervo Técnico Oficial - Restauração Estável
 
-   Regra do banco:
+   Base enviada pelo usuário.
+
+   Objetivo:
+   - Restaurar o carregamento do Acervo Técnico.
+   - Garantir que window.acervoTecnico exista.
+   - Voltar a busca a funcionar antes de enriquecer novamente.
+
+   Regra deste arquivo:
    - Usar somente fonte oficial do fabricante.
    - Não inventar dados técnicos.
    - Quando o manual oficial não informar, usar:
