@@ -1,747 +1,904 @@
-/* HVAC PRO - databases/acervo_tecnico.js
-   ACERVO TÉCNICO V2 - FICHA LIMPA
-
-   NOVO PADRÃO:
-   - Busca por modelo/código da etiqueta.
-   - A ficha mostra somente dados úteis e confiáveis.
-   - Campos vagos ficam ocultos pelo app.js.
-   - Dados confirmados aparecem em verde no app.
-
-   FONTES ACEITAS:
-   - FABRICANTE_OFICIAL
-   - ETIQUETA_MAQUINA
-   - INMETRO_ENCE
-   - DISTRIBUIDOR_TECNICO_AUTORIZADO
-
-   NÃO USAR COMO DADO CONFIRMADO:
-   - loja comum
-   - fórum
-   - YouTube
-   - Manualzz / Scribd / PDFCoffee
-   - comentário técnico sem fonte
+/* HVAC PRO - app.js
+   ARQUIVO COMPLETO
+   Correção: busca do Acervo mais tolerante para modelo/código.
+   - Aceita maiúscula/minúscula.
+   - Aceita com ou sem hífen, espaço, barra e pontos.
+   - Se o técnico continuar digitando depois do código, o resultado não some.
+   - A ficha do Acervo continua limpa: campos vagos ficam ocultos; dados úteis aparecem em verde.
 */
 
-const NAO = "Não informado no manual oficial";
-const VALIDAR = "Validar etiqueta/manual";
-const VALIDAR_PROC = "Validar procedimento técnico do fabricante";
+const gasData = window.gasData || {};
+const errorCategories = window.errorCategories || [];
+const brandsByCategory = window.brandsByCategory || {};
+const modelsByBrand = window.modelsByBrand || {};
+const errorCodesByModel = window.errorCodesByModel || {};
+const acervoTecnico = window.acervoTecnico || [];
 
-function acervoItem(dados) {
-  return {
-    marca: dados.marca || "",
-    modelo: dados.modelo || "",
-    codigoBusca: dados.codigoBusca || [],
-    linha: dados.linha || NAO,
-    tipo: dados.tipo || NAO,
-    capacidade: dados.capacidade || VALIDAR,
+let cards = [];
+let current = 0;
+let startX = 0;
+let endX = 0;
+let catCurrent = 0;
+let brandCurrent = 0;
+let modelCurrent = 0;
+let codeCurrent = 0;
 
-    tensao: dados.tensao || "",
-    fluidoRefrigerante: dados.fluidoRefrigerante || "",
-    cargaGas: dados.cargaGas || "",
-    correnteNominal: dados.correnteNominal || "",
-    disjuntor: dados.disjuntor || "",
-
-    tubulacaoAlta: dados.tubulacaoAlta || "",
-    tubulacaoBaixa: dados.tubulacaoBaixa || "",
-    comprimentoMaximo: dados.comprimentoMaximo || "",
-    desnivelMaximo: dados.desnivelMaximo || "",
-    cargaAdicional: dados.cargaAdicional || "",
-
-    superaquecimento: dados.superaquecimento || "",
-    subresfriamento: dados.subresfriamento || "",
-
-    manualInstalacao: dados.manualInstalacao || "",
-    manualManutencao: dados.manualManutencao || dados.manualInstalacao || "",
-
-    fonte: dados.fonte || "",
-    fonteTipo: dados.fonteTipo || "FABRICANTE_OFICIAL",
-    nivelConfianca: dados.nivelConfianca || "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: dados.observacaoFonte || "Dados cadastrados a partir de fonte técnica confiável."
-  };
+function normalizeSearchText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
-window.acervoTecnico = [
+function normalizeAcervoCodeText(value) {
+  return normalizeSearchText(value).replace(/[^a-z0-9]/g, "");
+}
 
-  /* =========================
-     MIDEA / SPRINGER - BASE TÉCNICA
-     ========================= */
+function safeValue(value, fallback) {
+  return value || fallback || "Não informado no manual oficial";
+}
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "42AGVCJ09 / 38AGVCJ09 - Xtreme Save AI Connect R32",
-    codigoBusca: [
-      "42AGVCJ09", "38AGVCJ09", "42AGVCJ09M5", "38AGVCJ09M5",
-      "XTREME SAVE 9000", "XTREME SAVE 09", "AGVCJ09"
-    ],
-    linha: "Xtreme Save AI Connect",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "R32",
-    tubulacaoAlta: "1/4 pol. - validar tabela do manual conforme código completo",
-    tubulacaoBaixa: "3/8 pol. - validar tabela do manual conforme código completo",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    fonte: "Midea oficial - Manual Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Dados refinados pelo manual oficial. Carga de gás, corrente e disjuntor devem ser confirmados pela etiqueta/tabela do modelo exato."
-  }),
+function hasConcreteAcervoValue(value) {
+  const raw = String(value || "");
+  const text = normalizeSearchText(raw);
+  if (!text) return false;
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "42AGVCJ12 / 38AGVCJ12 - Xtreme Save AI Connect R32",
-    codigoBusca: [
-      "42AGVCJ12", "38AGVCJ12", "42AGVCJ12M5", "38AGVCJ12M5",
-      "XTREME SAVE 12000", "XTREME SAVE 12", "AGVCJ12"
-    ],
-    linha: "Xtreme Save AI Connect",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "R32",
-    tubulacaoAlta: "1/4 pol. - validar tabela do manual conforme código completo",
-    tubulacaoBaixa: "3/8 pol. ou 1/2 pol. conforme versão/capacidade indicada no manual",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    fonte: "Midea oficial - Manual Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Dados refinados pelo manual oficial. Carga de gás, corrente e disjuntor devem ser confirmados pela etiqueta/tabela do modelo exato."
-  }),
+  return /\d/.test(raw) ||
+    text.includes("btu") ||
+    text.includes("r32") ||
+    text.includes("r410a") ||
+    text.includes("r22") ||
+    text.includes("127v") ||
+    text.includes("220v") ||
+    text.includes("380v") ||
+    text.includes("pol") ||
+    text.includes("mm") ||
+    text.includes("kg") ||
+    text.includes(" g") ||
+    text.includes("g/");
+}
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "42AGVCJ18 / 38AGVCJ18 - Xtreme Save AI Connect R32",
-    codigoBusca: [
-      "42AGVCJ18", "38AGVCJ18", "42AGVCJ18M5", "38AGVCJ18M5",
-      "XTREME SAVE 18000", "XTREME SAVE 18", "AGVCJ18"
-    ],
-    linha: "Xtreme Save AI Connect",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "18.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "R32",
-    tubulacaoAlta: "1/4 pol. - validar tabela do manual conforme código completo",
-    tubulacaoBaixa: "1/2 pol. - validar tabela do manual conforme código completo",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    fonte: "Midea oficial - Manual Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Dados refinados pelo manual oficial. Carga de gás, corrente e disjuntor devem ser confirmados pela etiqueta/tabela do modelo exato."
-  }),
+function isWeakAcervoValue(value) {
+  const text = normalizeSearchText(value);
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "42AGVCJ22 / 38AGVCJ22 - Xtreme Save AI Connect R32",
-    codigoBusca: [
-      "42AGVCJ22", "38AGVCJ22", "42AGVCJ22M5", "38AGVCJ22M5",
-      "XTREME SAVE 22000", "XTREME SAVE 22", "AGVCJ22"
-    ],
-    linha: "Xtreme Save AI Connect",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "22.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "R32",
-    tubulacaoAlta: "3/8 pol. - validar tabela do manual conforme código completo",
-    tubulacaoBaixa: "5/8 pol. - validar tabela do manual conforme código completo",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    fonte: "Midea oficial - Manual Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Dados refinados pelo manual oficial. Carga de gás, corrente e disjuntor devem ser confirmados pela etiqueta/tabela do modelo exato."
-  }),
+  if (!text) return true;
+  if (text === "-") return true;
+  if (text === "nao aplicavel") return true;
+  if (text === "nao se aplica") return true;
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "42EFV / 38TAV - AI AirVolution",
-    codigoBusca: ["42EFV", "38TAV", "42EFV 38TAV", "AI AIRVOLUTION", "MIDEA AIRVOLUTION"],
-    linha: "AI AirVolution",
-    tipo: "Split Hi Wall",
-    capacidade: "Validar capacidade pelo código completo",
-    tensao: "220V - validar etiqueta do equipamento",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
-    fonte: "Midea oficial - Manual AI AirVolution",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Cadastro por família/código. Usar etiqueta e tabela do manual para dados elétricos e frigorígenos específicos."
-  }),
+  if (hasConcreteAcervoValue(value)) return false;
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "40KVQD - Cassete 58.000 BTU 4 Vias Frio",
-    codigoBusca: ["40KVQD", "MIDEA 40KVQD", "CASSETE 58000 MIDEA", "CASSETE 4 VIAS MIDEA"],
-    linha: "Cassete 4 Vias",
-    tipo: "Cassete 4 Vias Frio",
-    capacidade: "58.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    tubulacaoAlta: "Validar tabela do manual oficial",
-    tubulacaoBaixa: "Validar tabela do manual oficial",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
-    fonte: "Midea oficial - Manual Cassete 58.000 BTU 40KVQD",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Cadastro por código/família 40KVQD. Confirmar dados elétricos e carga pela etiqueta/tabela do equipamento."
-  }),
+  if (text.includes("nao informado")) return true;
+  if (text.includes("não informado")) return true;
+  if (text.includes("validar etiqueta")) return true;
+  if (text.includes("validar manual")) return true;
+  if (text.includes("validar procedimento")) return true;
+  if (text.includes("validar tabela")) return true;
+  if (text.includes("validar modelo")) return true;
+  if (text.includes("validar codigo")) return true;
+  if (text.includes("validar código")) return true;
+  if (text.includes("validar combinacao")) return true;
+  if (text.includes("validar combinação")) return true;
+  if (text.includes("nao cadastrado")) return true;
+  if (text.includes("não cadastrado")) return true;
 
-  acervoItem({
-    marca: "Midea",
-    modelo: "Piso Teto 36.000 BTU Inverter Frio",
-    codigoBusca: ["PISO TETO 36000 MIDEA", "MIDEA PISO TETO 36000", "MIDEA 36000 INVERTER PISO TETO"],
-    linha: "Piso Teto Inverter",
-    tipo: "Piso Teto Inverter Frio",
-    capacidade: "36.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    tubulacaoAlta: "Validar tabela do manual oficial",
-    tubulacaoBaixa: "Validar tabela do manual oficial",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-36000-btu-inverter-frio-midea.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-split-piso-teto-36000-btu-inverter-frio-midea.pdf",
-    fonte: "Midea oficial - Manual Piso Teto 36.000 BTU",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Cadastro por família/capacidade. Confirmar código exato na etiqueta."
-  }),
+  return false;
+}
 
-  /* =========================
-     GREE - BASE TÉCNICA
-     ========================= */
+function renderAcervoField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
 
-  acervoItem({
-    marca: "Gree",
-    modelo: "G-Diamond Auto Inverter",
-    codigoBusca: [
-      "G-DIAMOND AUTO INVERTER", "G DIAMOND AUTO INVERTER", "G-DIAMOND AUTO",
-      "G DIAMOND AUTO", "CB497N24100", "CB497N", "GWH12"
-    ],
-    linha: "G-Diamond Auto Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "Validar capacidade pelo código completo da etiqueta",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "R32 quando aplicável ao modelo indicado no manual oficial",
-    tubulacaoAlta: "Validar tabela do modelo/capacidade no manual oficial",
-    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
-    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
-    fonte: "Gree oficial - Manual G-Diamond Auto Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial de instalação/manutenção. Dados específicos dependem do código completo da etiqueta."
-  }),
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong class="green">${value}</strong>
+    </div>
+  `;
+}
 
-  acervoItem({
-    marca: "Gree",
-    modelo: "G-Prime Inverter Compact",
-    codigoBusca: ["G-PRIME INVERTER COMPACT", "G PRIME INVERTER COMPACT", "GREE G-PRIME COMPACT"],
-    linha: "G-Prime Inverter Compact",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "Validar modelo/capacidade no manual oficial e etiqueta",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    tubulacaoAlta: "Validar tabela do manual oficial",
-    tubulacaoBaixa: "Validar tabela do manual oficial",
-    superaquecimento: VALIDAR_PROC,
-    subresfriamento: VALIDAR_PROC,
-    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
-    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
-    fonte: "Gree oficial - Manual G-Prime Inverter Compact",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial direto. Separar códigos exatos da etiqueta na próxima validação fina."
-  }),
+function renderAcervoTextField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
 
-  acervoItem({
-    marca: "Gree",
-    modelo: "G-Top Inverter",
-    codigoBusca: ["G-TOP INVERTER", "G TOP INVERTER", "GREE G-TOP INVERTER", "GREE G TOP INVERTER"],
-    linha: "G-Top Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "Validar modelo/capacidade no manual oficial",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-TOP-INVERTER-Rev-005-full.pdf",
-    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-TOP-INVERTER-Rev-005-full.pdf",
-    fonte: "Gree oficial - Manual G-Top Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Cadastro por linha oficial. Confirmar código e capacidade na etiqueta do equipamento."
-  }),
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      ${value}
+    </div>
+  `;
+}
 
-  acervoItem({
-    marca: "Gree",
-    modelo: "G-Max Inverter",
-    codigoBusca: ["G-MAX INVERTER", "G MAX INVERTER", "GREE G-MAX", "GREE G MAX"],
-    linha: "G-Max Inverter",
-    tipo: "Split Hi Wall Inverter / linha G-Max conforme manual",
-    capacidade: "Validar modelo/capacidade no manual oficial e etiqueta",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-Max-Rev.001-full.pdf",
-    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-Max-Rev.001-full.pdf",
-    fonte: "Gree oficial - Manual G-Max Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial direto. Confirmar código completo na etiqueta."
-  }),
+function renderAcervoManual(label, value, text) {
+  if (!value || !String(value).startsWith("http")) return "";
 
-  acervoItem({
-    marca: "Gree",
-    modelo: "Piso Teto Inverter Gree",
-    codigoBusca: ["PISO TETO GREE", "PISO-TETO GREE", "PISO TETO INVERTER GREE"],
-    linha: "Piso-Teto Inverter",
-    tipo: "Piso Teto Inverter",
-    capacidade: "Validar modelo/capacidade no manual oficial",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://gree.com.br/manuais/",
-    manualManutencao: "https://gree.com.br/manuais/",
-    fonte: "Gree oficial - página de materiais técnicos",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    observacaoFonte: "Portal oficial para baixar manual específico da revisão correta."
-  }),
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <a href="${value}" target="_blank" rel="noopener">${text}</a>
+    </div>
+  `;
+}
 
-  /* =========================
-     LG - BASE TÉCNICA
-     ========================= */
+function updateCarousel() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
 
-  acervoItem({
-    marca: "LG",
-    modelo: "S4-Q12JA31G - Dual Inverter Voice 12.000 BTU Frio 127V",
-    codigoBusca: ["S4-Q12JA31G", "S4Q12JA31G", "LG S4-Q12JA31G", "DUAL INVERTER VOICE 12000 127V"],
-    linha: "Dual Inverter Voice",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "127V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s4-q12ja31g-1/",
-    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "LG oficial - página do produto S4-Q12JA31G e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Código real em página oficial LG. Dados elétricos/frigorígenos devem ser confirmados pelo manual/etiqueta."
-  }),
+  cards.forEach((card, index) => {
+    card.className = "card";
 
-  acervoItem({
-    marca: "LG",
-    modelo: "S4-Q12JA315 - Dual Inverter 12.000 BTU 220V",
-    codigoBusca: ["S4-Q12JA315", "S4Q12JA315", "LG S4-Q12JA315", "DUAL INVERTER 12000 220V"],
-    linha: "Dual Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s4-q12ja315/",
-    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "LG oficial - página do produto S4-Q12JA315 e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Código real em página oficial LG. Dados elétricos/frigorígenos devem ser confirmados pelo manual/etiqueta."
-  }),
+    const left = (current - 1 + cards.length) % cards.length;
+    const right = (current + 1) % cards.length;
+    const farLeft = (current - 2 + cards.length) % cards.length;
+    const farRight = (current + 2) % cards.length;
 
-  acervoItem({
-    marca: "LG",
-    modelo: "S4-Q12JA3WC - Dual Inverter 12.000 BTU Frio",
-    codigoBusca: ["S4-Q12JA3WC", "S4Q12JA3WC", "LG S4-Q12JA3WC", "DUAL INVERTER 12000 FRIO"],
-    linha: "Dual Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-residencial-inverter/s4-q12ja3wc1/",
-    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "LG oficial - página do produto S4-Q12JA3WC e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Código real em página oficial LG. Dados elétricos/frigorígenos devem ser confirmados pelo manual/etiqueta."
-  }),
+    if (index === current) card.classList.add("center");
+    else if (index === left) card.classList.add("left");
+    else if (index === right) card.classList.add("right");
+    else if (index === farLeft) card.classList.add("far-left");
+    else if (index === farRight) card.classList.add("far-right");
+    else card.classList.add("hidden");
+  });
+}
 
-  acervoItem({
-    marca: "LG",
-    modelo: "S3-Q12JA33K - Dual Inverter Voice +AI 12.000 BTU",
-    codigoBusca: ["S3-Q12JA33K", "S3Q12JA33K", "LG S3-Q12JA33K", "DUAL INVERTER VOICE AI 12000"],
-    linha: "Dual Inverter Voice +AI",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s3-q12ja33k/",
-    manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "LG oficial - página do produto S3-Q12JA33K e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Código real em página oficial LG. Dados elétricos/frigorígenos devem ser confirmados pelo manual/etiqueta."
-  }),
+function next() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
+  current = (current + 1) % cards.length;
+  updateCarousel();
+}
 
-  /* =========================
-     SAMSUNG - BASE TÉCNICA
-     ========================= */
+function prev() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
+  current = (current - 1 + cards.length) % cards.length;
+  updateCarousel();
+}
 
-  acervoItem({
-    marca: "Samsung",
-    modelo: "AR12MVPXAWKNAZ - WindFree 12.000 BTU Frio",
-    codigoBusca: ["AR12MVPXAWKNAZ", "AR12MVPX", "AR12MVPXAWK", "AR12MVPXAWKNAZ/AZ", "WINDFREE AR12MVPXAWKNAZ"],
-    linha: "WindFree",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
-    manualManutencao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
-    fonte: "Samsung oficial - página de suporte do modelo",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    observacaoFonte: "Código real em página oficial Samsung. Baixar manual mais atual na página do modelo."
-  }),
+function searchHome() {
+  const input = document.getElementById("homeSearch");
+  if (!input) return;
 
-  acervoItem({
-    marca: "Samsung",
-    modelo: "AR12DYFABWKNAZ - WindFree AI 12.000 BTU Frio Wi-Fi",
-    codigoBusca: ["AR12DYFABWKNAZ", "AR12DYFAB", "AR12DYFABWK", "AR12DYFABWKNAZ/AZ", "WINDFREE AI AR12DYFABWKNAZ"],
-    linha: "WindFree AI",
-    tipo: "Split Hi Wall Inverter Wi-Fi",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
-    manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
-    fonte: "Samsung oficial - página de suporte do modelo",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    observacaoFonte: "Código real em página oficial Samsung. Baixar manual mais atual na página do modelo."
-  }),
+  const value = normalizeSearchText(input.value);
+  if (value.length < 2) return;
 
-  /* =========================
-     ELGIN - BASE TÉCNICA
-     ========================= */
+  const map = [
+    { keys: ["manifold", "pressao", "pressão"], index: 0 },
+    { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
+    { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
+    { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
+    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
+    { keys: ["acervo", "acervo tecnico", "acervo técnico", "manual", "manuais", "manual tecnico", "manual técnico"], index: 5 }
+  ];
 
-  acervoItem({
-    marca: "Elgin",
-    modelo: "Eco Star Inverter 12.000 BTU Frio 127V",
-    codigoBusca: ["ECO STAR INVERTER 12000", "ECO STAR 12000 127V", "ELGIN ECO STAR 12000", "ECO STAR INVERTER 12K"],
-    linha: "Eco Star Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "127V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-star-inverter-12000-btus-frio-127v/p",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Star Inverter 12.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Extrair código exato da etiqueta/manual quando disponível."
-  }),
+  const found = map.find((item) => {
+    return item.keys.some((key) => {
+      const cleanKey = normalizeSearchText(key);
+      return cleanKey.includes(value) || value.includes(cleanKey);
+    });
+  });
 
-  acervoItem({
-    marca: "Elgin",
-    modelo: "Eco Inverter II Wi-Fi 9.000 BTU Frio 220V",
-    codigoBusca: ["ECO INVERTER II 9000", "ECO INVERTER II WIFI 9000", "ELGIN ECO INVERTER II 9000", "ECO INVERTER II 9K"],
-    linha: "Eco Inverter II Wi-Fi",
-    tipo: "Split Hi Wall Inverter Wi-Fi",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-9000-btus-frio-wifi-220v/p",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Inverter II 9.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Extrair código exato da etiqueta/manual quando disponível."
-  }),
+  if (found) {
+    current = found.index;
+    updateCarousel();
+  }
+}
 
-  acervoItem({
-    marca: "Elgin",
-    modelo: "Eco Inverter II Wi-Fi 18.000 BTU Quente/Frio 220V",
-    codigoBusca: ["ECO INVERTER II 18000", "ECO INVERTER II WIFI 18000", "ELGIN ECO INVERTER II 18000", "ECO INVERTER II 18K"],
-    linha: "Eco Inverter II Wi-Fi",
-    tipo: "Split Hi Wall Inverter Quente/Frio",
-    capacidade: "18.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-18000-btus-quente-e-frio-wifi-220v/p",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Inverter II 18.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Extrair código exato da etiqueta/manual quando disponível."
-  }),
+function setupMainSwipe() {
+  const carousel = document.getElementById("carousel");
+  if (!carousel) return;
 
-  acervoItem({
-    marca: "Elgin",
-    modelo: "Eco Inverter II Wi-Fi 24.000 BTU Frio 220V",
-    codigoBusca: ["ECO INVERTER II 24000", "ECO INVERTER II WIFI 24000", "ELGIN ECO INVERTER II 24000", "ECO INVERTER II 24K"],
-    linha: "Eco Inverter II Wi-Fi",
-    tipo: "Split Hi Wall Inverter Wi-Fi",
-    capacidade: "24.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "Validar etiqueta/manual",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-24000-btus-frio-wifi-220v/p",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Inverter II 24.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Extrair código exato da etiqueta/manual quando disponível."
-  }),
+  carousel.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+  });
 
-  /* =========================
-     KOMECO - BASE TÉCNICA
-     ========================= */
+  carousel.addEventListener("touchend", (event) => {
+    endX = event.changedTouches[0].clientX;
+    const diff = endX - startX;
+    if (diff > 45) prev();
+    if (diff < -45) next();
+  });
+}
 
-  acervoItem({
-    marca: "Komeco",
-    modelo: "KOHI 09QC 1HV - Inverter KOHI 9.000 BTU",
-    codigoBusca: ["KOHI09QC1HV", "KOHI 09QC 1HV", "KOHI09QC", "KOHI 09", "KOMECO KOHI 09QC"],
-    linha: "KOHI Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "A2L conforme aviso do manual oficial; validar etiqueta do equipamento",
-    tubulacaoAlta: "1/4 pol. - conforme tabela do manual KOHI, validar código completo",
-    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
-    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
-    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
-    fonte: "Komeco oficial - Manual KOHI e Manual de Serviço Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial KOHI e manual técnico Komeco. Validar etiqueta e tabela completa antes do serviço."
-  }),
+function openScreen(id) {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.remove("active");
+  });
 
-  acervoItem({
-    marca: "Komeco",
-    modelo: "KOHI 12QC 1HV - Inverter KOHI 12.000 BTU",
-    codigoBusca: ["KOHI12QC1HV", "KOHI 12QC 1HV", "KOHI12QC", "KOHI 12", "KOMECO KOHI 12QC"],
-    linha: "KOHI Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "A2L conforme aviso do manual oficial; validar etiqueta do equipamento",
-    tubulacaoAlta: "Validar tabela do modelo/capacidade no manual oficial",
-    tubulacaoBaixa: "Validar tabela do modelo/capacidade no manual oficial",
-    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
-    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
-    fonte: "Komeco oficial - Manual KOHI e Manual de Serviço Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial KOHI e manual técnico Komeco. Validar etiqueta e tabela completa antes do serviço."
-  }),
+  const screen = document.getElementById(id);
+  if (!screen) return;
+  screen.classList.add("active");
 
-  /* =========================
-     DAIKIN - BASE TÉCNICA
-     ========================= */
+  if (id === "home") updateCarousel();
 
-  acervoItem({
-    marca: "Daikin",
-    modelo: "FTKP09Q5VL / RKP09Q5VL - EcoSwing Smart R-32 9.000 BTU",
-    codigoBusca: ["FTKP09Q5VL", "RKP09Q5VL", "FTKP09", "RKP09", "ECOSWING SMART R32 FTKP09"],
-    linha: "EcoSwing Smart R-32",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "R32",
-    manualInstalacao: "https://www.daikin.com.br/profissionais/downloads",
-    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
-    fonte: "Daikin oficial - área de downloads e linha EcoSwing Smart R-32",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    observacaoFonte: "Validar documentação específica no portal oficial Daikin."
-  }),
+  if (id === "gases") {
+    const gases = document.getElementById("gases");
+    if (gases) gases.scrollTop = 0;
+  }
 
-  acervoItem({
-    marca: "Daikin",
-    modelo: "FTKP12Q5VL / RKP12Q5VL - EcoSwing Smart R-32 12.000 BTU",
-    codigoBusca: ["FTKP12Q5VL", "RKP12Q5VL", "FTKP12", "RKP12", "ECOSWING SMART R32 FTKP12"],
-    linha: "EcoSwing Smart R-32",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "R32",
-    manualInstalacao: "https://www.daikin.com.br/profissionais/downloads",
-    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
-    fonte: "Daikin oficial - área de downloads e linha EcoSwing Smart R-32",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    observacaoFonte: "Validar documentação específica no portal oficial Daikin."
-  }),
+  if (id === "erros") {
+    const erros = document.getElementById("erros");
+    if (erros) erros.scrollTop = 0;
 
-  acervoItem({
-    marca: "Daikin",
-    modelo: "FTKP18Q5VL / RKP18Q5VL - EcoSwing Smart R-32 18.000 BTU",
-    codigoBusca: ["FTKP18Q5VL", "RKP18Q5VL", "FTKP18", "RKP18", "ECOSWING SMART R32 FTKP18"],
-    linha: "EcoSwing Smart R-32",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "18.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    fluidoRefrigerante: "R32",
-    manualInstalacao: "https://www.daikin.com.br/profissionais/downloads",
-    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
-    fonte: "Daikin oficial - área de downloads e linha EcoSwing Smart R-32",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    observacaoFonte: "Validar documentação específica no portal oficial Daikin."
-  }),
+    const typeStep = document.getElementById("typeStep");
+    const brandStep = document.getElementById("brandStep");
+    const modelStep = document.getElementById("modelStep");
+    const codeStep = document.getElementById("codeStep");
 
-  /* =========================
-     CONSUL / ELECTROLUX / PHILCO / BRITÂNIA - ENTRADAS COM FICHA OFICIAL
-     ========================= */
+    if (typeStep) typeStep.style.display = "block";
+    if (brandStep) brandStep.style.display = "none";
+    if (modelStep) modelStep.style.display = "none";
+    if (codeStep) codeStep.style.display = "none";
 
-  acervoItem({
-    marca: "Consul",
-    modelo: "CBK12EBBCJ - Dual Inverter Cobre Frio 12.000 BTU",
-    codigoBusca: ["CBK12EBBCJ", "CBK12EB", "CONSUL CBK12EBBCJ", "DUAL INVERTER CONSUL CBK12EBBCJ"],
-    linha: "Dual Inverter Cobre Frio",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/página oficial",
-    manualInstalacao: "https://www.consul.com.br/ar-condicionado-split-consul-dual-inverter-cobre-frio-12000-btus-cbk12eb/p",
-    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
-    fonte: "Consul oficial - página do produto e orientação oficial de manuais por código",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Usar código do produto no portal Consul para manual mais atual."
-  }),
+    renderCategoryCarousel();
+  }
 
-  acervoItem({
-    marca: "Electrolux",
-    modelo: "YI18F / YE18F - Inverter 18.000 BTU Frio",
-    codigoBusca: ["YI18F", "YE18F", "YI18F YE18F", "ELECTROLUX YI18F", "ELECTROLUX YE18F"],
-    linha: "Split Inverter Electrolux",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "18.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    manualInstalacao: "https://content.electrolux.com.br/brasil/electrolux/emanuelle_21_10_24/yi_ye18f/index.html",
-    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
-    fonte: "Electrolux oficial - página do produto/manual e central oficial de guias e manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial/manual online. Confirmar dados elétricos e frigorígenos por etiqueta/manual completo."
-  }),
+  if (id === "acervo") {
+    const acervo = document.getElementById("acervo");
+    if (acervo) acervo.scrollTop = 0;
 
-  acervoItem({
-    marca: "Philco",
-    modelo: "PH9000IFM / PH12000IFM - Inverter",
-    codigoBusca: ["PH9000IFM", "PH12000IFM", "PH9000", "PH12000", "PHILCO PH9000IFM", "PHILCO PH12000IFM"],
-    linha: "Condicionadores de Ar Inverter Philco",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 / 12.000 BTU/h conforme código",
-    tensao: "220V - validar etiqueta/manual",
-    manualInstalacao: "https://suporte.philco.com.br/sfc/servlet.shepherd/document/download/0692T00000EbDP3QAN",
-    manualManutencao: "https://suporte.philco.com.br/",
-    fonte: "Philco oficial - Manual de Operação e Instalação Unificado",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial unificado. Confirmar código exato da etiqueta."
-  }),
+    const acervoSearch = document.getElementById("acervoSearch");
+    if (acervoSearch && !acervoSearch.value.trim()) renderAcervoIntro();
+  }
+}
 
-  acervoItem({
-    marca: "Britânia",
-    modelo: "BAC24000IQFM15 - Inverter Quente/Frio 24.000 BTU",
-    codigoBusca: ["BAC24000IQFM15", "BAC24000", "BAC24000IQFM", "BRITANIA BAC24000IQFM15", "BRITÂNIA BAC24000IQFM15"],
-    linha: "BAC Inverter Britânia",
-    tipo: "Split Hi Wall Inverter Quente/Frio",
-    capacidade: "24.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    manualInstalacao: "https://suporte.britania.com.br/hc/pt-br/articles/45657835553940-Documentos-para-o-Ar-Condicionado-BAC24000IQFM15",
-    manualManutencao: "https://suporte.britania.com.br/",
-    fonte: "Britânia oficial - documentos do produto BAC24000IQFM15",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    observacaoFonte: "Documentos oficiais do produto. Confirmar dados por etiqueta/ficha técnica."
-  }),
+/* GASES */
 
-  /* =========================
-     AGRATTO / EOS / TCL / HISENSE / HITACHI - BASE OFICIAL
-     ========================= */
+function renderGas(name) {
+  const key = String(name || "").toUpperCase();
+  const gas = gasData[key];
+  const gasInfo = document.getElementById("gasInfo");
+  if (!gasInfo) return;
 
-  acervoItem({
-    marca: "Agratto",
-    modelo: "ZICST12F-02 / ZICST12QF-02 - ZEN Inverter 12.000 BTU",
-    codigoBusca: ["ZICST12F-02", "ZICST12QF-02", "ZICST12F", "ZICST12QF", "ZEN INVERTER 12000 AGRATTO"],
-    linha: "ZEN Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "220V - validar etiqueta/manual",
-    manualInstalacao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
-    manualManutencao: "https://www.agratto.com.br/ar-condicionado/residencial/zen-inverter",
-    fonte: "Agratto oficial - página residencial ZEN Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    observacaoFonte: "Página oficial do produto. Validar documentos técnicos específicos do código."
-  }),
+  if (!gas) {
+    gasInfo.innerHTML = `
+      <h2>Não encontrado</h2>
+      <div class="info-row">Digite um gás válido.</div>
+    `;
+    return;
+  }
 
-  acervoItem({
-    marca: "EOS",
-    modelo: "Master Inverter EOS",
-    codigoBusca: ["MASTER INVERTER EOS", "EOS MASTER INVERTER", "MASTER INVERTER", "EOS INVERTER"],
-    linha: "Master Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "Validar código/capacidade no produto oficial",
-    manualInstalacao: "https://eos.com.br/wp-content/uploads/2025/02/Master-Inverter-EOS_Manual.pdf",
-    manualManutencao: "https://eos.com.br/wp-content/uploads/2025/02/Master-Inverter-EOS_Manual.pdf",
-    fonte: "EOS oficial - Manual Master Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Manual oficial por família. Separar por código/capacidade quando disponível no manual ou etiqueta."
-  }),
+  const ptRows = Array.isArray(gas.pt)
+    ? gas.pt.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")
+    : "";
 
-  acervoItem({
-    marca: "TCL",
-    modelo: "TAC-12CSA2-INV - Série A2 Inverter",
-    codigoBusca: ["TAC-12CSA2-INV", "TAC12CSA2INV", "TAC 12CSA2 INV", "TCL TAC-12CSA2-INV"],
-    linha: "Série A2 Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    manualInstalacao: "https://www.tcl.com/br/pt/support-airconditioner/model-tv/tac-12csa2-inv",
-    manualManutencao: "https://www.tcl.com/br/pt/support",
-    fonte: "TCL oficial - suporte do modelo TAC-12CSA2-INV",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    observacaoFonte: "Página oficial do modelo. Usar página oficial para baixar documentos disponíveis."
-  }),
+  gasInfo.innerHTML = `
+    <h2>${gas.nome || key}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${gas.tipo || "-"}</div>
+    <div class="info-row"><span>Composição:</span><br>${gas.composicao || "-"}</div>
+    <div class="info-row"><span>Aplicação:</span><br>${gas.aplicacao || "-"}</div>
+    <div class="info-row"><span>Óleo:</span><br>${gas.oleo || "-"}</div>
+    <div class="info-row"><span>Segurança:</span><br>${gas.seguranca || "-"}</div>
+    <div class="info-row"><span>GWP:</span><br>${gas.gwp || "-"}</div>
+    <div class="info-row"><span>ODP:</span><br>${gas.odp || "-"}</div>
+    <div class="info-row"><span>Ebulição:</span><br>${gas.ebulição || gas.ebulicao || "-"}</div>
+    <div class="info-row"><span>Crítica:</span><br>${gas.critica || "-"}</div>
+    <div class="info-row"><span>Pressão crítica:</span><br>${gas.pressaoCritica || "-"}</div>
+    <div class="info-row"><span>Glide:</span><br>${gas.glide || "-"}</div>
+    <div class="info-row"><span>Transferência:</span><br>${gas.transferencia || "-"}</div>
+    <div class="info-row"><span>Evaporação típica:</span><br>${gas.faixaEvaporacao || "-"}</div>
+    <div class="info-row"><span>Condensação típica:</span><br>${gas.faixaCondensacao || "-"}</div>
+    <div class="info-row"><span>Campo:</span><br>${gas.campo || "-"}</div>
+    <div class="info-row">
+      <span>Tabela PT resumida:</span>
+      ${ptRows ? `<table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão</th></tr></thead><tbody>${ptRows}</tbody></table>` : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`}
+      <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
+    </div>
+  `;
+}
 
-  acervoItem({
-    marca: "Hitachi",
-    modelo: "SCI24B3IV / RCI24B3IV / RAA24B3IV - airCore 600 Cassette 24.000 BTU",
-    codigoBusca: ["SCI24B3IV", "RCI24B3IV", "RAA24B3IV", "AIRCORE 600 24", "HITACHI SCI24B3IV", "HITACHI RCI24B3IV"],
-    linha: "airCore 600",
-    tipo: "Cassette 4 Vias / Comercial Split DC Inverter",
-    capacidade: "24.000 BTU/h",
-    manualInstalacao: "https://documentation.hitachiaircon.com/br/pt/pac/sci-spc-rci-rpc-b3iv-raa-b3iv/download/R0000015361_JCH",
-    manualManutencao: "https://www.hitachiaircon.com/br/downloads/aircore-600",
-    fonte: "Hitachi oficial - documentação técnica airCore 600",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    observacaoFonte: "Documentação oficial Hitachi. Validar combinação interna/externa."
-  }),
+function selectGas(name, element) {
+  document.querySelectorAll(".gas-chip").forEach((chip) => chip.classList.remove("active-gas"));
+  if (element) element.classList.add("active-gas");
 
-  /* =========================
-     STATUS INTERNO
-     ========================= */
+  const gasSearch = document.getElementById("gasSearch");
+  if (gasSearch) gasSearch.value = name;
 
-  acervoItem({
-    marca: "HVAC PRO",
-    modelo: "STATUS-ACERVO-V2",
-    codigoBusca: ["STATUS-ACERVO-V2", "ACERVO V2", "VERSAO 2 ACERVO", "VERSÃO 2 ACERVO"],
-    linha: "Controle interno do Acervo Técnico",
-    tipo: "Status do banco",
-    capacidade: "Ficha limpa ativa",
-    fonte: "Controle interno HVAC PRO",
-    fonteTipo: "CONTROLE_INTERNO",
-    nivelConfianca: "STATUS_INTERNO",
-    observacaoFonte: "Acervo V2 com ficha limpa: campos sem dados confiáveis ficam ocultos; dados úteis aparecem em verde com fonte/status."
-  })
-];
+  renderGas(name);
+}
+
+function searchGas() {
+  const input = document.getElementById("gasSearch");
+  if (!input) return;
+
+  const value = input.value.trim();
+  if (value.length >= 2) renderGas(value);
+}
+
+/* ÍCONES DO MÓDULO ERROS */
+
+function svgSplit() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgCassete() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/><rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/><path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgJanela() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="20" width="56" height="60" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M30 38H70" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 52H66M34 63H66" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><circle cx="67" cy="70" r="4" fill="#ff3636"/></svg>`;
+}
+
+function svgPisoTeto() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/><path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+/* ERROS */
+
+function activeCategory() {
+  return errorCategories[catCurrent]?.name || "";
+}
+
+function activeBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  return brands[brandCurrent] || "";
+}
+
+function activeModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  return models[modelCurrent] || "";
+}
+
+function getCodes() {
+  const key = activeBrand() + "|" + activeModel();
+  const codes = errorCodesByModel[key];
+
+  if (Array.isArray(codes) && codes.length) return codes;
+
+  return [
+    {
+      code: "E1",
+      title: "Falha genérica",
+      cause: "Código ainda não refinado para este modelo.",
+      test: "Verificar alimentação, sensores, comunicação e placas.",
+      solution: "Cadastrar diagnóstico específico na próxima etapa.",
+      sourceLevel: "DIAGNOSTICO_CAMPO"
+    },
+    {
+      code: "E3",
+      title: "Ventilador / sensor",
+      cause: "Possível falha no motor, sensor ou rotação.",
+      test: "Verificar motor, capacitor, sensor Hall e placa.",
+      solution: "Corrigir componente defeituoso.",
+      sourceLevel: "DIAGNOSTICO_CAMPO"
+    }
+  ];
+}
+
+function formatSourceLevel(sourceLevel) {
+  const map = {
+    DIAGNOSTICO_CAMPO: "Diagnóstico de campo",
+    VALIDAR_MANUAL_MODELO: "Validar no manual do modelo",
+    BASE_APP_ORIGINAL: "Base original do app",
+    BASE_APP_ORIGINAL_VALIDAR_MANUAL: "Base original do app / validar manual",
+    OFICIAL_SAMSUNG_SUPORTE: "Suporte oficial Samsung",
+    OFICIAL_MIDEA_FREEMATCH: "Manual técnico Midea FreeMatch",
+    OFICIAL_MIDEA_PORTATIL_REFERENCIA: "Referência oficial Midea",
+    OFICIAL_FUJITSU_MANUAL_LED: "Manual Fujitsu / leitura por LED",
+    OFICIAL_CONSUL_SUPORTE_GERAL: "Suporte oficial Consul",
+    OFICIAL_TRANE_U_MATCH: "Manual técnico Trane",
+    LISTA_TECNICA_NAO_OFICIAL_VALIDAR: "Lista técnica não oficial / validar"
+  };
+
+  return map[sourceLevel] || sourceLevel || "Não informado";
+}
+
+function renderCategoryCarousel() {
+  const box = document.getElementById("categoryCarousel");
+  if (!box) return;
+
+  box.innerHTML = errorCategories.map((cat, index) => `
+    <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-title">${cat.name}</div>
+    </div>
+  `).join("");
+
+  updateCategoryCarousel();
+}
+
+function updateCategoryCarousel() {
+  const catCards = document.querySelectorAll(".category-card");
+  if (!catCards.length) return;
+
+  catCards.forEach((card, index) => {
+    card.className = "category-card";
+    const left = (catCurrent - 1 + catCards.length) % catCards.length;
+    const right = (catCurrent + 1) % catCards.length;
+
+    if (index === catCurrent) card.classList.add("cat-center");
+    else if (index === left) card.classList.add("cat-left");
+    else if (index === right) card.classList.add("cat-right");
+    else card.classList.add("cat-hidden");
+  });
+}
+
+function nextCategory() {
+  if (!errorCategories.length) return;
+  catCurrent = (catCurrent + 1) % errorCategories.length;
+  updateCategoryCarousel();
+}
+
+function prevCategory() {
+  if (!errorCategories.length) return;
+  catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
+  updateCategoryCarousel();
+}
+
+function searchErrorType() {
+  const input = document.getElementById("errorTypeSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  if (value.length < 2) return;
+
+  const index = errorCategories.findIndex((cat) => {
+    return cat.search.some((term) => {
+      const cleanTerm = normalizeSearchText(term);
+      return cleanTerm.includes(value) || value.includes(cleanTerm);
+    });
+  });
+
+  if (index >= 0) {
+    catCurrent = index;
+    updateCategoryCarousel();
+  }
+}
+
+function selectTypeAndOpenBrand(index) {
+  catCurrent = index;
+  brandCurrent = 0;
+
+  document.getElementById("typeStep").style.display = "none";
+  document.getElementById("brandStep").style.display = "block";
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+
+  renderBrandCarousel();
+}
+
+function backToType() {
+  document.getElementById("brandStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("typeStep").style.display = "block";
+}
+
+function renderBrandCarousel() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  const box = document.getElementById("brandCarousel");
+  if (!box) return;
+
+  box.innerHTML = brands.map((brand, index) => `
+    <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
+      <div class="brand-title">${brand}</div>
+      <div class="brand-sub">${activeCategory()}</div>
+    </div>
+  `).join("");
+
+  updateBrandCarousel();
+}
+
+function updateBrandCarousel() {
+  const brandCards = document.querySelectorAll(".brand-card");
+  if (!brandCards.length) return;
+
+  brandCards.forEach((card, index) => {
+    card.className = "brand-card";
+    const left = (brandCurrent - 1 + brandCards.length) % brandCards.length;
+    const right = (brandCurrent + 1) % brandCards.length;
+
+    if (index === brandCurrent) card.classList.add("brand-center");
+    else if (index === left) card.classList.add("brand-left");
+    else if (index === right) card.classList.add("brand-right");
+    else card.classList.add("brand-hidden");
+  });
+}
+
+function nextBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  if (!brands.length) return;
+  brandCurrent = (brandCurrent + 1) % brands.length;
+  updateBrandCarousel();
+}
+
+function prevBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  if (!brands.length) return;
+  brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
+  updateBrandCarousel();
+}
+
+function searchBrand() {
+  const input = document.getElementById("brandSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  if (value.length < 1) return;
+
+  const brands = brandsByCategory[activeCategory()] || [];
+  const index = brands.findIndex((brand) => {
+    const cleanBrand = normalizeSearchText(brand);
+    return cleanBrand.includes(value) || value.includes(cleanBrand);
+  });
+
+  if (index >= 0) {
+    brandCurrent = index;
+    updateBrandCarousel();
+  }
+}
+
+function selectBrandAndOpenModel(index) {
+  brandCurrent = index;
+  modelCurrent = 0;
+
+  document.getElementById("brandStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "block";
+  document.getElementById("codeStep").style.display = "none";
+
+  const modelSearch = document.getElementById("modelSearch");
+  if (modelSearch) modelSearch.value = "";
+
+  renderModelCarousel();
+}
+
+function backToBrand() {
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("brandStep").style.display = "block";
+}
+
+function renderModelCarousel() {
+  const brand = activeBrand();
+  const models = modelsByBrand[brand] || ["Modelo não cadastrado"];
+  const box = document.getElementById("modelCarousel");
+  if (!box) return;
+
+  box.innerHTML = models.map((model, index) => `
+    <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
+      <div class="model-title">${model}</div>
+      <div class="model-sub">${brand}</div>
+    </div>
+  `).join("");
+
+  updateModelCarousel();
+  renderModelInfo();
+}
+
+function updateModelCarousel() {
+  const modelCards = document.querySelectorAll(".model-card");
+  if (!modelCards.length) return;
+
+  modelCards.forEach((card, index) => {
+    card.className = "model-card";
+    const left = (modelCurrent - 1 + modelCards.length) % modelCards.length;
+    const right = (modelCurrent + 1) % modelCards.length;
+
+    if (index === modelCurrent) card.classList.add("model-center");
+    else if (index === left) card.classList.add("model-left");
+    else if (index === right) card.classList.add("model-right");
+    else card.classList.add("model-hidden");
+  });
+
+  renderModelInfo();
+}
+
+function nextModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  if (!models.length) return;
+  modelCurrent = (modelCurrent + 1) % models.length;
+  updateModelCarousel();
+}
+
+function prevModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  if (!models.length) return;
+  modelCurrent = (modelCurrent - 1 + models.length) % models.length;
+  updateModelCarousel();
+}
+
+function searchModel() {
+  const input = document.getElementById("modelSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  const models = modelsByBrand[activeBrand()] || [];
+
+  if (value.length < 1) {
+    renderModelInfo();
+    return;
+  }
+
+  const index = models.findIndex((model) => {
+    const cleanModel = normalizeSearchText(model);
+    return cleanModel.includes(value) || value.includes(cleanModel);
+  });
+
+  if (index >= 0) {
+    modelCurrent = index;
+    updateModelCarousel();
+  } else {
+    const modelInfo = document.getElementById("modelInfo");
+    if (modelInfo) {
+      modelInfo.innerHTML = `
+        <h2>Modelo informado</h2>
+        <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+        <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
+      `;
+    }
+  }
+}
+
+function renderModelInfo() {
+  const modelInfo = document.getElementById("modelInfo");
+  if (!modelInfo) return;
+
+  modelInfo.innerHTML = `
+    <h2>${activeBrand()}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo para ver os códigos de erro.</div>
+  `;
+}
+
+function selectModelAndOpenCodes(index) {
+  modelCurrent = index;
+  codeCurrent = 0;
+
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "block";
+
+  const codeSearch = document.getElementById("codeSearch");
+  if (codeSearch) codeSearch.value = "";
+
+  renderCodeCarousel();
+}
+
+function backToModel() {
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "block";
+}
+
+function renderCodeCarousel() {
+  const codes = getCodes();
+  const box = document.getElementById("codeCarousel");
+  if (!box) return;
+
+  box.innerHTML = codes.map((item) => `
+    <div class="code-card">
+      <div class="code-title">${item.code}</div>
+      <div class="code-sub">${item.title}</div>
+    </div>
+  `).join("");
+
+  updateCodeCarousel();
+  renderCodeInfo();
+}
+
+function updateCodeCarousel() {
+  const codeCards = document.querySelectorAll(".code-card");
+  if (!codeCards.length) return;
+
+  codeCards.forEach((card, index) => {
+    card.className = "code-card";
+    const left = (codeCurrent - 1 + codeCards.length) % codeCards.length;
+    const right = (codeCurrent + 1) % codeCards.length;
+
+    if (index === codeCurrent) card.classList.add("code-center");
+    else if (index === left) card.classList.add("code-left");
+    else if (index === right) card.classList.add("code-right");
+    else card.classList.add("code-hidden");
+  });
+
+  renderCodeInfo();
+}
+
+function nextCode() {
+  const codes = getCodes();
+  if (!codes.length) return;
+  codeCurrent = (codeCurrent + 1) % codes.length;
+  updateCodeCarousel();
+}
+
+function prevCode() {
+  const codes = getCodes();
+  if (!codes.length) return;
+  codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
+  updateCodeCarousel();
+}
+
+function searchCode() {
+  const input = document.getElementById("codeSearch");
+  const codeInfo = document.getElementById("codeInfo");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  const codes = getCodes();
+
+  if (value.length < 1) {
+    renderCodeInfo();
+    return;
+  }
+
+  const index = codes.findIndex((item) => {
+    const sourceText = formatSourceLevel(item.sourceLevel);
+    const fullText = normalizeSearchText([item.code, item.title, item.cause, item.test, item.solution, item.sourceLevel, sourceText].join(" "));
+    const cleanCode = normalizeSearchText(item.code);
+    return fullText.includes(value) || value.includes(cleanCode);
+  });
+
+  if (index >= 0) {
+    codeCurrent = index;
+    updateCodeCarousel();
+    return;
+  }
+
+  if (codeInfo) {
+    codeInfo.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum defeito deste modelo contém esse termo.</div>
+      <div class="info-row"><span>Dica:</span><br>Tente buscar por código, sensor, comunicação, compressor, ventilador, baixa carga, alta pressão, dreno ou placa.</div>
+    `;
+  }
+}
+
+function renderCodeInfo() {
+  const codeInfo = document.getElementById("codeInfo");
+  const codes = getCodes();
+  const item = codes[codeCurrent];
+  if (!codeInfo || !item) return;
+
+  const sourceText = formatSourceLevel(item.sourceLevel);
+
+  codeInfo.innerHTML = `
+    <h2>${item.code} - ${item.title}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+    <div class="info-row"><span>Modelo/Linha:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Causa provável:</span><br>${item.cause || "-"}</div>
+    <div class="info-row"><span>Teste em campo:</span><br>${item.test || "-"}</div>
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution || "-"}</div>
+    <div class="info-row"><span>Fonte/base:</span><br>${sourceText}</div>
+  `;
+}
+
+/* ACERVO TÉCNICO */
+
+function acervoMatchesSearch(item, searchValue) {
+  const rawSearch = normalizeSearchText(searchValue);
+  const compactSearch = normalizeAcervoCodeText(searchValue);
+
+  if (compactSearch.length < 2) return false;
+
+  const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca : [];
+  const termos = [item.modelo, ...codigos].filter(Boolean);
+
+  return termos.some((term) => {
+    const rawTerm = normalizeSearchText(term);
+    const compactTerm = normalizeAcervoCodeText(term);
+    if (!compactTerm) return false;
+
+    const rawMatch = rawTerm.includes(rawSearch) || rawSearch.includes(rawTerm);
+    const compactMatch = compactTerm.includes(compactSearch) || compactSearch.includes(compactTerm);
+
+    return rawMatch || compactMatch;
+  });
+}
+
+function renderAcervoIntro() {
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!acervoInfo) return;
+
+  acervoInfo.innerHTML = `
+    <h2>Acervo Técnico</h2>
+    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da etiqueta da evaporadora ou condensadora.</div>
+    <div class="info-row"><span>Busca corrigida:</span><br>Agora aceita código com ou sem hífen, espaço, barra e letras maiúsculas/minúsculas.</div>
+    <div class="info-row"><span>Padrão da ficha:</span><br>O app exibe somente campos com dados técnicos úteis. Campos sem fonte confiável ficam ocultos.</div>
+    <div class="info-row"><span>Cor verde:</span><br>Indica dado encontrado em fonte confiável, como manual oficial, ficha técnica oficial, etiqueta, INMETRO/ENCE ou catálogo técnico autorizado.</div>
+  `;
+}
+
+function searchAcervoTecnico() {
+  const input = document.getElementById("acervoSearch");
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!input || !acervoInfo) return;
+
+  const value = normalizeSearchText(input.value);
+
+  if (value.length < 2) {
+    renderAcervoIntro();
+    return;
+  }
+
+  const resultados = acervoTecnico.filter((item) => acervoMatchesSearch(item, input.value));
+
+  if (!resultados.length) {
+    acervoInfo.innerHTML = `
+      <h2>Modelo não cadastrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum modelo/código cadastrado no Acervo Técnico contém esse termo.</div>
+      <div class="info-row"><span>Orientação:</span><br>Confira o código na etiqueta da evaporadora ou condensadora e tente novamente.</div>
+    `;
+    return;
+  }
+
+  acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
+}
+
+function renderAcervoItem(item) {
+  const ficha = [
+    renderAcervoField("Modelo", item.modelo),
+    renderAcervoField("Marca", item.marca),
+    renderAcervoField("Linha", item.linha),
+    renderAcervoField("Tipo", item.tipo),
+    renderAcervoField("Capacidade", item.capacidade),
+    renderAcervoField("Tensão", item.tensao),
+    renderAcervoField("Fluido refrigerante", item.fluidoRefrigerante),
+    renderAcervoField("Carga de gás", item.cargaGas),
+    renderAcervoField("Corrente", item.correnteNominal),
+    renderAcervoField("Disjuntor", item.disjuntor),
+    renderAcervoField("Tubulação líquido / alta", item.tubulacaoAlta),
+    renderAcervoField("Tubulação sucção / baixa", item.tubulacaoBaixa),
+    renderAcervoField("Superaquecimento", item.superaquecimento),
+    renderAcervoField("Subresfriamento", item.subresfriamento),
+    renderAcervoField("Comprimento máximo", item.comprimentoMaximo),
+    renderAcervoField("Desnível máximo", item.desnivelMaximo),
+    renderAcervoField("Carga adicional", item.cargaAdicional),
+    renderAcervoManual("Manual de instalação", item.manualInstalacao, "Abrir manual de instalação"),
+    renderAcervoManual("Manual técnico/manutenção", item.manualManutencao, "Abrir manual técnico/manutenção"),
+    renderAcervoTextField("Fonte", item.fonte),
+    renderAcervoTextField("Status", item.status),
+    renderAcervoTextField("Tipo da fonte", item.fonteTipo),
+    renderAcervoTextField("Nível de confiança", item.nivelConfianca),
+    renderAcervoTextField("Observação da fonte", item.observacaoFonte)
+  ].join("");
+
+  return `
+    <h2>${safeValue(item.modelo, "Equipamento")}</h2>
+    ${ficha}
+    <div class="note">A ficha mostra somente dados cadastrados com fonte útil. Quando um campo não aparece, ainda não há dado confiável cadastrado para esse item.</div>
+  `;
+}
+
+/* SWIPE DOS CARROSSÉIS INTERNOS */
+
+function setupSwipe(id, prevFn, nextFn) {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  let sx = 0;
+  let ex = 0;
+
+  element.addEventListener("touchstart", (event) => {
+    sx = event.touches[0].clientX;
+  });
+
+  element.addEventListener("touchend", (event) => {
+    ex = event.changedTouches[0].clientX;
+    const diff = ex - sx;
+    if (diff > 45) prevFn();
+    if (diff < -45) nextFn();
+  });
+}
+
+function initApp() {
+  cards = document.querySelectorAll(".card");
+  current = 0;
+
+  updateCarousel();
+  setupMainSwipe();
+
+  setupSwipe("categoryCarousel", prevCategory, nextCategory);
+  setupSwipe("brandCarousel", prevBrand, nextBrand);
+  setupSwipe("modelCarousel", prevModel, nextModel);
+  setupSwipe("codeCarousel", prevCode, nextCode);
+
+  const acervoSearch = document.getElementById("acervoSearch");
+  if (acervoSearch) acervoSearch.addEventListener("input", searchAcervoTecnico);
+
+  renderGas("R410A");
+  renderCategoryCarousel();
+  renderAcervoIntro();
+}
+
+window.addEventListener("load", initApp);
