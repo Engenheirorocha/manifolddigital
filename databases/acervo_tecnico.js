@@ -1,22 +1,17 @@
 /* HVAC PRO - databases/acervo_tecnico.js
-   ACERVO TÉCNICO V3 - ENRIQUECIDO AZUL/VERDE
+   ACERVO TÉCNICO V4 - 3 NÍVEIS DE CONFIANÇA
+
+   Compatível com: COPIAR_APP_JS_ACERVO_3_CORES
+
+   CORES NO APP:
+   - AZUL  = informação oficial
+   - VERDE = informação confiável não oficial direta
+   - BRANCO = informação sugerida
 
    REGRAS:
-   - Campo sem dado confiável fica vazio/oculto no app.
-   - Dado oficial: azul.
-   - Dado confiável não oficial direto: verde.
-   - Não inventar corrente, disjuntor, carga de gás, tubulação, superaquecimento ou subresfriamento.
-
-   FONTES OFICIAIS ACEITAS:
-   - Fabricante oficial
-   - Manual oficial
-   - Página/ficha técnica oficial
-   - INMETRO / ENCE
-   - Etiqueta real validada
-
-   FONTES CONFIÁVEIS NÃO OFICIAIS:
-   - Catálogo técnico de distribuidor autorizado
-   - Documento técnico vinculado ao fabricante
+   - Campo sem informação útil fica vazio e o app oculta.
+   - Não preencher campo técnico como confirmado sem fonte.
+   - Informação sugerida deve ser usada apenas como apoio, não como verdade técnica final.
 */
 
 function normalizarTextoAcervo(valor) {
@@ -49,34 +44,21 @@ function limparDadoTecnico(valor) {
     .trim();
 
   texto = normalizarTextoAcervo(bruto);
-
   if (!texto) return "";
   if (texto.includes("validar") || texto.includes("confirmar")) return "";
 
   return bruto;
 }
 
-function fonteOficial(campos) {
+function fonteCampos(campos, tipo) {
   const obj = {};
-  campos.forEach((campo) => obj[campo] = "FABRICANTE_OFICIAL");
+  campos.forEach((campo) => obj[campo] = tipo);
   return obj;
 }
 
-function confiancaOficial(campos) {
+function confiancaCampos(campos, nivel) {
   const obj = {};
-  campos.forEach((campo) => obj[campo] = "CONFIRMADO_FONTE_OFICIAL");
-  return obj;
-}
-
-function fonteConfiavelNaoOficial(campos) {
-  const obj = {};
-  campos.forEach((campo) => obj[campo] = "DISTRIBUIDOR_TECNICO_AUTORIZADO");
-  return obj;
-}
-
-function confiancaConfiavelNaoOficial(campos) {
-  const obj = {};
-  campos.forEach((campo) => obj[campo] = "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL");
+  campos.forEach((campo) => obj[campo] = nivel);
   return obj;
 }
 
@@ -117,12 +99,30 @@ function acervoItem(dados) {
   };
 }
 
-const camposBaseOficial = ["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"];
+const OFICIAL = "FABRICANTE_OFICIAL";
+const VERDE = "DISTRIBUIDOR_TECNICO_AUTORIZADO";
+const SUGERIDA = "INFORMACAO_SUGERIDA";
+
+const C_OFICIAL = "CONFIRMADO_FONTE_OFICIAL";
+const C_VERDE = "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL";
+const C_SUGERIDA = "INFORMACAO_SUGERIDA_NAO_CONFIRMADA";
+
+const camposPrincipais = [
+  "modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante",
+  "manualInstalacao", "manualManutencao", "fonte"
+];
+
+const camposTecnicos = [
+  "modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante",
+  "cargaGas", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa",
+  "comprimentoMaximo", "desnivelMaximo", "cargaAdicional",
+  "manualInstalacao", "manualManutencao", "fonte"
+];
 
 window.acervoTecnico = [
 
   /* =========================
-     MIDEA / SPRINGER - OFICIAL
+     MIDEA / SPRINGER - AZUL OFICIAL
      ========================= */
 
   acervoItem({
@@ -137,10 +137,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     fonte: "Midea oficial - página do produto e manual oficial Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(camposBaseOficial),
-    confiancaCampos: confiancaOficial(camposBaseOficial)
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(camposPrincipais, OFICIAL),
+    confiancaCampos: confiancaCampos(camposPrincipais, C_OFICIAL)
   }),
 
   acervoItem({
@@ -155,28 +155,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     fonte: "Midea oficial - página do produto e manual oficial Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(camposBaseOficial),
-    confiancaCampos: confiancaOficial(camposBaseOficial)
-  }),
-
-  acervoItem({
-    marca: "Midea",
-    modelo: "42AGVCJ09M5 / 38AGVCJ09M5 - Xtreme Save AI Connect 9.000 BTU",
-    codigoBusca: ["42AGVCJ09M5", "38AGVCJ09M5", "42AGVCJ09", "38AGVCJ09", "AGVCJ09", "XTREME SAVE AI CONNECT 9000"],
-    linha: "Xtreme Save AI Connect",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V",
-    fluidoRefrigerante: "R32",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
-    fonte: "Midea oficial - manual oficial Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(camposBaseOficial),
-    confiancaCampos: confiancaOficial(camposBaseOficial)
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(camposPrincipais, OFICIAL),
+    confiancaCampos: confiancaCampos(camposPrincipais, C_OFICIAL)
   }),
 
   acervoItem({
@@ -191,10 +173,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Ar-Condicionado-Midea-Inverter-Xtreme-Save-AI-Connect.pdf",
     fonte: "Midea oficial - manual oficial Xtreme Save AI Connect",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(camposBaseOficial),
-    confiancaCampos: confiancaOficial(camposBaseOficial)
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(camposPrincipais, OFICIAL),
+    confiancaCampos: confiancaCampos(camposPrincipais, C_OFICIAL)
   }),
 
   acervoItem({
@@ -206,30 +188,14 @@ window.acervoTecnico = [
     manualInstalacao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
     manualManutencao: "https://conteudo.midea.com.br/manuais/Manual%20do%20usu%C3%A1rio%20-%20Ar-Condicionado%20Split%20AI%20AirVolution%20Midea.pdf",
     fonte: "Midea oficial - manual oficial AI AirVolution",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Midea",
-    modelo: "40KVQD - Cassete 58.000 BTU 4 Vias Frio",
-    codigoBusca: ["40KVQD", "MIDEA 40KVQD", "CASSETE 58000 MIDEA", "CASSETE 4 VIAS MIDEA"],
-    linha: "Cassete 4 Vias",
-    tipo: "Cassete 4 Vias Frio",
-    capacidade: "58.000 BTU/h",
-    manualInstalacao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
-    manualManutencao: "https://conteudo.midea.com.br/manuais/ar-condicionado-cassete-58000-btus-4-vias-frio-midea.pdf",
-    fonte: "Midea oficial - manual oficial Cassete 58.000 BTU 40KVQD",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   /* =========================
-     LG - OFICIAL
+     LG - AZUL OFICIAL
      ========================= */
 
   acervoItem({
@@ -244,10 +210,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s4-q12ja315/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "LG oficial - página do produto S4-Q12JA315 e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(camposBaseOficial),
-    confiancaCampos: confiancaOficial(camposBaseOficial)
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(camposPrincipais, OFICIAL),
+    confiancaCampos: confiancaCampos(camposPrincipais, C_OFICIAL)
   }),
 
   acervoItem({
@@ -261,30 +227,30 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s4-q12ja31g-1/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
     fonte: "LG oficial - página do produto S4-Q12JA31G e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   acervoItem({
     marca: "LG",
-    modelo: "S4-Q12JA3WC - Dual Inverter 12.000 BTU Frio",
-    codigoBusca: ["S4-Q12JA3WC", "S4Q12JA3WC", "LG S4-Q12JA3WC", "DUAL INVERTER 12000 FRIO"],
-    linha: "Dual Inverter",
+    modelo: "S3-Q12JA33K - Dual Inverter Voice +AI 12.000 BTU",
+    codigoBusca: ["S3-Q12JA33K", "S3Q12JA33K", "LG S3-Q12JA33K", "DUAL INVERTER VOICE AI 12000"],
+    linha: "Dual Inverter Voice +AI",
     tipo: "Split Hi Wall Inverter",
     capacidade: "12.000 BTU/h",
-    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/ar-condicionado-residencial-inverter/s4-q12ja3wc1/",
+    manualInstalacao: "https://www.lg.com/br/ar-condicionado-residencial/dual-inverter-split/s3-q12ja33k/",
     manualManutencao: "https://www.lg.com/br/suporte/manuais-sistema/",
-    fonte: "LG oficial - página do produto S4-Q12JA3WC e central de manuais LG",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
+    fonte: "LG oficial - página do produto S3-Q12JA33K e central de manuais LG",
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   /* =========================
-     SAMSUNG - OFICIAL
+     SAMSUNG - AZUL OFICIAL
      ========================= */
 
   acervoItem({
@@ -297,10 +263,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12MVPXAWKNAZ/",
     fonte: "Samsung oficial - página de suporte do modelo",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   acervoItem({
@@ -313,14 +279,14 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     manualManutencao: "https://www.samsung.com/br/support/model/AR12DYFABWKNAZ/",
     fonte: "Samsung oficial - página de suporte do modelo",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   /* =========================
-     GREE - OFICIAL
+     GREE - AZUL OFICIAL
      ========================= */
 
   acervoItem({
@@ -333,10 +299,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-DIAMOND-AUTO-INVERTER-Full.pdf",
     fonte: "Gree oficial - Manual G-Diamond Auto Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   acervoItem({
@@ -348,62 +314,15 @@ window.acervoTecnico = [
     manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
     manualManutencao: "https://gree.com.br/wp-content/uploads/2025/01/Manual-G-Prime-Inverter-Compact-full-Rev.000-2.pdf",
     fonte: "Gree oficial - Manual G-Prime Inverter Compact",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Gree",
-    modelo: "G-Top Inverter",
-    codigoBusca: ["G-TOP INVERTER", "G TOP INVERTER", "GREE G-TOP INVERTER", "GREE G TOP INVERTER"],
-    linha: "G-Top Inverter",
-    tipo: "Split Hi Wall Inverter",
-    manualInstalacao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-TOP-INVERTER-Rev-005-full.pdf",
-    manualManutencao: "https://gree.com.br/wp-content/uploads/2025/02/Manual-G-TOP-INVERTER-Rev-005-full.pdf",
-    fonte: "Gree oficial - Manual G-Top Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Gree",
-    modelo: "Materiais Técnicos Gree - Portal Oficial",
-    codigoBusca: ["MANUAIS GREE", "MATERIAIS TECNICOS GREE", "MATERIAIS TÉCNICOS GREE", "PORTAL GREE", "GREE MANUAIS"],
-    linha: "Portal oficial de materiais técnicos",
-    tipo: "Consulta oficial por linha/modelo",
-    manualInstalacao: "https://gree.com.br/manuais/",
-    manualManutencao: "https://gree.com.br/manuais/",
-    fonte: "Gree oficial - Materiais Técnicos",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   /* =========================
-     ELGIN - OFICIAL
+     ELGIN - AZUL OFICIAL
      ========================= */
-
-  acervoItem({
-    marca: "Elgin",
-    modelo: "Eco Star Inverter 12.000 BTU Frio 127V",
-    codigoBusca: ["ECO STAR INVERTER 12000", "ECO STAR 12000 127V", "ELGIN ECO STAR 12000", "ECO STAR INVERTER 12K"],
-    linha: "Eco Star Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    tensao: "127V",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-star-inverter-12000-btus-frio-127v/p",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Star Inverter 12.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
 
   acervoItem({
     marca: "Elgin",
@@ -416,10 +335,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-9000-btus-frio-wifi-220v/p",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Elgin oficial - página do produto Eco Inverter II 9.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   acervoItem({
@@ -430,124 +349,18 @@ window.acervoTecnico = [
     tipo: "Split Hi Wall Inverter Wi-Fi",
     capacidade: "12.000 BTU/h",
     tensao: "220V",
-    manualInstalacao: "https://www.elgin.com.br/ar-condicionado-split-high-wall-eco-inverter-ii-12000-btus-frio-wifi-220v/p",
+    manualInstalacao: "https://www.elgin.com.br/manuals",
     manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Elgin oficial - página do produto Eco Inverter II 12.000 e portal oficial de manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"])
+    fonte: "Elgin oficial - portal oficial de manuais",
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   /* =========================
-     KOMECO - OFICIAL
-     ========================= */
-
-  acervoItem({
-    marca: "Komeco",
-    modelo: "KOHI 09QC 1HV - Inverter KOHI 9.000 BTU",
-    codigoBusca: ["KOHI09QC1HV", "KOHI 09QC 1HV", "KOHI09QC", "KOHI 09", "KOMECO KOHI 09QC"],
-    linha: "KOHI Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "9.000 BTU/h",
-    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
-    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
-    fonte: "Komeco oficial - Manual KOHI e Manual de Serviço Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Komeco",
-    modelo: "KOHI 12QC 1HV - Inverter KOHI 12.000 BTU",
-    codigoBusca: ["KOHI12QC1HV", "KOHI 12QC 1HV", "KOHI12QC", "KOHI 12", "KOMECO KOHI 12QC"],
-    linha: "KOHI Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
-    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
-    fonte: "Komeco oficial - Manual KOHI e Manual de Serviço Inverter",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_MANUAL_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  /* =========================
-     OUTRAS MARCAS - OFICIAL / SUPORTE
-     ========================= */
-
-  acervoItem({
-    marca: "Daikin",
-    modelo: "FTKP12Q5VL / RKP12Q5VL - EcoSwing Smart R-32 12.000 BTU",
-    codigoBusca: ["FTKP12Q5VL", "RKP12Q5VL", "FTKP12", "RKP12", "ECOSWING SMART R32 FTKP12"],
-    linha: "EcoSwing Smart R-32",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    fluidoRefrigerante: "R32",
-    manualInstalacao: "https://www.daikin.com.br/profissionais/downloads",
-    manualManutencao: "https://www.daikin.com.br/profissionais/downloads",
-    fonte: "Daikin oficial - área de downloads e linha EcoSwing Smart R-32",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "PORTAL_OFICIAL_VALIDAR_CODIGO",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "fluidoRefrigerante", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Consul",
-    modelo: "CBK12EBBCJ - Dual Inverter Cobre Frio 12.000 BTU",
-    codigoBusca: ["CBK12EBBCJ", "CBK12EB", "CONSUL CBK12EBBCJ", "DUAL INVERTER CONSUL CBK12EBBCJ"],
-    linha: "Dual Inverter Cobre Frio",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    manualInstalacao: "https://www.consul.com.br/ar-condicionado-split-consul-dual-inverter-cobre-frio-12000-btus-cbk12eb/p",
-    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
-    fonte: "Consul oficial - página do produto e orientação oficial de manuais por código",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Electrolux",
-    modelo: "YI18F / YE18F - Inverter 18.000 BTU Frio",
-    codigoBusca: ["YI18F", "YE18F", "YI18F YE18F", "ELECTROLUX YI18F", "ELECTROLUX YE18F"],
-    linha: "Split Inverter Electrolux",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "18.000 BTU/h",
-    manualInstalacao: "https://content.electrolux.com.br/brasil/electrolux/emanuelle_21_10_24/yi_ye18f/index.html",
-    manualManutencao: "https://cuida.electrolux.com.br/guias-e-manuais",
-    fonte: "Electrolux oficial - página do produto/manual e central oficial de guias e manuais",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_FICHA_TECNICA_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "TCL",
-    modelo: "TAC-12CSA2-INV - Série A2 Inverter 12.000 BTU",
-    codigoBusca: ["TAC-12CSA2-INV", "TAC12CSA2INV", "TAC 12CSA2 INV", "TCL TAC-12CSA2-INV"],
-    linha: "Série A2 Inverter",
-    tipo: "Split Hi Wall Inverter",
-    capacidade: "12.000 BTU/h",
-    manualInstalacao: "https://www.tcl.com/br/pt/support-airconditioner/model-tv/tac-12csa2-inv",
-    manualManutencao: "https://www.tcl.com/br/pt/support",
-    fonte: "TCL oficial - suporte do modelo TAC-12CSA2-INV",
-    fonteTipo: "FABRICANTE_OFICIAL",
-    nivelConfianca: "CONFIRMADO_SUPORTE_OFICIAL",
-    fontesCampos: fonteOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaOficial(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  /* =========================
-     ELGIN - FONTE TÉCNICA CONFIÁVEL NÃO OFICIAL DIRETA
-     Base: ficha cadastral técnica Leveros Integra vinculada à linha Elgin Eco Inverter II Wi-Fi.
-     No app estes dados devem aparecer em VERDE.
+     ELGIN - VERDE CONFIÁVEL NÃO OFICIAL
+     Fonte: catálogo/ficha técnica de distribuidor técnico
      ========================= */
 
   acervoItem({
@@ -568,34 +381,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
-  }),
-
-  acervoItem({
-    marca: "Elgin",
-    modelo: "HJQC09C2WBCB - Eco Inverter II Wi-Fi 9.000 BTU Quente/Frio",
-    codigoBusca: ["HJQC09C2WBCB", "HJQI09C2WB", "HJQE09C2CB", "ELGIN HJQC09", "ECO INVERTER II 9000 QUENTE FRIO", "ECO INVERTER II 9K QF"],
-    linha: "Eco Inverter II Wi-Fi",
-    tipo: "Split Hi Wall Inverter Quente/Frio",
-    capacidade: "9.000 BTU/h",
-    tensao: "220V / 1F / 60Hz",
-    fluidoRefrigerante: "R32",
-    correnteNominal: "10,5 A corrente máxima",
-    disjuntor: "16 A",
-    tubulacaoAlta: "1/4 pol.",
-    tubulacaoBaixa: "3/8 pol.",
-    comprimentoMaximo: "15 m",
-    desnivelMaximo: "7 m",
-    manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
-    manualManutencao: "https://www.elgin.com.br/manuals",
-    fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
   }),
 
   acervoItem({
@@ -616,10 +405,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
   }),
 
   acervoItem({
@@ -640,10 +429,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
   }),
 
   acervoItem({
@@ -664,10 +453,10 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
   }),
 
   acervoItem({
@@ -688,20 +477,87 @@ window.acervoTecnico = [
     manualInstalacao: "https://www.leverosintegra.com.br/download/manuais/Elgin/catalogo-split-hw-eco-inverter-wifi.pdf",
     manualManutencao: "https://www.elgin.com.br/manuals",
     fonte: "Leveros Integra - ficha cadastral técnica Elgin Eco Inverter II Wi-Fi",
-    fonteTipo: "DISTRIBUIDOR_TECNICO_AUTORIZADO",
-    nivelConfianca: "FONTE_TECNICA_CONFIAVEL_NAO_OFICIAL",
-    fontesCampos: fonteConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"]),
-    confiancaCampos: confiancaConfiavelNaoOficial(["modelo", "marca", "linha", "tipo", "capacidade", "tensao", "fluidoRefrigerante", "correnteNominal", "disjuntor", "tubulacaoAlta", "tubulacaoBaixa", "comprimentoMaximo", "desnivelMaximo", "manualInstalacao", "manualManutencao", "fonte"])
+    fonteTipo: VERDE,
+    nivelConfianca: C_VERDE,
+    fontesCampos: fonteCampos(camposTecnicos, VERDE),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_VERDE)
+  }),
+
+  /* =========================
+     ELGIN - BRANCO INFORMAÇÃO SUGERIDA
+     Fonte: internet/loja/usuário/campo. Usar apenas como apoio.
+     ========================= */
+
+  acervoItem({
+    marca: "Elgin",
+    modelo: "LE HW12FRELECOIW - Eco Inverter II 12.000 BTU Frio 220V - Informação sugerida",
+    codigoBusca: ["LE HW12FRELECOIW", "ELGIN LE HW12FRELECOIW", "HJFI12C2WB HJFE12C2CB", "INFORMACAO SUGERIDA ELGIN 12000"],
+    linha: "Eco Inverter II Wi-Fi",
+    tipo: "Split Hi Wall Inverter Frio",
+    capacidade: "12.000 BTU/h",
+    tensao: "220V monofásico",
+    fluidoRefrigerante: "R32",
+    tubulacaoAlta: "1/4 pol.",
+    tubulacaoBaixa: "3/8 pol.",
+    comprimentoMaximo: "15 m",
+    desnivelMaximo: "7 m",
+    manualInstalacao: "https://www.elgin.com.br/manuals",
+    manualManutencao: "https://www.elgin.com.br/manuals",
+    fonte: "Informação sugerida de internet/campo - conferir antes de aplicar",
+    fonteTipo: SUGERIDA,
+    nivelConfianca: C_SUGERIDA,
+    observacaoFonte: "Informação branca/sugerida. Não tratar como dado oficial nem como catálogo técnico autorizado.",
+    fontesCampos: fonteCampos(camposTecnicos, SUGERIDA),
+    confiancaCampos: confiancaCampos(camposTecnicos, C_SUGERIDA)
+  }),
+
+  /* =========================
+     KOMECO / OUTRAS OFICIAIS
+     ========================= */
+
+  acervoItem({
+    marca: "Komeco",
+    modelo: "KOHI 09QC 1HV - Inverter KOHI 9.000 BTU",
+    codigoBusca: ["KOHI09QC1HV", "KOHI 09QC 1HV", "KOHI09QC", "KOHI 09", "KOMECO KOHI 09QC"],
+    linha: "KOHI Inverter",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "9.000 BTU/h",
+    manualInstalacao: "https://www.komeco.com.br/arquivos/manuais/ar-condicionado/split-hi-wall/manual-ar-condicionado-inverter-kohi.pdf",
+    manualManutencao: "https://www.komeco.com.br/portaltecnico/LINHA%20DE%20CONDICIONADORES%20DE%20AR/Manuais%20Tecnicos/MANUAL%20DE%20SERVICO%20INVERTER.PDF",
+    fonte: "Komeco oficial - Manual KOHI e Manual de Serviço Inverter",
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
+  }),
+
+  acervoItem({
+    marca: "Consul",
+    modelo: "CBK12EBBCJ - Dual Inverter Cobre Frio 12.000 BTU",
+    codigoBusca: ["CBK12EBBCJ", "CBK12EB", "CONSUL CBK12EBBCJ", "DUAL INVERTER CONSUL CBK12EBBCJ"],
+    linha: "Dual Inverter Cobre Frio",
+    tipo: "Split Hi Wall Inverter",
+    capacidade: "12.000 BTU/h",
+    manualInstalacao: "https://www.consul.com.br/ar-condicionado-split-consul-dual-inverter-cobre-frio-12000-btus-cbk12eb/p",
+    manualManutencao: "https://www.consul.com.br/atendimento/perguntas-frequentes/problemas-com-o-produto/manual-de-instrucoes-como-encontrar",
+    fonte: "Consul oficial - página do produto e orientação oficial de manuais por código",
+    fonteTipo: OFICIAL,
+    nivelConfianca: C_OFICIAL,
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], OFICIAL),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "capacidade", "manualInstalacao", "manualManutencao", "fonte"], C_OFICIAL)
   }),
 
   acervoItem({
     marca: "HVAC PRO",
-    modelo: "STATUS-ACERVO-V3",
-    codigoBusca: ["STATUS-ACERVO-V3", "ACERVO V3", "VERSAO 3 ACERVO", "VERSÃO 3 ACERVO"],
+    modelo: "STATUS-ACERVO-V4-3-NIVEIS",
+    codigoBusca: ["STATUS-ACERVO-V4", "ACERVO V4", "VERSAO 4 ACERVO", "VERSÃO 4 ACERVO", "3 NIVEIS", "3 NÍVEIS"],
     linha: "Controle interno do Acervo Técnico",
     tipo: "Status do banco",
     fonte: "Controle interno HVAC PRO",
-    fonteTipo: "CONTROLE_INTERNO",
-    nivelConfianca: "STATUS_INTERNO"
+    fonteTipo: SUGERIDA,
+    nivelConfianca: C_SUGERIDA,
+    observacaoFonte: "V4 com azul oficial, verde confiável não oficial e branco sugerido.",
+    fontesCampos: fonteCampos(["modelo", "marca", "linha", "tipo", "fonte"], SUGERIDA),
+    confiancaCampos: confiancaCampos(["modelo", "marca", "linha", "tipo", "fonte"], C_SUGERIDA)
   })
 ];
