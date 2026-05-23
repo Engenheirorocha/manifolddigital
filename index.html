@@ -1,1 +1,396 @@
-<!-- HVAC PRO - index.html será preenchido na Etapa 2 -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <title>HVAC PRO</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- TELA INICIAL -->
+  <main class="app screen active" id="home">
+    <div class="logo">HVAC PRO</div>
+
+    <div class="home-search">
+      <input
+        id="homeSearch"
+        type="text"
+        placeholder="Buscar: manifold, erros, testes, gases, modelos"
+        autocomplete="off"
+        oninput="searchHome()"
+        onkeydown="homeKey(event)"
+      />
+    </div>
+
+    <section class="carousel-wrap" aria-label="Menu principal">
+      <div class="carousel" id="carousel">
+
+        <article class="card" data-module="manifold" onclick="cardTap(0)">
+          <div class="manifold-icon">
+            <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+              <rect x="18" y="14" width="64" height="50" rx="10" stroke="#009dff" stroke-width="6"/>
+              <circle cx="35" cy="39" r="10" stroke="#009dff" stroke-width="5"/>
+              <circle cx="65" cy="39" r="10" stroke="#ff3636" stroke-width="5"/>
+              <path d="M30 66V88" stroke="#009dff" stroke-width="6" stroke-linecap="round"/>
+              <path d="M70 66V88" stroke="#ff3636" stroke-width="6" stroke-linecap="round"/>
+              <path d="M50 64V86" stroke="#ff8c1a" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="title blue">MANIFOLD</div>
+        </article>
+
+        <article class="card" data-module="erros" onclick="cardTap(1)">
+          <div class="icon red">⚠️</div>
+          <div class="title red">ERROS</div>
+        </article>
+
+        <article class="card" data-module="testes" onclick="cardTap(2)">
+          <div class="icon orange">📟</div>
+          <div class="title orange">TESTES</div>
+        </article>
+
+        <article class="card" data-module="gases" onclick="cardTap(3)">
+          <div class="gas-icon">
+            <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+              <rect x="32" y="18" width="36" height="58" rx="10" stroke="#00d084" stroke-width="6"/>
+              <rect x="42" y="10" width="16" height="10" rx="3" fill="#00d084"/>
+              <path d="M38 40H62" stroke="#00d084" stroke-width="5" stroke-linecap="round"/>
+              <path d="M38 52H62" stroke="#00d084" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="title green">GASES</div>
+        </article>
+
+        <article class="card" data-module="modelos" onclick="cardTap(4)">
+          <div class="icon blue">❄️</div>
+          <div class="title blue">MODELOS</div>
+        </article>
+
+      </div>
+    </section>
+
+    <div class="nav">
+      <button type="button" onclick="prev()" aria-label="Anterior">‹</button>
+      <button type="button" onclick="openCurrentModule()" aria-label="Abrir módulo selecionado">✓</button>
+      <button type="button" onclick="next()" aria-label="Próximo">›</button>
+    </div>
+
+    <p class="home-hint">Toque no card ou use ✓ para abrir o módulo selecionado.</p>
+  </main>
+
+  <!-- TELA MANIFOLD -->
+  <section class="screen page" id="manifold">
+    <header class="topbar">
+      <button type="button" class="back" onclick="openScreen('home')">← Voltar</button>
+      <div class="page-title blue">MANIFOLD</div>
+    </header>
+
+    <div class="notice">
+      <strong>Aviso técnico:</strong> use como referência rápida. Confirme pressões, superaquecimento e subresfriamento no manual do fabricante e em tabelas oficiais.
+    </div>
+
+    <div class="mode-box">
+      <div class="mode-title">Leitura rápida de campo</div>
+
+      <div class="calc-grid">
+        <div>
+          <label for="manifoldGas">Gás</label>
+          <select id="manifoldGas">
+            <option value="R410A">R410A</option>
+            <option value="R22">R22</option>
+            <option value="R32">R32</option>
+            <option value="R407C">R407C</option>
+            <option value="R134A">R134a</option>
+            <option value="R404A">R404A</option>
+            <option value="R507A">R507A</option>
+            <option value="R448A">R448A</option>
+            <option value="R449A">R449A</option>
+            <option value="R600A">R600a</option>
+            <option value="R290">R290</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="lowPsi">Pressão baixa</label>
+          <input id="lowPsi" type="number" inputmode="decimal" placeholder="psi" />
+        </div>
+
+        <div>
+          <label for="suctionTemp">Temp. sucção</label>
+          <input id="suctionTemp" type="number" inputmode="decimal" placeholder="°C" />
+        </div>
+
+        <div>
+          <label for="evapSat">Temp. evap. saturada</label>
+          <input id="evapSat" type="number" inputmode="decimal" placeholder="°C" />
+        </div>
+
+        <div>
+          <label for="highPsi">Pressão alta</label>
+          <input id="highPsi" type="number" inputmode="decimal" placeholder="psi" />
+        </div>
+
+        <div>
+          <label for="liquidTemp">Temp. linha líquido</label>
+          <input id="liquidTemp" type="number" inputmode="decimal" placeholder="°C" />
+        </div>
+
+        <div class="full">
+          <label for="condSat">Temp. cond. saturada</label>
+          <input id="condSat" type="number" inputmode="decimal" placeholder="°C" />
+        </div>
+      </div>
+
+      <button type="button" class="primary-btn" onclick="calcManifold()">Calcular leitura</button>
+
+      <div class="result-box" id="manifoldResult">
+        <h2>Pronto para calcular</h2>
+        <div class="info-row">Preencha os campos usando sua tabela PT, manifold digital ou dados do fabricante.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA ERROS -->
+  <section class="screen page" id="erros">
+    <header class="topbar">
+      <button type="button" class="back" onclick="openScreen('home')">← Voltar</button>
+      <div class="page-title red">ERROS</div>
+    </header>
+
+    <div class="mode-box">
+
+      <div id="typeStep">
+        <div class="mode-title">Buscar tipo de equipamento</div>
+
+        <div class="search-area">
+          <input
+            id="errorTypeSearch"
+            type="text"
+            placeholder="Digite: split, cassete, janela ou piso teto"
+            autocomplete="off"
+            oninput="searchErrorType()"
+          />
+        </div>
+
+        <div class="mode-title">Escolha o tipo de equipamento</div>
+
+        <div class="error-category-wrap">
+          <div class="error-category-carousel" id="categoryCarousel"></div>
+        </div>
+
+        <div class="small-nav">
+          <button type="button" onclick="prevCategory()">‹</button>
+          <button type="button" onclick="selectTypeAndOpenBrand(catCurrent)">✓</button>
+          <button type="button" onclick="nextCategory()">›</button>
+        </div>
+      </div>
+
+      <div id="brandStep" style="display:none;">
+        <button type="button" class="back inner-back" onclick="backToType()">← Voltar tipo</button>
+
+        <div class="mode-title">Buscar marca</div>
+
+        <div class="search-area">
+          <input
+            id="brandSearch"
+            type="text"
+            placeholder="Digite: Midea, Carrier, Samsung, Consul..."
+            autocomplete="off"
+            oninput="searchBrand()"
+          />
+        </div>
+
+        <div class="mode-title">Escolha a marca</div>
+
+        <div class="brand-category-wrap">
+          <div class="brand-category-carousel" id="brandCarousel"></div>
+        </div>
+
+        <div class="small-nav">
+          <button type="button" onclick="prevBrand()">‹</button>
+          <button type="button" onclick="selectBrandAndOpenModel(brandCurrent)">✓</button>
+          <button type="button" onclick="nextBrand()">›</button>
+        </div>
+      </div>
+
+      <div id="modelStep" style="display:none;">
+        <button type="button" class="back inner-back" onclick="backToBrand()">← Voltar marca</button>
+
+        <div class="mode-title">Buscar ou digitar modelo / série</div>
+
+        <div class="search-area">
+          <input
+            id="modelSearch"
+            type="text"
+            placeholder="Ex: Xtreme Save, WindFree, Dual Inverter..."
+            autocomplete="off"
+            oninput="searchModel()"
+          />
+        </div>
+
+        <div class="mode-title">Modelos / linhas disponíveis</div>
+
+        <div class="model-category-wrap">
+          <div class="model-category-carousel" id="modelCarousel"></div>
+        </div>
+
+        <div class="small-nav">
+          <button type="button" onclick="prevModel()">‹</button>
+          <button type="button" onclick="selectModelAndOpenCodes(modelCurrent)">✓</button>
+          <button type="button" onclick="nextModel()">›</button>
+        </div>
+
+        <div class="model-info" id="modelInfo"></div>
+      </div>
+
+      <div id="codeStep" style="display:none;">
+        <button type="button" class="back inner-back" onclick="backToModel()">← Voltar modelo</button>
+
+        <div class="mode-title">Buscar código de erro</div>
+
+        <div class="search-area">
+          <input
+            id="codeSearch"
+            type="text"
+            placeholder="Ex: E1, E3, P4, CH05, E101..."
+            autocomplete="off"
+            oninput="searchCode()"
+          />
+        </div>
+
+        <div class="mode-title">Códigos disponíveis</div>
+
+        <div class="code-category-wrap">
+          <div class="code-category-carousel" id="codeCarousel"></div>
+        </div>
+
+        <div class="small-nav">
+          <button type="button" onclick="prevCode()">‹</button>
+          <button type="button" onclick="nextCode()">›</button>
+        </div>
+
+        <div class="model-info" id="codeInfo"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TELA TESTES -->
+  <section class="screen page" id="testes">
+    <header class="topbar">
+      <button type="button" class="back" onclick="openScreen('home')">← Voltar</button>
+      <div class="page-title orange">TESTES</div>
+    </header>
+
+    <div class="notice">
+      <strong>Segurança:</strong> testes elétricos devem ser feitos por profissional habilitado, com EPI, instrumento adequado e bloqueio de energia quando necessário.
+    </div>
+
+    <div class="mode-box">
+      <div class="mode-title">Escolha um teste</div>
+
+      <div class="grid-actions">
+        <button type="button" class="action-card" onclick="renderTest('compressor', this)">
+          <strong>Compressor</strong>
+          <small>Bobinas, isolamento, corrente e travamento.</small>
+        </button>
+
+        <button type="button" class="action-card" onclick="renderTest('capacitor', this)">
+          <strong>Capacitor</strong>
+          <small>Capacitância, estufamento e partida.</small>
+        </button>
+
+        <button type="button" class="action-card" onclick="renderTest('sensor', this)">
+          <strong>Sensor NTC</strong>
+          <small>Resistência, conector e variação térmica.</small>
+        </button>
+
+        <button type="button" class="action-card" onclick="renderTest('ventilador', this)">
+          <strong>Ventilador</strong>
+          <small>Motor, Hall, capacitor e placa.</small>
+        </button>
+      </div>
+
+      <div class="result-box" id="testResult">
+        <h2>Selecione um teste</h2>
+        <div class="info-row">Aqui aparecerá o passo a passo de verificação em campo.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA GASES -->
+  <section class="screen page" id="gases">
+    <header class="topbar">
+      <button type="button" class="back" onclick="openScreen('home')">← Voltar</button>
+      <div class="page-title green">GASES</div>
+    </header>
+
+    <div class="notice">
+      <strong>Referência rápida:</strong> dados aproximados. Para carga, retrofit ou ajuste fino, use tabela oficial, balança, superaquecimento/subresfriamento e manual técnico.
+    </div>
+
+    <div class="mode-box">
+      <div class="mode-title">Modo interativo</div>
+
+      <div class="gas-list" id="gasList"></div>
+
+      <div class="mode-title">Modo manual</div>
+
+      <div class="search-area">
+        <input
+          id="gasSearch"
+          type="text"
+          placeholder="Digite o gás: R410A, R22, R404A..."
+          autocomplete="off"
+          oninput="searchGas()"
+        />
+      </div>
+
+      <div class="gas-info" id="gasInfo"></div>
+    </div>
+  </section>
+
+  <!-- TELA MODELOS -->
+  <section class="screen page" id="modelos">
+    <header class="topbar">
+      <button type="button" class="back" onclick="openScreen('home')">← Voltar</button>
+      <div class="page-title blue">MODELOS</div>
+    </header>
+
+    <div class="mode-box">
+      <div class="mode-title">Consulta rápida de marcas e linhas</div>
+
+      <div class="search-area">
+        <input
+          id="modelosSearch"
+          type="text"
+          placeholder="Digite marca ou modelo: LG, Midea, WindFree..."
+          autocomplete="off"
+          oninput="searchModelos()"
+        />
+      </div>
+
+      <div class="result-box" id="modelosResult">
+        <h2>Base de modelos</h2>
+        <div class="info-row">Digite uma marca ou linha para localizar rapidamente.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANCOS DE DADOS -->
+  <script src="databases/gases.js"></script>
+  <script src="databases/modelos.js"></script>
+  <script src="databases/erros.js"></script>
+  <script src="databases/sensores.js"></script>
+  <script src="databases/pressao_temp.js"></script>
+  <script src="databases/diagnosticos.js"></script>
+
+  <!-- LÓGICA DO APP -->
+  <script src="app.js"></script>
+
+</body>
+</html>
