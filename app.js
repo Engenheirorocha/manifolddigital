@@ -1,6 +1,6 @@
 /* HVAC PRO - app.js
-   Versao restaurada sem Acervo Tecnico.
-   Mantem: Home, carrossel principal, Gases e Erros/Defeitos.
+   Versao com Acervo Tecnico ativo.
+   Mantem: Home, carrossel principal, Gases, Erros/Defeitos e busca do Acervo.
 */
 
 const gasData = window.gasData || {};
@@ -8,6 +8,7 @@ const errorCategories = window.errorCategories || [];
 const brandsByCategory = window.brandsByCategory || {};
 const modelsByBrand = window.modelsByBrand || {};
 const errorCodesByModel = window.errorCodesByModel || {};
+const acervoTecnico = window.acervoTecnico || [];
 
 let cards = [];
 let current = 0;
@@ -25,6 +26,10 @@ function normalizeSearchText(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function safeValue(value, fallback) {
+  return value || fallback || "Não informado no manual oficial";
 }
 
 function updateCarousel() {
@@ -84,7 +89,8 @@ function searchHome() {
     { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
     { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
     { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
-    { keys: ["modelos", "modelo", "equipamento"], index: 4 }
+    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
+    { keys: ["acervo", "acervo tecnico", "acervo técnico", "manual", "manuais", "manual tecnico", "manual técnico"], index: 5 }
   ];
 
   const found = map.find((item) => {
@@ -146,6 +152,16 @@ function openScreen(id) {
     document.getElementById("codeStep").style.display = "none";
 
     renderCategoryCarousel();
+  }
+
+  if (id === "acervo") {
+    const acervo = document.getElementById("acervo");
+    if (acervo) acervo.scrollTop = 0;
+
+    const acervoSearch = document.getElementById("acervoSearch");
+    if (acervoSearch && !acervoSearch.value.trim()) {
+      renderAcervoIntro();
+    }
   }
 }
 
@@ -746,6 +762,94 @@ function renderCodeInfo() {
   `;
 }
 
+/* ACERVO TÉCNICO */
+
+function renderAcervoIntro() {
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!acervoInfo) return;
+
+  acervoInfo.innerHTML = `
+    <h2>Acervo Técnico</h2>
+    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da máquina no campo acima.</div>
+    <div class="info-row"><span>Objetivo:</span><br>Organizar dados oficiais de manuais, instalação, manutenção, gás, corrente, tubulação, capacitor, placa eletrônica e observações técnicas por modelo.</div>
+    <div class="info-row"><span>Status:</span><br>Busca técnica ativa. Primeiro teste com o modelo de exemplo cadastrado no acervo.</div>
+  `;
+}
+
+function searchAcervoTecnico() {
+  const input = document.getElementById("acervoSearch");
+  const acervoInfo = document.getElementById("acervoInfo");
+
+  if (!input || !acervoInfo) return;
+
+  const value = normalizeSearchText(input.value);
+
+  if (value.length < 2) {
+    renderAcervoIntro();
+    return;
+  }
+
+  const resultados = acervoTecnico.filter((item) => {
+    const codigos = Array.isArray(item.codigoBusca) ? item.codigoBusca.join(" ") : "";
+
+    const texto = normalizeSearchText([
+      item.marca,
+      item.modelo,
+      codigos,
+      item.linha,
+      item.tipo,
+      item.capacidade,
+      item.fluidoRefrigerante,
+      item.fonte,
+      item.status
+    ].join(" "));
+
+    return texto.includes(value);
+  });
+
+  if (!resultados.length) {
+    acervoInfo.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum modelo cadastrado no Acervo Técnico contém esse termo.</div>
+      <div class="info-row"><span>Dica:</span><br>Digite o código exato da etiqueta ou parte do modelo. Exemplo de teste: EXEMPLO.</div>
+    `;
+    return;
+  }
+
+  acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
+}
+
+function renderAcervoItem(item) {
+  const manualInstalacao = item.manualInstalacao && String(item.manualInstalacao).startsWith("http")
+    ? `<a href="${item.manualInstalacao}" target="_blank" rel="noopener">Abrir manual de instalação</a>`
+    : safeValue(item.manualInstalacao, "Não cadastrado ainda");
+
+  const manualManutencao = item.manualManutencao && String(item.manualManutencao).startsWith("http")
+    ? `<a href="${item.manualManutencao}" target="_blank" rel="noopener">Abrir manual de manutenção/técnico</a>`
+    : safeValue(item.manualManutencao, "Não cadastrado ainda");
+
+  return `
+    <h2>${safeValue(item.marca, "-")} - ${safeValue(item.modelo, "-")}</h2>
+    <div class="info-row"><span>Linha:</span><br>${safeValue(item.linha)}</div>
+    <div class="info-row"><span>Tipo de equipamento:</span><br>${safeValue(item.tipo)}</div>
+    <div class="info-row"><span>Capacidade:</span><br>${safeValue(item.capacidade)}</div>
+    <div class="info-row"><span>Ano/faixa de fabricação:</span><br>${safeValue(item.anoFabricacao, "Validar etiqueta/manual")}</div>
+    <div class="info-row"><span>Fluido refrigerante:</span><br>${safeValue(item.fluidoRefrigerante, "Validar etiqueta/manual")}</div>
+    <div class="info-row"><span>Corrente nominal / trabalho:</span><br>${safeValue(item.correnteNominal)}</div>
+    <div class="info-row"><span>Superaquecimento:</span><br>${safeValue(item.superaquecimento, "Validar procedimento técnico do fabricante")}</div>
+    <div class="info-row"><span>Subresfriamento:</span><br>${safeValue(item.subresfriamento, "Validar procedimento técnico do fabricante")}</div>
+    <div class="info-row"><span>Capacitor:</span><br>${safeValue(item.capacitor)}</div>
+    <div class="info-row"><span>Placa eletrônica:</span><br>${safeValue(item.placaEletronica)}</div>
+    <div class="info-row"><span>Tubulação líquido / alta:</span><br>${safeValue(item.tubulacaoAlta)}</div>
+    <div class="info-row"><span>Tubulação sucção / baixa:</span><br>${safeValue(item.tubulacaoBaixa)}</div>
+    <div class="info-row"><span>Manual de instalação:</span><br>${manualInstalacao}</div>
+    <div class="info-row"><span>Manual de manutenção/técnico:</span><br>${manualManutencao}</div>
+    <div class="info-row"><span>Fonte:</span><br>${safeValue(item.fonte, "Não informado")}</div>
+    <div class="info-row"><span>Status:</span><br>${safeValue(item.status, "Não informado")}</div>
+  `;
+}
+
 /* SWIPE DOS CARROSSÉIS INTERNOS */
 
 function setupSwipe(id, prevFn, nextFn) {
@@ -780,8 +884,14 @@ function initApp() {
   setupSwipe("modelCarousel", prevModel, nextModel);
   setupSwipe("codeCarousel", prevCode, nextCode);
 
+  const acervoSearch = document.getElementById("acervoSearch");
+  if (acervoSearch) {
+    acervoSearch.addEventListener("input", searchAcervoTecnico);
+  }
+
   renderGas("R410A");
   renderCategoryCarousel();
+  renderAcervoIntro();
 }
 
-window.addEventListener("load", initApp);
+window.addEventListener("load", init
