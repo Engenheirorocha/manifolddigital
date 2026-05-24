@@ -1,14 +1,18 @@
 /* HVAC PRO - app.js
-   ARQUIVO COMPLETO ESTÁVEL - v6611
+   ARQUIVO COMPLETO ESTÁVEL - v6621
 
-   Correção desta versão:
-   - Fabricante selecionado agora trava a busca.
-   - Se LG estiver selecionado, o app só procura LG no acervo.
-   - Se o código não existir no acervo LG, ele roda somente a máscara LG.
-   - Código Midea com fabricante LG não retorna mais Midea.
-   - Consulta Equipamento funciona em 2 etapas:
-     1. Selecionar fabricante
-     2. Digitar código do condensador
+   Correção principal:
+   - A etiqueta gerada por máscara agora exibe campos separados:
+     Gás provável
+     Tensão provável
+     Corrente estimada
+     Tubulação provável
+
+   Regras:
+   - Fabricante selecionado trava a busca.
+   - Se LG estiver selecionado, o app não retorna Midea.
+   - Primeiro busca código exato no acervo.
+   - Se não achar, aplica máscara do fabricante selecionado.
 */
 
 const gasData = window.gasData || {};
@@ -1026,7 +1030,7 @@ function renderAcervoIntro() {
     <div class="info-row"><span>Etapa 1:</span><br>Selecione o fabricante do equipamento.</div>
     <div class="info-row"><span>Etapa 2:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
     <div class="info-row"><span>Máscara:</span><br>O fabricante selecionado limita a leitura ao padrão correto e evita conflito entre marcas.</div>
-    <div class="info-row"><span>Teste inicial:</span><br>LG ativo para códigos como S4-Q12JA3WC, S3-Q12JA31B, S4-W18KL3WA e S4-W30L43FA.</div>
+    <div class="info-row"><span>Versão:</span><br>app.js v6621 — exibe gás, tensão, corrente e tubulação provável.</div>
   `;
 }
 
@@ -1114,12 +1118,17 @@ function renderMascaraItem(leitura) {
     renderMascaraField("Fabricante", leitura.fabricante),
     renderMascaraField("Grupo", leitura.grupo),
     renderMascaraField("Código do condensador", leitura.codigo),
+    renderMascaraField("Máscara aplicada", leitura.mascaraAplicada),
     renderMascaraField("Tipo de código", leitura.tipoCodigo),
     renderMascaraField("Linha provável", leitura.linhaProvavel),
     renderMascaraField("Tipo provável", leitura.tipoProvavel),
     renderMascaraField("Tecnologia provável", leitura.tecnologiaProvavel),
     renderMascaraField("Capacidade provável", leitura.capacidadeProvavel),
     renderMascaraField("Ciclo provável", leitura.cicloProvavel),
+    renderMascaraField("Gás provável", leitura.gasProvavel),
+    renderMascaraField("Tensão provável", leitura.tensaoProvavel),
+    renderMascaraField("Corrente estimada", leitura.correnteEstimada),
+    renderMascaraField("Tubulação provável", leitura.tubulacaoProvavel),
     renderMascaraField("Confiabilidade da máscara", leitura.confiabilidadeMascara),
     renderMascaraField("Origem da leitura", leitura.origemLeitura),
     renderMascaraField("Observação técnica", leitura.observacao)
@@ -1128,7 +1137,7 @@ function renderMascaraItem(leitura) {
   return `
     <h2>Etiqueta gerada por máscara</h2>
     ${ficha}
-    <div class="note">Essa leitura é automática por padrão de engenharia do fabricante selecionado. Não substitui manual, etiqueta oficial ou acervo técnico validado.</div>
+    <div class="note">Essa leitura é automática por padrão de engenharia do fabricante selecionado. Dados como gás, tensão, corrente e tubulação são prováveis/estimados e devem ser validados na etiqueta ou manual.</div>
   `;
 }
 
