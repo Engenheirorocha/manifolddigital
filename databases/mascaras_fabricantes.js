@@ -1,12 +1,13 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
    MÁSCARAS DE FABRICANTES
-   LG - PADRÕES NOVOS, MULTI SPLIT E ANTIGOS
+   LG - VERSÃO OPERACIONAL COMPLETA POR PADRÕES PRINCIPAIS
 
    REGRA:
    - Este arquivo NÃO substitui dado oficial.
    - Ele interpreta o código do condensador por padrão de fabricante.
-   - Dados críticos como carga de gás, corrente, tubulação, disjuntor e carga adicional
+   - Dados críticos como carga exata de gás, corrente nominal real, disjuntor e tubulação oficial
      só devem vir do acervo técnico oficial/confiável.
+   - Quando a máscara gerar dados técnicos, eles são PROVÁVEIS / ESTIMADOS.
 */
 
 window.mascarasFabricantes = [
@@ -29,10 +30,15 @@ window.mascarasFabricantes = [
     exemplosValidos: [
       "S4-Q12JA3WC",
       "S3-Q12JA31B",
+      "S3-Q12JAQAL",
+      "S3-Q18KLQAL",
       "S4-W18KL3WA",
       "S4-W30L43FA",
+      "S4-W36R43FB",
       "S4-Q09WA51B",
-      "S4-Q15JL31A"
+      "S4-Q15JL31A",
+      "S4-Q18KL3WB",
+      "S4-Q24K23WD"
     ],
 
     capacidades: {
@@ -46,6 +52,65 @@ window.mascarasFabricantes = [
       "36": "36.000 BTU/h"
     },
 
+    referenciasTecnicas: {
+      "07": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "127V ou 220V conforme sufixo/modelo",
+        correnteEstimada: "Faixa típica estimada: 3 A a 6 A",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Capacidade baixa. Validar fluido e tensão na etiqueta."
+      },
+      "09": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "127V ou 220V conforme sufixo/modelo",
+        correnteEstimada: "Faixa típica estimada: 3,5 A a 7 A",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Em LG inverter recente, 9.000 BTU costuma usar tubulação leve. Validar etiqueta."
+      },
+      "12": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "127V ou 220V conforme sufixo/modelo",
+        correnteEstimada: "Faixa típica estimada: 5 A a 10 A",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Capacidade comum de campo. Validar fluido, corrente e tensão na etiqueta."
+      },
+      "15": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica estimada: 6 A a 11 A",
+        tubulacaoProvavel: "1/4\" x 1/2\" provável",
+        observacaoTecnica: "Capacidade intermediária. Validar tubulação no manual/etiqueta."
+      },
+      "18": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica estimada: 7 A a 14 A",
+        tubulacaoProvavel: "1/4\" x 1/2\" provável",
+        observacaoTecnica: "Em 18.000 BTU, validar bitola de sucção e corrente nominal na etiqueta."
+      },
+      "24": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica estimada: 9 A a 18 A",
+        tubulacaoProvavel: "1/4\" x 1/2\" ou 3/8\" x 5/8\" provável conforme linha",
+        observacaoTecnica: "A tubulação pode variar por família. Não usar sem validar."
+      },
+      "30": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica estimada: 11 A a 22 A",
+        tubulacaoProvavel: "3/8\" x 5/8\" provável",
+        observacaoTecnica: "Alta capacidade. Validar disjuntor, tubulação e corrente oficial."
+      },
+      "36": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica estimada: 14 A a 28 A",
+        tubulacaoProvavel: "3/8\" x 5/8\" provável",
+        observacaoTecnica: "Alta capacidade. Validar sempre no manual/etiqueta antes de dimensionar."
+      }
+    },
+
     leitura: {
       fabricante: "LG",
       tipoCodigo: "Condensadora provável",
@@ -53,7 +118,7 @@ window.mascarasFabricantes = [
       tecnologia: "Inverter / Dual Inverter provável",
       tipoEquipamento: "Split Hi Wall provável",
       origemLeitura: "Máscara LG baseada em padrões S3, S4 e U4 com número central de capacidade.",
-      observacao: "Leitura automática por padrão de engenharia. Validar com etiqueta ou manual antes de aplicar dados críticos."
+      observacao: "Leitura automática por padrão de engenharia. Dados técnicos gerados são prováveis/estimados e devem ser validados na etiqueta ou manual."
     }
   },
 
@@ -89,7 +154,67 @@ window.mascarasFabricantes = [
       "30": "30.000 BTU/h provável",
       "36": "36.000 BTU/h provável",
       "42": "42.000 BTU/h provável",
-      "48": "48.000 BTU/h provável"
+      "48": "48.000 BTU/h provável",
+      "54": "54.000 BTU/h provável"
+    },
+
+    referenciasTecnicas: {
+      "18": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo número de evaporadoras conectadas",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Multi Split depende das evaporadoras conectadas. Não dimensionar só pela máscara."
+      },
+      "21": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual do conjunto",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Unidade externa Multi Split. Validar combinação permitida."
+      },
+      "24": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual do conjunto",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Unidade externa Multi Split. Validar distância, desnível e carga adicional."
+      },
+      "30": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Unidade externa Multi Split maior. Validar limite de combinação."
+      },
+      "36": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Unidade externa Multi Split de maior capacidade. Validar todas as evaporadoras."
+      },
+      "42": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Capacidade elevada. Validar proteção elétrica e carga adicional."
+      },
+      "48": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Capacidade elevada. Validar combinação máxima e manual."
+      },
+      "54": {
+        gasProvavel: "R-410A / R-32 conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar pelo manual",
+        tubulacaoProvavel: "Tubulação variável por combinação",
+        observacaoTecnica: "Capacidade elevada. Validar documentação oficial."
+      }
     },
 
     leitura: {
@@ -99,7 +224,7 @@ window.mascarasFabricantes = [
       tecnologia: "Inverter provável",
       tipoEquipamento: "Unidade externa Multi Split provável",
       origemLeitura: "Máscara LG baseada em padrão A*UW usado em unidades externas Multi Split.",
-      observacao: "Leitura automática por padrão de engenharia. Validar combinações, capacidade total e limites no manual oficial."
+      observacao: "Leitura automática por padrão de engenharia. Em Multi Split, dados técnicos dependem da combinação das unidades internas."
     }
   },
 
@@ -134,6 +259,51 @@ window.mascarasFabricantes = [
       "30": "30.000 BTU/h provável"
     },
 
+    referenciasTecnicas: {
+      "07": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "127V ou 220V conforme etiqueta",
+        correnteEstimada: "Faixa típica antiga: validar na etiqueta",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Linha antiga. Nunca assumir fluido sem etiqueta."
+      },
+      "09": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "127V ou 220V conforme etiqueta",
+        correnteEstimada: "Faixa típica antiga: 4 A a 9 A estimada",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Linha antiga. Validar fluido antes de manutenção."
+      },
+      "12": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "127V ou 220V conforme etiqueta",
+        correnteEstimada: "Faixa típica antiga: 5 A a 12 A estimada",
+        tubulacaoProvavel: "1/4\" x 3/8\" provável",
+        observacaoTecnica: "Linha antiga/on-off provável. Validar fluido e tensão na etiqueta."
+      },
+      "18": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica antiga: 7 A a 16 A estimada",
+        tubulacaoProvavel: "1/4\" x 1/2\" provável",
+        observacaoTecnica: "Linha antiga. Validar compressor, capacitor e fluido."
+      },
+      "24": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica antiga: 10 A a 22 A estimada",
+        tubulacaoProvavel: "3/8\" x 5/8\" ou 1/4\" x 1/2\" provável",
+        observacaoTecnica: "Linha antiga. Tubulação pode variar muito por modelo."
+      },
+      "30": {
+        gasProvavel: "R-22 / R-410A conforme geração",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa típica antiga: validar na etiqueta",
+        tubulacaoProvavel: "Validar no manual/etiqueta",
+        observacaoTecnica: "Linha antiga de maior capacidade. Máscara apenas auxiliar."
+      }
+    },
+
     leitura: {
       fabricante: "LG",
       tipoCodigo: "Código LG antigo provável",
@@ -146,11 +316,6 @@ window.mascarasFabricantes = [
   }
 
 ];
-
-/* =========================================================
-   FUNÇÃO AUXILIAR GLOBAL
-   Usada pelo app.js para interpretar códigos por máscara.
-========================================================= */
 
 window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInformado) {
   const fabricante = String(fabricanteInformado || "").trim().toUpperCase();
@@ -216,6 +381,10 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
     }
 
+    const referencia = mascara.referenciasTecnicas && capacidadeCodigo
+      ? mascara.referenciasTecnicas[capacidadeCodigo]
+      : null;
+
     let cicloProvavel = "";
 
     if (mascara.id === "LG_SPLIT_INVERTER_ATUAL") {
@@ -236,6 +405,14 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       cicloProvavel = "Ciclo não confirmado pela máscara / validar etiqueta";
     }
 
+    const detalhesTecnicos = referencia ? [
+      "Gás provável: " + referencia.gasProvavel,
+      "Tensão provável: " + referencia.tensaoProvavel,
+      "Corrente estimada: " + referencia.correnteEstimada,
+      "Tubulação provável: " + referencia.tubulacaoProvavel,
+      "Observação técnica: " + referencia.observacaoTecnica
+    ].join(" | ") : "";
+
     return {
       encontrado: true,
       tipoResultado: "mascara",
@@ -249,9 +426,13 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       tecnologiaProvavel: mascara.leitura.tecnologia,
       capacidadeProvavel: capacidadeProvavel,
       cicloProvavel: cicloProvavel,
+      gasProvavel: referencia ? referencia.gasProvavel : "",
+      tensaoProvavel: referencia ? referencia.tensaoProvavel : "",
+      correnteEstimada: referencia ? referencia.correnteEstimada : "",
+      tubulacaoProvavel: referencia ? referencia.tubulacaoProvavel : "",
       confiabilidadeMascara: mascara.confiabilidadeGeral,
       origemLeitura: mascara.leitura.origemLeitura,
-      observacao: mascara.leitura.observacao
+      observacao: mascara.leitura.observacao + (detalhesTecnicos ? " | " + detalhesTecnicos : "")
     };
   }
 
