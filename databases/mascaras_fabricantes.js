@@ -1,6 +1,6 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
    MÁSCARAS DE FABRICANTES
-   LG - VERSÃO AMPLIADA OPERACIONAL
+   LG - VERSÃO AMPLIADA OPERACIONAL LIMPA
 
    REGRA:
    - Este arquivo NÃO substitui dado oficial.
@@ -9,6 +9,7 @@
      só devem vir do acervo técnico oficial/confiável.
    - Quando a máscara gerar dados técnicos, eles são PROVÁVEIS / ESTIMADOS.
    - Máscaras comerciais/VRF são auxiliares e exigem validação em manual/etiqueta.
+   - A observação técnica NÃO repete gás, tensão, corrente e tubulação.
 */
 
 window.mascarasFabricantes = [
@@ -493,16 +494,12 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       return codigoLimpo.startsWith(String(inicio).toUpperCase());
     });
 
-    if (!inicioValido) {
-      continue;
-    }
+    if (!inicioValido) continue;
 
     const regex = new RegExp(mascara.regexLimpo);
     const bateRegex = regex.test(codigoLimpo);
 
-    if (!bateRegex) {
-      continue;
-    }
+    if (!bateRegex) continue;
 
     let capacidadeCodigo = "";
     let capacidadeProvavel = "";
@@ -568,14 +565,6 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       cicloProvavel = "Depende da combinação do sistema VRF / validar projeto e manual";
     }
 
-    const detalhesTecnicos = referencia ? [
-      "Gás provável: " + referencia.gasProvavel,
-      "Tensão provável: " + referencia.tensaoProvavel,
-      "Corrente estimada: " + referencia.correnteEstimada,
-      "Tubulação provável: " + referencia.tubulacaoProvavel,
-      "Observação técnica: " + referencia.observacaoTecnica
-    ].join(" | ") : "";
-
     return {
       encontrado: true,
       tipoResultado: "mascara",
@@ -595,7 +584,7 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       tubulacaoProvavel: referencia ? referencia.tubulacaoProvavel : "",
       confiabilidadeMascara: mascara.confiabilidadeGeral,
       origemLeitura: mascara.leitura.origemLeitura,
-      observacao: mascara.leitura.observacao + (detalhesTecnicos ? " | " + detalhesTecnicos : "")
+      observacao: mascara.leitura.observacao
     };
   }
 
