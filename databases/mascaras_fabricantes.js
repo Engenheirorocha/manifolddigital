@@ -1,6 +1,6 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
    MÁSCARAS DE FABRICANTES
-   TESTE INICIAL: LG
+   TESTE LG - 3 PADRÕES PRINCIPAIS
 
    REGRA:
    - Este arquivo NÃO substitui dado oficial.
@@ -12,6 +12,7 @@
 window.mascarasFabricantes = [
 
   {
+    id: "LG_SPLIT_INVERTER_ATUAL",
     fabricante: "LG",
     grupo: "LG Electronics",
     marcasRelacionadas: ["LG"],
@@ -20,11 +21,8 @@ window.mascarasFabricantes = [
     tipoMascara: "condensadora",
     confiabilidadeGeral: "Alta",
 
-    padroesInicio: [
-      "S3",
-      "S4",
-      "U4"
-    ],
+    nomeMascara: "LG Split Inverter atual",
+    padroesInicio: ["S3", "S4", "U4"],
 
     regexPrincipal: "^(S3|S4|U4)-?[QW][0-9]{2}[A-Z0-9]+$",
 
@@ -57,6 +55,90 @@ window.mascarasFabricantes = [
       origemLeitura: "Máscara LG baseada em padrões S3, S4 e U4 com número central de capacidade.",
       observacao: "Leitura automática por padrão de engenharia. Validar com etiqueta ou manual antes de aplicar dados críticos."
     }
+  },
+
+  {
+    id: "LG_MULTI_SPLIT_EXTERNA",
+    fabricante: "LG",
+    grupo: "LG Electronics",
+    marcasRelacionadas: ["LG"],
+
+    status: "ativo",
+    tipoMascara: "condensadora",
+    confiabilidadeGeral: "Alta",
+
+    nomeMascara: "LG Multi Split unidade externa",
+    padroesInicio: ["A2UW", "A3UW", "A4UW", "A5UW"],
+
+    regexPrincipal: "^A[0-9]UW[0-9]{2}[A-Z0-9]+$",
+
+    exemplosValidos: [
+      "A3UW21GFA0",
+      "A3UW24GFA2",
+      "A5UW36GFA2",
+      "A4UW30GFA2"
+    ],
+
+    capacidades: {
+      "18": "18.000 BTU/h provável",
+      "21": "21.000 BTU/h provável",
+      "24": "24.000 BTU/h provável",
+      "30": "30.000 BTU/h provável",
+      "36": "36.000 BTU/h provável",
+      "42": "42.000 BTU/h provável",
+      "48": "48.000 BTU/h provável"
+    },
+
+    leitura: {
+      fabricante: "LG",
+      tipoCodigo: "Unidade externa Multi Split provável",
+      linhaProvavel: "LG Multi Split Inverter provável",
+      tecnologia: "Inverter provável",
+      tipoEquipamento: "Unidade externa Multi Split provável",
+      origemLeitura: "Máscara LG baseada em padrão A*UW usado em unidades externas Multi Split.",
+      observacao: "Leitura automática por padrão de engenharia. Validar combinações, capacidade total e limites no manual oficial."
+    }
+  },
+
+  {
+    id: "LG_ANTIGO_AS",
+    fabricante: "LG",
+    grupo: "LG Electronics",
+    marcasRelacionadas: ["LG"],
+
+    status: "ativo",
+    tipoMascara: "condensadora",
+    confiabilidadeGeral: "Média",
+
+    nomeMascara: "LG linha antiga / on-off provável",
+    padroesInicio: ["AS"],
+
+    regexPrincipal: "^AS-?[A-Z][0-9]{2,3}[A-Z0-9]+$",
+
+    exemplosValidos: [
+      "AS-W122BRG2",
+      "ASW122BRG2",
+      "AS-Q092BRG2"
+    ],
+
+    capacidades: {
+      "07": "7.000 BTU/h provável",
+      "09": "9.000 BTU/h provável",
+      "12": "12.000 BTU/h provável",
+      "18": "18.000 BTU/h provável",
+      "24": "24.000 BTU/h provável",
+      "30": "30.000 BTU/h provável"
+    },
+
+    leitura: {
+      fabricante: "LG",
+      tipoCodigo: "Código LG antigo provável",
+      linhaProvavel: "LG Split antigo / on-off provável",
+      tecnologia: "Convencional / on-off provável",
+      tipoEquipamento: "Split Hi Wall antigo provável",
+      origemLeitura: "Máscara LG baseada em códigos antigos iniciados por AS.",
+      observacao: "Confiabilidade média. Validar sempre com etiqueta ou manual, pois linhas antigas possuem muitas variações."
+    }
   }
 
 ];
@@ -79,11 +161,12 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
 
   const base = Array.isArray(window.mascarasFabricantes) ? window.mascarasFabricantes : [];
 
-  const mascara = base.find((item) => {
-    return String(item.fabricante || "").toUpperCase() === fabricante;
+  const mascarasDoFabricante = base.filter((item) => {
+    return String(item.fabricante || "").toUpperCase() === fabricante &&
+           String(item.status || "").toLowerCase() === "ativo";
   });
 
-  if (!mascara) {
+  if (!mascarasDoFabricante.length) {
     return {
       encontrado: false,
       motivo: "Fabricante sem máscara cadastrada."
@@ -92,59 +175,86 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
 
   const codigoLimpo = codigoOriginal.replace(/[^A-Z0-9]/g, "");
 
-  const inicioValido = mascara.padroesInicio.some((inicio) => {
-    return codigoLimpo.startsWith(String(inicio).toUpperCase());
-  });
+  for (const mascara of mascarasDoFabricante) {
+    const inicioValido = mascara.padroesInicio.some((inicio) => {
+      return codigoLimpo.startsWith(String(inicio).toUpperCase());
+    });
 
-  if (!inicioValido) {
+    if (!inicioValido) {
+      continue;
+    }
+
+    const regex = new RegExp(mascara.regexPrincipal);
+    const bateRegex = regex.test(codigoOriginal) || regex.test(codigoLimpo);
+
+    if (!bateRegex) {
+      continue;
+    }
+
+    let capacidadeCodigo = "";
+    let capacidadeProvavel = "";
+
+    if (mascara.id === "LG_SPLIT_INVERTER_ATUAL") {
+      const capacidadeMatch = codigoLimpo.match(/(?:S3|S4|U4)[QW]?([0-9]{2})/);
+      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
+      capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
+    }
+
+    if (mascara.id === "LG_MULTI_SPLIT_EXTERNA") {
+      const capacidadeMatch = codigoLimpo.match(/^A[0-9]UW([0-9]{2})/);
+      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
+      capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
+    }
+
+    if (mascara.id === "LG_ANTIGO_AS") {
+      const capacidadeMatch = codigoLimpo.match(/^AS[A-Z]?([0-9]{2})/);
+      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
+      capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
+    }
+
+    let cicloProvavel = "";
+
+    if (mascara.id === "LG_SPLIT_INVERTER_ATUAL") {
+      if (codigoOriginal.includes("-Q") || codigoLimpo.includes("Q")) {
+        cicloProvavel = "Frio provável / variação Q";
+      }
+
+      if (codigoOriginal.includes("-W") || codigoLimpo.includes("W")) {
+        cicloProvavel = "Quente/Frio provável / variação W";
+      }
+    }
+
+    if (mascara.id === "LG_MULTI_SPLIT_EXTERNA") {
+      cicloProvavel = "Depende da combinação das unidades internas / validar no manual";
+    }
+
+    if (mascara.id === "LG_ANTIGO_AS") {
+      cicloProvavel = "Ciclo não confirmado pela máscara / validar etiqueta";
+    }
+
     return {
-      encontrado: false,
+      encontrado: true,
+      tipoResultado: "mascara",
       fabricante: mascara.fabricante,
+      grupo: mascara.grupo,
       codigo: codigoOriginal,
-      motivo: "Código não bate com os padrões iniciais do fabricante selecionado."
+      mascaraAplicada: mascara.nomeMascara,
+      tipoCodigo: mascara.leitura.tipoCodigo,
+      linhaProvavel: mascara.leitura.linhaProvavel,
+      tipoProvavel: mascara.leitura.tipoEquipamento,
+      tecnologiaProvavel: mascara.leitura.tecnologia,
+      capacidadeProvavel: capacidadeProvavel,
+      cicloProvavel: cicloProvavel,
+      confiabilidadeMascara: mascara.confiabilidadeGeral,
+      origemLeitura: mascara.leitura.origemLeitura,
+      observacao: mascara.leitura.observacao
     };
-  }
-
-  const regex = new RegExp(mascara.regexPrincipal);
-  const bateRegex = regex.test(codigoOriginal) || regex.test(codigoLimpo);
-
-  if (!bateRegex) {
-    return {
-      encontrado: false,
-      fabricante: mascara.fabricante,
-      codigo: codigoOriginal,
-      motivo: "Código não bate com a estrutura principal da máscara LG."
-    };
-  }
-
-  const capacidadeMatch = codigoLimpo.match(/(?:S3|S4|U4)[QW]?([0-9]{2})/);
-  const capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
-  const capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
-
-  let cicloProvavel = "";
-
-  if (codigoOriginal.includes("-Q") || codigoLimpo.includes("Q")) {
-    cicloProvavel = "Frio provável / variação Q";
-  }
-
-  if (codigoOriginal.includes("-W") || codigoLimpo.includes("W")) {
-    cicloProvavel = "Quente/Frio provável / variação W";
   }
 
   return {
-    encontrado: true,
-    tipoResultado: "mascara",
-    fabricante: mascara.fabricante,
-    grupo: mascara.grupo,
+    encontrado: false,
+    fabricante: fabricante,
     codigo: codigoOriginal,
-    tipoCodigo: mascara.leitura.tipoCodigo,
-    linhaProvavel: mascara.leitura.linhaProvavel,
-    tipoProvavel: mascara.leitura.tipoEquipamento,
-    tecnologiaProvavel: mascara.leitura.tecnologia,
-    capacidadeProvavel: capacidadeProvavel,
-    cicloProvavel: cicloProvavel,
-    confiabilidadeMascara: mascara.confiabilidadeGeral,
-    origemLeitura: mascara.leitura.origemLeitura,
-    observacao: mascara.leitura.observacao
+    motivo: "Código não bate com nenhuma máscara ativa do fabricante selecionado."
   };
 };
