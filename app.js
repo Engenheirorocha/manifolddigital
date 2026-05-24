@@ -2,10 +2,9 @@
    ARQUIVO COMPLETO ESTÁVEL
 
    Atualização desta versão:
-   - Mantém o app funcionando sem alterar a estrutura principal.
    - Consulta Equipamento trabalha somente com CÓDIGO DO CONDENSADOR.
    - Não busca por marca, fabricante, evaporadora, unidade interna, família ou linha genérica.
-   - A ficha técnica mostra dados em cor padrão profissional.
+   - A ficha técnica mostra os dados em branco/cinza forte, padrão profissional.
    - A confiança aparece escrita abaixo do dado: Oficial / Confiável / Sugerido.
    - Campo vazio, fraco ou sem informação útil não aparece.
    - Link de manual/site oficial continua destacado e clicável.
@@ -144,8 +143,8 @@ function renderAcervoField(label, value, item, fieldKey) {
   return `
     <div class="info-row">
       <span>${label}:</span><br>
-      <strong style="color:#e5e7eb !important;">${value}</strong>
-      <small style="display:block;opacity:.72;margin-top:4px;color:${style.color};">${style.label}</small>
+      <strong style="color:#f8fafc !important;">${value}</strong>
+      <small style="display:block;opacity:.80;margin-top:4px;color:${style.color};">${style.label}</small>
     </div>
   `;
 }
@@ -156,7 +155,7 @@ function renderAcervoTextField(label, value) {
   return `
     <div class="info-row">
       <span>${label}:</span><br>
-      ${value}
+      <strong style="color:#f8fafc !important;">${value}</strong>
     </div>
   `;
 }
@@ -970,7 +969,7 @@ function renderAcervoIntro() {
     <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
     <div class="info-row"><span>Regra:</span><br>Não pesquise por marca, fabricante, família, linha comercial, evaporadora ou unidade interna.</div>
     <div class="info-row"><span>Confiança:</span><br>Abaixo de cada dado aparecerá: Oficial, Confiável / complementar ou Sugerido / campo.</div>
-    <div class="info-row"><span>Manual:</span><br>Links oficiais aparecem destacados para o técnico abrir e validar a informação.</div>
+    <div class="info-row"><span>Visual:</span><br>Os dados usam branco/cinza profissional. Links oficiais aparecem destacados para abrir o manual ou a fonte.</div>
   `;
 }
 
@@ -990,7 +989,7 @@ function searchAcervoTecnico() {
   if (isGenericAcervoSearch(rawValue)) {
     acervoInfo.innerHTML = `
       <h2>Digite o código do condensador</h2>
-      <div class="info-row"><span>Busca digitada:</span><br>${rawValue}</div>
+      <div class="info-row"><span>Busca digitada:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
       <div class="info-row">Esta consulta não busca por marca, fabricante, família, evaporadora ou linha comercial.</div>
       <div class="info-row"><span>Use assim:</span><br>Digite o código exato da condensadora conforme a etiqueta da unidade externa.</div>
     `;
@@ -1003,7 +1002,7 @@ function searchAcervoTecnico() {
     acervoInfo.innerHTML = `
       <h2>Banco zerado</h2>
       <div class="info-row">O arquivo <strong>databases/acervo_tecnico.js</strong> está carregado, mas ainda não possui condensadoras cadastradas.</div>
-      <div class="info-row"><span>Busca:</span><br>${rawValue}</div>
+      <div class="info-row"><span>Busca:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
     `;
     return;
   }
@@ -1013,7 +1012,7 @@ function searchAcervoTecnico() {
   if (!resultados.length) {
     acervoInfo.innerHTML = `
       <h2>Condensador não cadastrado</h2>
-      <div class="info-row"><span>Código digitado:</span><br>${rawValue}</div>
+      <div class="info-row"><span>Código digitado:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
       <div class="info-row">Nenhuma condensadora cadastrada corresponde exatamente a esse código.</div>
       <div class="info-row"><span>Dica:</span><br>Confira o código na etiqueta da unidade externa e digite sem pesquisar por marca.</div>
     `;
