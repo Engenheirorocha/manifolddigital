@@ -1,3 +1,28 @@
+/* =========================================================
+   HVAC PRO - STYLE.CSS COMPLETO CORRIGIDO
+   VERSAO: 7200
+
+   COMO USAR:
+   1. GitHub -> style.css
+   2. Apagar tudo
+   3. Colar este codigo inteiro
+   4. Commit changes
+   5. Abrir o app em aba anonima:
+      https://engenheirorocha.github.io/manifolddigital/?v=7200
+
+   OBJETIVO:
+   - Restaurar o app funcional
+   - Corrigir icone gigante
+   - Corrigir carrossel
+   - Corrigir busca fora de lugar
+   - Corrigir cards
+   - Corrigir tela Gases
+   - Corrigir tela Erros
+   - Corrigir Consultar Equipamento
+   - Remover imagem de fundo quebrada
+   - Manter visual escuro profissional
+========================================================= */
+
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -9,16 +34,16 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
   background: #03050a;
   color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
 
 body {
   background:
-    radial-gradient(circle at top center, rgba(0, 157, 255, 0.18), transparent 32%),
-    radial-gradient(circle at bottom center, rgba(0, 80, 160, 0.12), transparent 48%),
+    radial-gradient(circle at top center, rgba(0, 157, 255, 0.20), transparent 34%),
+    radial-gradient(circle at bottom center, rgba(0, 80, 160, 0.14), transparent 48%),
     linear-gradient(180deg, #050811 0%, #02040a 100%);
 }
 
@@ -27,15 +52,19 @@ input {
   font-family: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* =========================================================
-   TELAS
+   CONTROLE DAS TELAS
 ========================================================= */
 
 .screen {
   display: none;
   width: 100%;
   min-height: 100vh;
-  padding: 22px 14px 38px;
+  padding: 22px 14px 40px;
   background: transparent;
 }
 
@@ -95,13 +124,13 @@ input {
   font-size: 14px;
   font-weight: 700;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.04),
-    0 0 18px rgba(0,157,255,0.08);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 18px rgba(0, 157, 255, 0.08);
 }
 
 .home-search input::placeholder,
 .search-area input::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* =========================================================
@@ -135,13 +164,13 @@ input {
   background: linear-gradient(180deg, rgba(11, 17, 29, 0.96), rgba(2, 5, 11, 0.96));
   box-shadow:
     0 20px 45px rgba(0, 0, 0, 0.56),
-    inset 0 0 0 1px rgba(255,255,255,0.04);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: transform .30s ease, opacity .30s ease, filter .30s ease;
+  transition: transform 0.30s ease, opacity 0.30s ease, filter 0.30s ease;
   cursor: pointer;
   overflow: hidden;
 }
@@ -154,36 +183,39 @@ input {
 }
 
 .card.left {
-  transform: translate(-108%, -50%) scale(.72);
-  opacity: .42;
+  transform: translate(-108%, -50%) scale(0.72);
+  opacity: 0.42;
   z-index: 3;
 }
 
 .card.right {
-  transform: translate(8%, -50%) scale(.72);
-  opacity: .42;
+  transform: translate(8%, -50%) scale(0.72);
+  opacity: 0.42;
   z-index: 3;
 }
 
 .card.far-left {
-  transform: translate(-150%, -50%) scale(.54);
-  opacity: .12;
+  transform: translate(-150%, -50%) scale(0.54);
+  opacity: 0.12;
   z-index: 1;
 }
 
 .card.far-right {
-  transform: translate(50%, -50%) scale(.54);
-  opacity: .12;
+  transform: translate(50%, -50%) scale(0.54);
+  opacity: 0.12;
   z-index: 1;
 }
 
 .card.hidden {
-  transform: translate(-50%, -50%) scale(.42);
+  transform: translate(-50%, -50%) scale(0.42);
   opacity: 0;
   pointer-events: none;
 }
 
-/* CORRECAO PRINCIPAL DO ICONE GIGANTE */
+/* =========================================================
+   CORRECAO DO ICONE GIGANTE
+========================================================= */
+
 .icon,
 .manifold-icon,
 .gas-icon,
@@ -192,25 +224,30 @@ input {
   height: 86px !important;
   max-width: 86px !important;
   max-height: 86px !important;
-  margin: 0 auto 24px;
+  min-width: 86px !important;
+  min-height: 86px !important;
+  margin: 0 auto 24px !important;
   display: flex !important;
-  align-items: center;
-  justify-content: center;
-  font-size: 54px;
-  line-height: 1;
-  overflow: hidden;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 54px !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  flex: 0 0 auto !important;
 }
 
 .card svg,
 .manifold-icon svg,
 .gas-icon svg,
 .cat-icon svg {
-  width: 100% !important;
-  height: 100% !important;
+  width: 86px !important;
+  height: 86px !important;
   max-width: 86px !important;
   max-height: 86px !important;
-  display: block;
-  object-fit: contain;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: block !important;
+  object-fit: contain !important;
 }
 
 .title {
@@ -225,10 +262,25 @@ input {
   word-break: normal;
 }
 
-.blue { color: #38bdf8 !important; }
-.green { color: #22c55e !important; }
-.red { color: #ff3636 !important; }
-.orange { color: #ff8c1a !important; }
+.blue {
+  color: #38bdf8 !important;
+}
+
+.green {
+  color: #22c55e !important;
+}
+
+.red {
+  color: #ff3636 !important;
+}
+
+.orange {
+  color: #ff8c1a !important;
+}
+
+/* =========================================================
+   BOTOES DE NAVEGACAO
+========================================================= */
 
 .nav,
 .small-nav {
@@ -243,7 +295,7 @@ input {
 .small-nav button {
   width: 46px;
   height: 46px;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 15px;
   background: rgba(15, 23, 42, 0.78);
   color: #ffffff;
@@ -273,9 +325,9 @@ input {
   min-height: 34px;
   padding: 7px 11px;
   border-radius: 12px;
-  color: rgba(255,255,255,0.88);
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -297,16 +349,16 @@ input {
   background: rgba(5, 8, 14, 0.88);
   border: 1px solid rgba(56, 189, 248, 0.18);
   box-shadow:
-    0 16px 44px rgba(0,0,0,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.04);
+    0 16px 44px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .mode-title {
   margin: 8px 0 12px;
   font-size: 14px;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255, 255, 255, 0.82);
   font-weight: 900;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 }
 
 .search-area {
@@ -330,7 +382,7 @@ input {
   padding: 12px;
   border: 1px solid rgba(34, 197, 94, 0.18);
   border-radius: 16px;
-  background: rgba(255,255,255,0.045);
+  background: rgba(255, 255, 255, 0.045);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -344,13 +396,13 @@ input {
 
 .gas-chip small {
   margin-top: 4px;
-  color: rgba(255,255,255,0.62);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 12px;
 }
 
 .gas-chip.active-gas {
   border-color: rgba(34, 197, 94, 0.65);
-  box-shadow: 0 0 18px rgba(34,197,94,0.12);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.12);
 }
 
 .gas-info,
@@ -359,8 +411,8 @@ input {
   margin-top: 16px;
   padding: 15px;
   border-radius: 18px;
-  background: rgba(0,0,0,0.30);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0, 0, 0, 0.30);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .gas-info h2,
@@ -377,15 +429,15 @@ input {
   margin: 9px 0;
   padding: 12px 13px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.045);
-  border: 1px solid rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.90);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.90);
   font-size: 14px;
   line-height: 1.42;
 }
 
 .info-row span {
-  color: rgba(255,255,255,0.58);
+  color: rgba(255, 255, 255, 0.58);
   font-size: 12px;
   font-weight: 900;
 }
@@ -410,9 +462,9 @@ input {
   margin-top: 12px;
   padding: 11px;
   border-radius: 12px;
-  color: rgba(255,255,255,0.66);
-  background: rgba(56,189,248,0.08);
-  border: 1px solid rgba(56,189,248,0.14);
+  color: rgba(255, 255, 255, 0.66);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.14);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -427,13 +479,13 @@ input {
 .pt-table th,
 .pt-table td {
   padding: 9px;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   text-align: left;
 }
 
 .pt-table th {
   color: #38bdf8;
-  background: rgba(56,189,248,0.08);
+  background: rgba(56, 189, 248, 0.08);
 }
 
 /* =========================================================
@@ -471,24 +523,24 @@ input {
   min-height: 148px;
   padding: 16px;
   border-radius: 22px;
-  border: 1px solid rgba(56,189,248,0.22);
-  background: linear-gradient(180deg, rgba(10,16,28,0.95), rgba(4,8,14,0.94));
-  box-shadow: 0 16px 36px rgba(0,0,0,0.42);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  background: linear-gradient(180deg, rgba(10, 16, 28, 0.95), rgba(4, 8, 14, 0.94));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: transform .30s ease, opacity .30s ease;
+  transition: transform 0.30s ease, opacity 0.30s ease;
   cursor: pointer;
 }
 
 .category-card {
-  border-color: rgba(255,54,54,0.25);
+  border-color: rgba(255, 54, 54, 0.25);
 }
 
 .cat-icon {
-  margin-bottom: 12px;
+  margin-bottom: 12px !important;
 }
 
 .cat-title,
@@ -506,7 +558,7 @@ input {
 .model-sub,
 .code-sub {
   margin-top: 8px;
-  color: rgba(255,255,255,0.60);
+  color: rgba(255, 255, 255, 0.60);
   font-size: 12px;
   font-weight: 700;
 }
@@ -524,8 +576,8 @@ input {
 .brand-left,
 .model-left,
 .code-left {
-  transform: translate(-105%, -50%) scale(.72);
-  opacity: .42;
+  transform: translate(-105%, -50%) scale(0.72);
+  opacity: 0.42;
   z-index: 2;
 }
 
@@ -533,8 +585,8 @@ input {
 .brand-right,
 .model-right,
 .code-right {
-  transform: translate(5%, -50%) scale(.72);
-  opacity: .42;
+  transform: translate(5%, -50%) scale(0.72);
+  opacity: 0.42;
   z-index: 2;
 }
 
@@ -542,7 +594,7 @@ input {
 .brand-hidden,
 .model-hidden,
 .code-hidden {
-  transform: translate(-50%, -50%) scale(.50);
+  transform: translate(-50%, -50%) scale(0.50);
   opacity: 0;
   pointer-events: none;
 }
@@ -552,7 +604,7 @@ input {
 ========================================================= */
 
 #acervo .mode-box {
-  border-color: rgba(56,189,248,0.25);
+  border-color: rgba(56, 189, 248, 0.25);
 }
 
 #acervo .mode-title {
@@ -560,37 +612,37 @@ input {
   text-align: left;
   text-transform: uppercase;
   font-size: 12px;
-  letter-spacing: .8px;
+  letter-spacing: 0.8px;
 }
 
 #acervoSearch {
   height: 48px;
   border-radius: 12px;
   text-transform: uppercase;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
 }
 
 #acervoInfo {
-  background: linear-gradient(180deg, rgba(8,13,22,0.95), rgba(3,6,12,0.95));
-  border: 1px solid rgba(56,189,248,0.25);
+  background: linear-gradient(180deg, rgba(8, 13, 22, 0.95), rgba(3, 6, 12, 0.95));
+  border: 1px solid rgba(56, 189, 248, 0.25);
 }
 
 #acervoInfo h2 {
   padding: 11px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(56,189,248,0.22);
-  background: rgba(56,189,248,0.07);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  background: rgba(56, 189, 248, 0.07);
   color: #eaf8ff;
   font-size: 16px;
   text-transform: uppercase;
-  letter-spacing: .8px;
+  letter-spacing: 0.8px;
 }
 
 #acervoInfo h2::before {
   content: "ETIQUETA TECNICA";
   display: block;
   margin-bottom: 4px;
-  color: rgba(255,255,255,0.52);
+  color: rgba(255, 255, 255, 0.52);
   font-size: 9px;
   letter-spacing: 1.8px;
 }
@@ -612,19 +664,19 @@ input {
 
 #acervoInfo .info-row span {
   font-size: 9px;
-  letter-spacing: .8px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 #acervoInfo .info-row strong {
   font-size: 12px;
-  letter-spacing: .25px;
+  letter-spacing: 0.25px;
 }
 
 #acervoInfo .info-row small {
   margin-top: 2px !important;
   font-size: 8.5px;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
