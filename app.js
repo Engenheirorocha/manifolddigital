@@ -2,17 +2,13 @@
    ARQUIVO COMPLETO ESTÁVEL
 
    Atualização desta versão:
-   - Mantém a busca do Acervo funcionando.
-   - Implementa a lógica visual de confiança:
-
-     VERDE   = informação oficial / site oficial / fabricante / manual oficial
-     AZUL    = informação confiável / complementar
-     AMARELO = informação sugerida / campo
-
-   Importante:
-   - A consulta de equipamento agora aceita SOMENTE código/modelo principal da CONDENSADORA.
-   - Não busca por marca, fabricante, família, linha, evaporadora ou unidade interna.
+   - Mantém o app funcionando sem alterar a estrutura principal.
+   - Consulta Equipamento trabalha somente com CÓDIGO DO CONDENSADOR.
+   - Não busca por marca, fabricante, evaporadora, unidade interna, família ou linha genérica.
+   - A ficha técnica mostra dados em cor padrão profissional.
+   - A confiança aparece escrita abaixo do dado: Oficial / Confiável / Sugerido.
    - Campo vazio, fraco ou sem informação útil não aparece.
+   - Link de manual/site oficial continua destacado e clicável.
 */
 
 const gasData = window.gasData || {};
@@ -99,15 +95,11 @@ function getAcervoColorStyle(item, fieldKey) {
     source.includes("usuario") ||
     source.includes("usuário") ||
     source.includes("relato") ||
-    source.includes("campo") ||
-    source.includes("nao confirmada") ||
-    source.includes("não confirmada") ||
-    source.includes("nao_confirmada") ||
-    source.includes("não_confirmada");
+    source.includes("campo");
 
   if (isSuggested) {
     return {
-      color: "#facc15",
+      color: "#94a3b8",
       label: "Sugerido / campo"
     };
   }
@@ -126,17 +118,20 @@ function getAcervoColorStyle(item, fieldKey) {
     source.includes("catalogo tecnico") ||
     source.includes("catálogo técnico") ||
     source.includes("fonte tecnica") ||
-    source.includes("fonte técnica");
+    source.includes("fonte técnica") ||
+    source.includes("revenda") ||
+    source.includes("pdf tecnico") ||
+    source.includes("pdf técnico");
 
   if (isTrustedNonOfficial) {
     return {
-      color: "#38bdf8",
+      color: "#94a3b8",
       label: "Confiável / complementar"
     };
   }
 
   return {
-    color: "#22c55e",
+    color: "#94a3b8",
     label: "Oficial"
   };
 }
@@ -149,7 +144,7 @@ function renderAcervoField(label, value, item, fieldKey) {
   return `
     <div class="info-row">
       <span>${label}:</span><br>
-      <strong style="color:${style.color} !important;">${value}</strong>
+      <strong style="color:#e5e7eb !important;">${value}</strong>
       <small style="display:block;opacity:.72;margin-top:4px;color:${style.color};">${style.label}</small>
     </div>
   `;
@@ -232,7 +227,7 @@ function searchHome() {
     { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
     { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
     { keys: ["modelos", "modelo", "equipamento"], index: 4 },
-    { keys: ["acervo", "acervo tecnico", "acervo técnico", "manual", "manuais", "manual tecnico", "manual técnico"], index: 5 }
+    { keys: ["acervo", "acervo tecnico", "acervo técnico", "manual", "manuais", "manual tecnico", "manual técnico", "consultar equipamento", "condensador", "condensadora"], index: 5 }
   ];
 
   const found = map.find((item) => {
@@ -308,7 +303,9 @@ function openScreen(id) {
   }
 }
 
-/* GASES */
+/* =========================================================
+   GASES
+========================================================= */
 
 function renderGas(name) {
   const key = String(name || "").toUpperCase();
@@ -372,7 +369,9 @@ function searchGas() {
   if (value.length >= 2) renderGas(value);
 }
 
-/* ÍCONES DO MÓDULO ERROS */
+/* =========================================================
+   ÍCONES DO MÓDULO ERROS
+========================================================= */
 
 function svgSplit() {
   return `<svg viewBox="0 0 100 100" fill="none"><rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
@@ -390,7 +389,9 @@ function svgPisoTeto() {
   return `<svg viewBox="0 0 100 100" fill="none"><rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/><path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
 }
 
-/* ERROS */
+/* =========================================================
+   ERROS
+========================================================= */
 
 function activeCategory() {
   return errorCategories[catCurrent]?.name || "";
@@ -830,15 +831,9 @@ function renderCodeInfo() {
   `;
 }
 
-/* ACERVO TÉCNICO / CONSULTAR EQUIPAMENTO
-
-   REGRA DA CONSULTA:
-   - A busca aceita SOMENTE código/modelo principal da CONDENSADORA.
-   - Não busca por marca, fabricante, família, linha, evaporadora ou unidade interna.
-   - A ficha principal mostra somente o código exato cadastrado.
-   - Campo vazio, fraco ou sem informação útil não aparece.
-   - Cada campo pode ter sua própria confiança: oficial, confiável ou sugerido.
-*/
+/* =========================================================
+   ACERVO TÉCNICO / CONSULTAR EQUIPAMENTO
+========================================================= */
 
 function getAcervoSearchTextParts(item) {
   const codigos = Array.isArray(item && item.codigoBusca) ? item.codigoBusca : [];
@@ -974,9 +969,8 @@ function renderAcervoIntro() {
     <h2>Consultar Equipamento</h2>
     <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
     <div class="info-row"><span>Regra:</span><br>Não pesquise por marca, fabricante, família, linha comercial, evaporadora ou unidade interna.</div>
-    <div class="info-row"><span style="color:#22c55e;font-weight:800;">Verde:</span><br>Dado oficial: fabricante, manual oficial, etiqueta ou catálogo oficial.</div>
-    <div class="info-row"><span style="color:#38bdf8;font-weight:800;">Azul:</span><br>Dado confiável/complementar: distribuidor, revenda técnica, catálogo comercial ou PDF técnico repostado.</div>
-    <div class="info-row"><span style="color:#facc15;font-weight:800;">Amarelo:</span><br>Dado sugerido/campo: técnico, fórum, vídeo ou experiência prática.</div>
+    <div class="info-row"><span>Confiança:</span><br>Abaixo de cada dado aparecerá: Oficial, Confiável / complementar ou Sugerido / campo.</div>
+    <div class="info-row"><span>Manual:</span><br>Links oficiais aparecem destacados para o técnico abrir e validar a informação.</div>
   `;
 }
 
@@ -1052,11 +1046,13 @@ function renderAcervoItem(item) {
   return `
     <h2>${safeValue(item.modelo, "Condensador")}</h2>
     ${ficha}
-    <div class="note">Verde = oficial. Azul = confiável/complementar. Amarelo = sugerido/campo. Campos sem informação não aparecem.</div>
+    <div class="note">A classificação de confiança aparece abaixo de cada dado. Campos sem informação validada não aparecem.</div>
   `;
 }
 
-/* SWIPE DOS CARROSSÉIS INTERNOS */
+/* =========================================================
+   SWIPE DOS CARROSSÉIS INTERNOS
+========================================================= */
 
 function setupSwipe(id, prevFn, nextFn) {
   const element = document.getElementById(id);
