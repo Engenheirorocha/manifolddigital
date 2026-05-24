@@ -1,6 +1,6 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
    MÁSCARAS DE FABRICANTES
-   LG - VERSÃO OPERACIONAL COMPLETA POR PADRÕES PRINCIPAIS
+   LG - VERSÃO AMPLIADA OPERACIONAL
 
    REGRA:
    - Este arquivo NÃO substitui dado oficial.
@@ -8,6 +8,7 @@
    - Dados críticos como carga exata de gás, corrente nominal real, disjuntor e tubulação oficial
      só devem vir do acervo técnico oficial/confiável.
    - Quando a máscara gerar dados técnicos, eles são PROVÁVEIS / ESTIMADOS.
+   - Máscaras comerciais/VRF são auxiliares e exigem validação em manual/etiqueta.
 */
 
 window.mascarasFabricantes = [
@@ -313,6 +314,149 @@ window.mascarasFabricantes = [
       origemLeitura: "Máscara LG baseada em códigos antigos iniciados por AS.",
       observacao: "Confiabilidade média. Validar sempre com etiqueta ou manual, pois linhas antigas possuem muitas variações."
     }
+  },
+
+  {
+    id: "LG_COMERCIAL_LEVE",
+    fabricante: "LG",
+    grupo: "LG Electronics",
+    marcasRelacionadas: ["LG"],
+
+    status: "ativo",
+    tipoMascara: "condensadora",
+    confiabilidadeGeral: "Média",
+
+    nomeMascara: "LG Comercial leve / piso-teto / cassete provável",
+    padroesInicio: ["UV", "UT", "LT", "LV", "AT", "AU"],
+
+    regexLimpo: "^(UV|UT|LT|LV|AT|AU)[A-Z0-9]*[0-9]{2}[A-Z0-9]*$",
+
+    exemplosValidos: [
+      "UVNH36GM2A0",
+      "UTNH36GM2A0",
+      "LTNC482MLE0",
+      "LVNC362MLE0",
+      "ATNW48GMLT0",
+      "AUNQ48GM3T0"
+    ],
+
+    capacidades: {
+      "18": "18.000 BTU/h provável",
+      "24": "24.000 BTU/h provável",
+      "30": "30.000 BTU/h provável",
+      "36": "36.000 BTU/h provável",
+      "42": "42.000 BTU/h provável",
+      "48": "48.000 BTU/h provável",
+      "54": "54.000 BTU/h provável",
+      "60": "60.000 BTU/h provável"
+    },
+
+    referenciasTecnicas: {
+      "18": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "1/4\" x 1/2\" provável",
+        observacaoTecnica: "Comercial leve. Validar tipo exato: cassete, piso-teto ou dutado."
+      },
+      "24": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "3/8\" x 5/8\" ou 1/4\" x 1/2\" provável",
+        observacaoTecnica: "Comercial leve. Validar tipo exato e tubulação no manual."
+      },
+      "30": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V provável",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "3/8\" x 5/8\" provável",
+        observacaoTecnica: "Comercial leve. Validar corrente e disjuntor no manual."
+      },
+      "36": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V / 380V conforme modelo",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "3/8\" x 5/8\" provável",
+        observacaoTecnica: "Comercial leve. Pode haver variação monofásica/trifásica."
+      },
+      "42": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V / 380V conforme modelo",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "3/8\" x 5/8\" provável",
+        observacaoTecnica: "Comercial leve alta capacidade. Validar manual."
+      },
+      "48": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V / 380V conforme modelo",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "3/8\" x 5/8\" ou maior conforme linha",
+        observacaoTecnica: "Comercial leve alta capacidade. Validar proteção elétrica."
+      },
+      "54": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V / 380V conforme modelo",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "Validar manual",
+        observacaoTecnica: "Comercial leve alta capacidade. Máscara apenas auxiliar."
+      },
+      "60": {
+        gasProvavel: "R-410A / R-32 conforme linha",
+        tensaoProvavel: "220V / 380V conforme modelo",
+        correnteEstimada: "Faixa estimada: validar na etiqueta",
+        tubulacaoProvavel: "Validar manual",
+        observacaoTecnica: "Comercial leve 60.000 BTU. Validar todos os dados oficiais."
+      }
+    },
+
+    leitura: {
+      fabricante: "LG",
+      tipoCodigo: "Código comercial LG provável",
+      linhaProvavel: "LG comercial leve provável",
+      tecnologia: "Inverter ou convencional conforme linha",
+      tipoEquipamento: "Piso-teto / cassete / dutado / comercial leve provável",
+      origemLeitura: "Máscara LG baseada em prefixos comerciais UV, UT, LT, LV, AT e AU.",
+      observacao: "Confiabilidade média. Usar como leitura auxiliar até validar por manual/etiqueta."
+    }
+  },
+
+  {
+    id: "LG_VRF_MULTI_V",
+    fabricante: "LG",
+    grupo: "LG Electronics",
+    marcasRelacionadas: ["LG"],
+
+    status: "ativo",
+    tipoMascara: "condensadora",
+    confiabilidadeGeral: "Média",
+
+    nomeMascara: "LG VRF / Multi V provável",
+    padroesInicio: ["ARU", "ARUN", "ARUV", "ARNU"],
+
+    regexLimpo: "^(ARU|ARUN|ARUV|ARNU)[A-Z0-9]+$",
+
+    exemplosValidos: [
+      "ARUN080LTE5",
+      "ARUN100LTE5",
+      "ARUN120LTE5",
+      "ARUV100LTE5",
+      "ARNU123BHA2"
+    ],
+
+    capacidades: {},
+
+    referenciasTecnicas: {},
+
+    leitura: {
+      fabricante: "LG",
+      tipoCodigo: "Código VRF / Multi V provável",
+      linhaProvavel: "LG Multi V / VRF provável",
+      tecnologia: "VRF / Inverter comercial provável",
+      tipoEquipamento: "Sistema VRF / Multi V provável",
+      origemLeitura: "Máscara LG baseada em prefixos ARU, ARUN, ARUV e ARNU usados em linhas comerciais/VRF.",
+      observacao: "Máscara auxiliar. Em VRF/Multi V, não gerar capacidade, corrente, gás ou tubulação apenas por código. Validar em manual/engenharia."
+    }
   }
 
 ];
@@ -381,6 +525,17 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
     }
 
+    if (mascara.id === "LG_COMERCIAL_LEVE") {
+      const capacidadeMatch = codigoLimpo.match(/(18|24|30|36|42|48|54|60)/);
+      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
+      capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
+    }
+
+    if (mascara.id === "LG_VRF_MULTI_V") {
+      capacidadeCodigo = "";
+      capacidadeProvavel = "";
+    }
+
     const referencia = mascara.referenciasTecnicas && capacidadeCodigo
       ? mascara.referenciasTecnicas[capacidadeCodigo]
       : null;
@@ -403,6 +558,14 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
 
     if (mascara.id === "LG_ANTIGO_AS") {
       cicloProvavel = "Ciclo não confirmado pela máscara / validar etiqueta";
+    }
+
+    if (mascara.id === "LG_COMERCIAL_LEVE") {
+      cicloProvavel = "Ciclo não confirmado pela máscara / validar etiqueta";
+    }
+
+    if (mascara.id === "LG_VRF_MULTI_V") {
+      cicloProvavel = "Depende da combinação do sistema VRF / validar projeto e manual";
     }
 
     const detalhesTecnicos = referencia ? [
