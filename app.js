@@ -5,16 +5,14 @@
    - Mantém a busca do Acervo funcionando.
    - Implementa a lógica visual de confiança:
 
-     AZUL  = informação oficial / site oficial / fabricante / manual oficial
-     VERDE = informação não oficial, mas confiável
-     BRANCO = informação sugerida por usuário, internet ou campo
+     VERDE   = informação oficial / site oficial / fabricante / manual oficial
+     AZUL    = informação confiável / complementar
+     AMARELO = informação sugerida / campo
 
    Importante:
-   - O banco continua simples em databases/acervo_tecnico.js.
-   - A cor é decidida pelo app.js lendo campos como:
-     fonteTipo, nivelConfianca, status, fonte, fontesCampos e confiancaCampos.
-   - Se o banco ainda não tiver essas marcações, o app trata como OFICIAL por padrão
-     para manter compatibilidade com o acervo original restaurado.
+   - A consulta de equipamento agora aceita SOMENTE código/modelo principal da CONDENSADORA.
+   - Não busca por marca, fabricante, família, linha, evaporadora ou unidade interna.
+   - Campo vazio, fraco ou sem informação útil não aparece.
 */
 
 const gasData = window.gasData || {};
@@ -109,8 +107,8 @@ function getAcervoColorStyle(item, fieldKey) {
 
   if (isSuggested) {
     return {
-      color: "#ffffff",
-      label: "Informação sugerida"
+      color: "#facc15",
+      label: "Sugerido / campo"
     };
   }
 
@@ -132,13 +130,13 @@ function getAcervoColorStyle(item, fieldKey) {
 
   if (isTrustedNonOfficial) {
     return {
-      color: "#22c55e",
-      label: "Confiável não oficial"
+      color: "#38bdf8",
+      label: "Confiável / complementar"
     };
   }
 
   return {
-    color: "#38bdf8",
+    color: "#22c55e",
     label: "Oficial"
   };
 }
@@ -832,7 +830,15 @@ function renderCodeInfo() {
   `;
 }
 
-/* ACERVO TÉCNICO */
+/* ACERVO TÉCNICO / CONSULTAR EQUIPAMENTO
+
+   REGRA DA CONSULTA:
+   - A busca aceita SOMENTE código/modelo principal da CONDENSADORA.
+   - Não busca por marca, fabricante, família, linha, evaporadora ou unidade interna.
+   - A ficha principal mostra somente o código exato cadastrado.
+   - Campo vazio, fraco ou sem informação útil não aparece.
+   - Cada campo pode ter sua própria confiança: oficial, confiável ou sugerido.
+*/
 
 function getAcervoSearchTextParts(item) {
   const codigos = Array.isArray(item && item.codigoBusca) ? item.codigoBusca : [];
@@ -840,19 +846,72 @@ function getAcervoSearchTextParts(item) {
   return {
     codigos: codigos.filter(Boolean),
     modelo: item && item.modelo ? item.modelo : "",
-    marca: item && item.marca ? item.marca : "",
-    linha: item && item.linha ? item.linha : "",
-    tipo: item && item.tipo ? item.tipo : ""
+    tipoCodigo: item && item.tipoCodigo ? item.tipoCodigo : ""
   };
+}
+
+function isCondensadoraAcervo(item) {
+  const tipoCodigo = normalizeSearchText(item && item.tipoCodigo ? item.tipoCodigo : "condensadora");
+
+  if (!tipoCodigo) return true;
+
+  return (
+    tipoCodigo.includes("condensadora") ||
+    tipoCodigo.includes("condensador") ||
+    tipoCodigo.includes("unidade externa") ||
+    tipoCodigo.includes("externa")
+  );
+}
+
+function isGenericAcervoSearch(searchValue) {
+  const value = normalizeSearchText(searchValue);
+  const compact = normalizeAcervoCode(searchValue);
+
+  if (!compact || compact.length < 3) return true;
+
+  const blockedTerms = [
+    "lg",
+    "midea",
+    "carrier",
+    "springer",
+    "samsung",
+    "elgin",
+    "gree",
+    "consul",
+    "electrolux",
+    "philco",
+    "agratto",
+    "daikin",
+    "fujitsu",
+    "komeco",
+    "tcl",
+    "dual inverter",
+    "inverter",
+    "split",
+    "hi wall",
+    "hiwall",
+    "cassete",
+    "k7",
+    "piso teto",
+    "janela",
+    "condensadora",
+    "condensador",
+    "evaporadora",
+    "evaporador"
+  ];
+
+  return blockedTerms.some((term) => value === normalizeSearchText(term));
 }
 
 function getAcervoSearchRank(item, searchValue) {
   if (!item) return 99;
+  if (!isCondensadoraAcervo(item)) return 99;
+  if (isGenericAcervoSearch(searchValue)) return 99;
 
   const rawSearch = normalizeSearchText(searchValue);
   const compactSearch = normalizeAcervoCode(searchValue);
 
-  if (compactSearch.length < 2) return 99;
+  if (compactSearch.length < 3) return 99;
 
   const parts = getAcervoSearchTextParts(item);
 
@@ -864,63 +923,20 @@ function getAcervoSearchRank(item, searchValue) {
   const modeloRaw = normalizeSearchText(parts.modelo);
   const modeloCompact = normalizeAcervoCode(parts.modelo);
 
-  const marcaRaw = normalizeSearchText(parts.marca);
-  const marcaCompact = normalizeAcervoCode(parts.marca);
-
-  const linhaRaw = normalizeSearchText(parts.linha);
-  const linhaCompact = normalizeAcervoCode(parts.linha);
-
-  const tipoRaw = normalizeSearchText(parts.tipo);
-  const tipoCompact = normalizeAcervoCode(parts.tipo);
-
-  /* 0 = codigo exato.
-     Exemplo: PAC12QC precisa ganhar de 12QC.
-  */
   if (codigos.some((codigo) => codigo.compact === compactSearch || codigo.raw === rawSearch)) {
     return 0;
   }
 
-  /* 1 = modelo exato. */
   if (modeloCompact === compactSearch || modeloRaw === rawSearch) {
     return 1;
   }
 
-  /* 2 = codigo comeca com a busca.
-     Exemplo: CBK12 encontra CBK12EBBCJ e CBK12DBXCJ.
-  */
-  if (codigos.some((codigo) => codigo.compact.startsWith(compactSearch) || codigo.raw.startsWith(rawSearch))) {
+  if (compactSearch.length >= 4 && codigos.some((codigo) => codigo.compact.startsWith(compactSearch))) {
     return 2;
   }
 
-  /* 3 = modelo comeca com a busca. */
-  if (
-    (modeloCompact && modeloCompact.startsWith(compactSearch)) ||
-    (modeloRaw && modeloRaw.startsWith(rawSearch))
-  ) {
+  if (compactSearch.length >= 4 && modeloCompact && modeloCompact.startsWith(compactSearch)) {
     return 3;
-  }
-
-  /* 4 = codigo contem a busca.
-     Importante: aqui NAO usamos compactSearch.includes(codigo.compact),
-     porque isso causava o erro PAC12QC retornar Britania 12QC.
-  */
-  if (codigos.some((codigo) => codigo.compact.includes(compactSearch) || codigo.raw.includes(rawSearch))) {
-    return 4;
-  }
-
-  /* 5 = modelo/marca/linha/tipo contem a busca. */
-  const genericTerms = [
-    { raw: modeloRaw, compact: modeloCompact },
-    { raw: marcaRaw, compact: marcaCompact },
-    { raw: linhaRaw, compact: linhaCompact },
-    { raw: tipoRaw, compact: tipoCompact }
-  ];
-
-  if (genericTerms.some((term) => {
-    if (!term.compact) return false;
-    return term.raw.includes(rawSearch) || term.compact.includes(compactSearch);
-  })) {
-    return 5;
   }
 
   return 99;
@@ -943,14 +959,7 @@ function getAcervoSearchResults(baseAcervo, searchValue) {
 
   const bestRank = ranked[0].rank;
 
-  /* Quando existe codigo exato ou inicio de codigo, mostra so o grupo mais preciso.
-     Isso evita um codigo completo puxar familia errada.
-  */
-  if (bestRank <= 4) {
-    return ranked.filter((result) => result.rank === bestRank).map((result) => result.item);
-  }
-
-  return ranked.map((result) => result.item);
+  return ranked.filter((result) => result.rank === bestRank).map((result) => result.item);
 }
 
 function acervoMatchesSearch(item, searchValue) {
@@ -962,11 +971,12 @@ function renderAcervoIntro() {
   if (!acervoInfo) return;
 
   acervoInfo.innerHTML = `
-    <h2>Acervo Técnico</h2>
-    <div class="info-row"><span>Como usar:</span><br>Digite o modelo ou código da etiqueta da evaporadora ou condensadora.</div>
-    <div class="info-row"><span style="color:#38bdf8;font-weight:800;">Azul:</span><br>Dado oficial: fabricante, site oficial, manual oficial ou etiqueta validada.</div>
-    <div class="info-row"><span style="color:#22c55e;font-weight:800;">Verde:</span><br>Dado não oficial, mas confiável.</div>
-    <div class="info-row"><span style="color:#ffffff;font-weight:800;">Branco:</span><br>Informação sugerida por usuário, internet ou campo.</div>
+    <h2>Consultar Equipamento</h2>
+    <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
+    <div class="info-row"><span>Regra:</span><br>Não pesquise por marca, fabricante, família, linha comercial, evaporadora ou unidade interna.</div>
+    <div class="info-row"><span style="color:#22c55e;font-weight:800;">Verde:</span><br>Dado oficial: fabricante, manual oficial, etiqueta ou catálogo oficial.</div>
+    <div class="info-row"><span style="color:#38bdf8;font-weight:800;">Azul:</span><br>Dado confiável/complementar: distribuidor, revenda técnica, catálogo comercial ou PDF técnico repostado.</div>
+    <div class="info-row"><span style="color:#facc15;font-weight:800;">Amarelo:</span><br>Dado sugerido/campo: técnico, fórum, vídeo ou experiência prática.</div>
   `;
 }
 
@@ -975,10 +985,21 @@ function searchAcervoTecnico() {
   const acervoInfo = document.getElementById("acervoInfo");
   if (!input || !acervoInfo) return;
 
-  const value = normalizeSearchText(input.value);
+  const rawValue = String(input.value || "").trim();
+  const value = normalizeSearchText(rawValue);
 
   if (value.length < 2) {
     renderAcervoIntro();
+    return;
+  }
+
+  if (isGenericAcervoSearch(rawValue)) {
+    acervoInfo.innerHTML = `
+      <h2>Digite o código do condensador</h2>
+      <div class="info-row"><span>Busca digitada:</span><br>${rawValue}</div>
+      <div class="info-row">Esta consulta não busca por marca, fabricante, família, evaporadora ou linha comercial.</div>
+      <div class="info-row"><span>Use assim:</span><br>Digite o código exato da condensadora conforme a etiqueta da unidade externa.</div>
+    `;
     return;
   }
 
@@ -986,19 +1007,21 @@ function searchAcervoTecnico() {
 
   if (!baseAcervo.length) {
     acervoInfo.innerHTML = `
-      <h2>Banco não carregado</h2>
-      <div class="info-row">O arquivo <strong>databases/acervo_tecnico.js</strong> não foi carregado ou está com erro.</div>
+      <h2>Banco zerado</h2>
+      <div class="info-row">O arquivo <strong>databases/acervo_tecnico.js</strong> está carregado, mas ainda não possui condensadoras cadastradas.</div>
+      <div class="info-row"><span>Busca:</span><br>${rawValue}</div>
     `;
     return;
   }
 
-  const resultados = getAcervoSearchResults(baseAcervo, input.value);
+  const resultados = getAcervoSearchResults(baseAcervo, rawValue);
 
   if (!resultados.length) {
     acervoInfo.innerHTML = `
-      <h2>Modelo não cadastrado</h2>
-      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
-      <div class="info-row">Nenhum modelo/código cadastrado no Acervo Técnico contém esse termo.</div>
+      <h2>Condensador não cadastrado</h2>
+      <div class="info-row"><span>Código digitado:</span><br>${rawValue}</div>
+      <div class="info-row">Nenhuma condensadora cadastrada corresponde exatamente a esse código.</div>
+      <div class="info-row"><span>Dica:</span><br>Confira o código na etiqueta da unidade externa e digite sem pesquisar por marca.</div>
     `;
     return;
   }
@@ -1008,32 +1031,28 @@ function searchAcervoTecnico() {
 
 function renderAcervoItem(item) {
   const ficha = [
-    renderAcervoField("Modelo", item.modelo, item, "modelo"),
     renderAcervoField("Marca", item.marca, item, "marca"),
+    renderAcervoField("Modelo", item.modelo, item, "modelo"),
     renderAcervoField("Linha", item.linha, item, "linha"),
     renderAcervoField("Tipo", item.tipo, item, "tipo"),
     renderAcervoField("Capacidade", item.capacidade, item, "capacidade"),
     renderAcervoField("Tensão", item.tensao, item, "tensao"),
-    renderAcervoField("Fluido refrigerante", item.fluidoRefrigerante, item, "fluidoRefrigerante"),
+    renderAcervoField("Corrente", item.corrente || item.correnteNominal, item, "correnteNominal"),
+    renderAcervoField("Gás", item.gas || item.fluidoRefrigerante, item, "fluidoRefrigerante"),
     renderAcervoField("Carga de gás", item.cargaGas, item, "cargaGas"),
-    renderAcervoField("Corrente", item.correnteNominal, item, "correnteNominal"),
-    renderAcervoField("Disjuntor", item.disjuntor, item, "disjuntor"),
+    renderAcervoField("Tubulação", item.tubulacao, item, "tubulacao"),
     renderAcervoField("Tubulação líquido / alta", item.tubulacaoAlta, item, "tubulacaoAlta"),
     renderAcervoField("Tubulação sucção / baixa", item.tubulacaoBaixa, item, "tubulacaoBaixa"),
-    renderAcervoField("Superaquecimento", item.superaquecimento, item, "superaquecimento"),
-    renderAcervoField("Subresfriamento", item.subresfriamento, item, "subresfriamento"),
-    renderAcervoField("Comprimento máximo", item.comprimentoMaximo, item, "comprimentoMaximo"),
-    renderAcervoField("Desnível máximo", item.desnivelMaximo, item, "desnivelMaximo"),
-    renderAcervoField("Carga adicional", item.cargaAdicional, item, "cargaAdicional"),
-    renderAcervoManual("Manual de instalação", item.manualInstalacao, "Abrir manual de instalação"),
-    renderAcervoManual("Manual técnico/manutenção", item.manualManutencao, "Abrir manual técnico/manutenção"),
+    renderAcervoManual("Manual de instalação", item.manualInstalacao, "🔗 Abrir manual oficial de instalação"),
+    renderAcervoManual("Manual técnico/manutenção", item.manualManutencao, "🔗 Abrir manual técnico/manutenção"),
+    renderAcervoManual("Página oficial", item.paginaOficial, "🔗 Abrir página oficial do fabricante"),
     renderAcervoTextField("Fonte", item.fonte)
   ].join("");
 
   return `
-    <h2>${safeValue(item.modelo, "Equipamento")}</h2>
+    <h2>${safeValue(item.modelo, "Condensador")}</h2>
     ${ficha}
-    <div class="note">Azul = oficial. Verde = confiável não oficial. Branco = informação sugerida.</div>
+    <div class="note">Verde = oficial. Azul = confiável/complementar. Amarelo = sugerido/campo. Campos sem informação não aparecem.</div>
   `;
 }
 
