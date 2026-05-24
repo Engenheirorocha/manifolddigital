@@ -1,13 +1,14 @@
 /* HVAC PRO - app.js
-   ARQUIVO COMPLETO ESTÁVEL
+   ARQUIVO COMPLETO ESTÁVEL - v6611
 
-   Atualização desta versão:
-   - Consulta Equipamento trabalha somente com CÓDIGO DO CONDENSADOR.
-   - Não busca por marca, fabricante, evaporadora, unidade interna, família ou linha genérica.
-   - A ficha técnica mostra os dados em branco/cinza forte, padrão profissional.
-   - A confiança aparece escrita abaixo do dado: Oficial / Confiável / Sugerido.
-   - Campo vazio, fraco ou sem informação útil não aparece.
-   - No final da ficha aparece somente o link do Manual de Instalação do fabricante.
+   Correção desta versão:
+   - Fabricante selecionado agora trava a busca.
+   - Se LG estiver selecionado, o app só procura LG no acervo.
+   - Se o código não existir no acervo LG, ele roda somente a máscara LG.
+   - Código Midea com fabricante LG não retorna mais Midea.
+   - Consulta Equipamento funciona em 2 etapas:
+     1. Selecionar fabricante
+     2. Digitar código do condensador
 */
 
 const gasData = window.gasData || {};
@@ -26,10 +27,9 @@ let brandCurrent = 0;
 let modelCurrent = 0;
 let codeCurrent = 0;
 
-function getAcervoTecnico() {
-  if (Array.isArray(window.acervoTecnico)) return window.acervoTecnico;
-  return [];
-}
+/* =========================================================
+   FUNÇÕES GERAIS
+========================================================= */
 
 function normalizeSearchText(value) {
   return String(value || "")
@@ -47,6 +47,11 @@ function safeValue(value, fallback) {
   return value || fallback || "Não informado";
 }
 
+function getAcervoTecnico() {
+  if (Array.isArray(window.acervoTecnico)) return window.acervoTecnico;
+  return [];
+}
+
 function isWeakAcervoValue(value) {
   const text = normalizeSearchText(value);
 
@@ -62,6 +67,10 @@ function isWeakAcervoValue(value) {
 
   return false;
 }
+
+/* =========================================================
+   CORES / CONFIANÇA DO ACERVO
+========================================================= */
 
 function getAcervoSourceText(item, fieldKey) {
   const fontesCampos = item && item.fontesCampos ? item.fontesCampos : {};
@@ -149,6 +158,18 @@ function renderAcervoField(label, value, item, fieldKey) {
   `;
 }
 
+function renderMascaraField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong style="color:#f8fafc !important;">${value}</strong>
+      <small style="display:block;opacity:.72;margin-top:4px;color:#94a3b8;">Leitura por máscara</small>
+    </div>
+  `;
+}
+
 function renderAcervoTextField(label, value) {
   if (isWeakAcervoValue(value)) return "";
 
@@ -170,6 +191,10 @@ function renderAcervoManual(label, value, text) {
     </div>
   `;
 }
+
+/* =========================================================
+   CARROSSEL PRINCIPAL
+========================================================= */
 
 function updateCarousel() {
   cards = document.querySelectorAll(".card");
@@ -258,6 +283,10 @@ function setupMainSwipe() {
   });
 }
 
+/* =========================================================
+   TELAS
+========================================================= */
+
 function openScreen(id) {
   document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.remove("active");
@@ -294,6 +323,8 @@ function openScreen(id) {
   if (id === "acervo") {
     const acervo = document.getElementById("acervo");
     if (acervo) acervo.scrollTop = 0;
+
+    validarFabricanteAcervo();
 
     const acervoSearch = document.getElementById("acervoSearch");
     if (acervoSearch && !acervoSearch.value.trim()) {
@@ -831,8 +862,82 @@ function renderCodeInfo() {
 }
 
 /* =========================================================
-   ACERVO TÉCNICO / CONSULTAR EQUIPAMENTO
+   CONSULTAR EQUIPAMENTO / ACERVO + MÁSCARA
 ========================================================= */
+
+function getFabricanteSelecionado() {
+  const select = document.getElementById("acervoFabricante");
+  if (!select) return "";
+  return String(select.value || "").trim().toUpperCase();
+}
+
+function marcaCombinaComFabricanteSelecionado(marcaItem, fabricanteSelecionado) {
+  const marca = normalizeSearchText(marcaItem);
+  const fabricante = normalizeSearchText(fabricanteSelecionado);
+
+  if (!fabricante) return false;
+  if (!marca) return false;
+
+  const grupos = {
+    lg: ["lg"],
+    midea: ["midea", "springer", "carrier"],
+    gree: ["gree"],
+    elgin: ["elgin"],
+    samsung: ["samsung"],
+    consul: ["consul"],
+    electrolux: ["electrolux"],
+    daikin: ["daikin"],
+    fujitsu: ["fujitsu"],
+    komeco: ["komeco"],
+    philco: ["philco"],
+    agratto: ["agratto"],
+    tcl: ["tcl"]
+  };
+
+  const lista = grupos[fabricante] || [fabricante];
+
+  return lista.some((nome) => {
+    return marca === nome || marca.includes(nome) || nome.includes(marca);
+  });
+}
+
+function validarFabricanteAcervo() {
+  const fabricante = getFabricanteSelecionado();
+  const status = document.getElementById("fabricanteStatus");
+  const acervoInfo = document.getElementById("acervoInfo");
+
+  if (!status) return;
+
+  if (!fabricante) {
+    status.innerHTML = "Selecione um fabricante para aplicar a máscara correta.";
+    status.className = "fabricante-status";
+    return;
+  }
+
+  const mascaras = Array.isArray(window.mascarasFabricantes) ? window.mascarasFabricantes : [];
+
+  const mascaraExiste = mascaras.some((item) => {
+    return String(item.fabricante || "").toUpperCase() === fabricante;
+  });
+
+  if (mascaraExiste) {
+    status.innerHTML = "✅ Fabricante validado: " + fabricante;
+    status.className = "fabricante-status fabricante-ok";
+  } else {
+    status.innerHTML = "⚠ Fabricante selecionado, mas a máscara ainda não está cadastrada.";
+    status.className = "fabricante-status fabricante-alerta";
+  }
+
+  const input = document.getElementById("acervoSearch");
+
+  if (input && input.value.trim()) {
+    searchAcervoTecnico();
+  } else if (acervoInfo) {
+    renderAcervoIntro();
+  }
+}
+
+window.validarFabricanteAcervo = validarFabricanteAcervo;
 
 function getAcervoSearchTextParts(item) {
   const codigos = Array.isArray(item && item.codigoBusca) ? item.codigoBusca : [];
@@ -840,7 +945,8 @@ function getAcervoSearchTextParts(item) {
   return {
     codigos: codigos.filter(Boolean),
     modelo: item && item.modelo ? item.modelo : "",
-    tipoCodigo: item && item.tipoCodigo ? item.tipoCodigo : ""
+    tipoCodigo: item && item.tipoCodigo ? item.tipoCodigo : "",
+    marca: item && item.marca ? item.marca : ""
   };
 }
 
@@ -857,57 +963,20 @@ function isCondensadoraAcervo(item) {
   );
 }
 
-function isGenericAcervoSearch(searchValue) {
-  const value = normalizeSearchText(searchValue);
-  const compact = normalizeAcervoCode(searchValue);
-
-  if (!compact || compact.length < 3) return true;
-
-  const blockedTerms = [
-    "lg",
-    "midea",
-    "carrier",
-    "springer",
-    "samsung",
-    "elgin",
-    "gree",
-    "consul",
-    "electrolux",
-    "philco",
-    "agratto",
-    "daikin",
-    "fujitsu",
-    "komeco",
-    "tcl",
-    "dual inverter",
-    "inverter",
-    "split",
-    "hi wall",
-    "hiwall",
-    "cassete",
-    "k7",
-    "piso teto",
-    "janela",
-    "condensadora",
-    "condensador",
-    "evaporadora",
-    "evaporador"
-  ];
-
-  return blockedTerms.some((term) => value === normalizeSearchText(term));
-}
-
-function getAcervoSearchRank(item, searchValue) {
+function getAcervoSearchRank(item, searchValue, fabricanteSelecionado) {
   if (!item) return 99;
   if (!isCondensadoraAcervo(item)) return 99;
-  if (isGenericAcervoSearch(searchValue)) return 99;
+
+  const parts = getAcervoSearchTextParts(item);
+
+  if (!marcaCombinaComFabricanteSelecionado(parts.marca, fabricanteSelecionado)) {
+    return 99;
+  }
 
   const rawSearch = normalizeSearchText(searchValue);
   const compactSearch = normalizeAcervoCode(searchValue);
 
   if (compactSearch.length < 3) return 99;
-
-  const parts = getAcervoSearchTextParts(item);
 
   const codigos = parts.codigos.map((codigo) => ({
     raw: normalizeSearchText(codigo),
@@ -925,23 +994,15 @@ function getAcervoSearchRank(item, searchValue) {
     return 1;
   }
 
-  if (compactSearch.length >= 4 && codigos.some((codigo) => codigo.compact.startsWith(compactSearch))) {
-    return 2;
-  }
-
-  if (compactSearch.length >= 4 && modeloCompact && modeloCompact.startsWith(compactSearch)) {
-    return 3;
-  }
-
   return 99;
 }
 
-function getAcervoSearchResults(baseAcervo, searchValue) {
+function getAcervoSearchResults(baseAcervo, searchValue, fabricanteSelecionado) {
   const ranked = baseAcervo
     .map((item, index) => ({
       item,
       index,
-      rank: getAcervoSearchRank(item, searchValue)
+      rank: getAcervoSearchRank(item, searchValue, fabricanteSelecionado)
     }))
     .filter((result) => result.rank < 99)
     .sort((a, b) => {
@@ -956,20 +1017,16 @@ function getAcervoSearchResults(baseAcervo, searchValue) {
   return ranked.filter((result) => result.rank === bestRank).map((result) => result.item);
 }
 
-function acervoMatchesSearch(item, searchValue) {
-  return getAcervoSearchRank(item, searchValue) < 99;
-}
-
 function renderAcervoIntro() {
   const acervoInfo = document.getElementById("acervoInfo");
   if (!acervoInfo) return;
 
   acervoInfo.innerHTML = `
     <h2>Consultar Equipamento</h2>
-    <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
-    <div class="info-row"><span>Regra:</span><br>Não pesquise por marca, fabricante, família, linha comercial, evaporadora ou unidade interna.</div>
-    <div class="info-row"><span>Confiança:</span><br>Abaixo de cada dado aparecerá: Oficial, Confiável / complementar ou Sugerido / campo.</div>
-    <div class="info-row"><span>Manual:</span><br>No final da ficha, o app mostra o link direto do manual de instalação do fabricante quando disponível.</div>
+    <div class="info-row"><span>Etapa 1:</span><br>Selecione o fabricante do equipamento.</div>
+    <div class="info-row"><span>Etapa 2:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
+    <div class="info-row"><span>Máscara:</span><br>O fabricante selecionado limita a leitura ao padrão correto e evita conflito entre marcas.</div>
+    <div class="info-row"><span>Teste inicial:</span><br>LG ativo para códigos como S4-Q12JA3WC, S3-Q12JA31B, S4-W18KL3WA e S4-W30L43FA.</div>
   `;
 }
 
@@ -980,46 +1037,51 @@ function searchAcervoTecnico() {
 
   const rawValue = String(input.value || "").trim();
   const value = normalizeSearchText(rawValue);
+  const fabricante = getFabricanteSelecionado();
+
+  if (!fabricante) {
+    acervoInfo.innerHTML = `
+      <h2>Selecione o fabricante</h2>
+      <div class="info-row">Antes de digitar o código, selecione o fabricante para o app aplicar a máscara correta.</div>
+    `;
+    return;
+  }
 
   if (value.length < 2) {
     renderAcervoIntro();
     return;
   }
 
-  if (isGenericAcervoSearch(rawValue)) {
-    acervoInfo.innerHTML = `
-      <h2>Digite o código do condensador</h2>
-      <div class="info-row"><span>Busca digitada:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
-      <div class="info-row">Esta consulta não busca por marca, fabricante, família, evaporadora ou linha comercial.</div>
-      <div class="info-row"><span>Use assim:</span><br>Digite o código exato da condensadora conforme a etiqueta da unidade externa.</div>
-    `;
-    return;
-  }
-
   const baseAcervo = getAcervoTecnico();
+  const resultados = getAcervoSearchResults(baseAcervo, rawValue, fabricante);
 
-  if (!baseAcervo.length) {
-    acervoInfo.innerHTML = `
-      <h2>Banco zerado</h2>
-      <div class="info-row">O arquivo <strong>databases/acervo_tecnico.js</strong> está carregado, mas ainda não possui condensadoras cadastradas.</div>
-      <div class="info-row"><span>Busca:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
-    `;
+  if (resultados.length) {
+    acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
     return;
   }
 
-  const resultados = getAcervoSearchResults(baseAcervo, rawValue);
+  if (typeof window.interpretarMascaraFabricante === "function") {
+    const leitura = window.interpretarMascaraFabricante(fabricante, rawValue);
 
-  if (!resultados.length) {
+    if (leitura && leitura.encontrado) {
+      acervoInfo.innerHTML = renderMascaraItem(leitura);
+      return;
+    }
+
     acervoInfo.innerHTML = `
-      <h2>Condensador não cadastrado</h2>
+      <h2>Código não reconhecido pela máscara</h2>
+      <div class="info-row"><span>Fabricante selecionado:</span><br><strong style="color:#f8fafc !important;">${fabricante}</strong></div>
       <div class="info-row"><span>Código digitado:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
-      <div class="info-row">Nenhuma condensadora cadastrada corresponde exatamente a esse código.</div>
-      <div class="info-row"><span>Dica:</span><br>Confira o código na etiqueta da unidade externa e digite sem pesquisar por marca.</div>
+      <div class="info-row"><span>Motivo:</span><br>${leitura && leitura.motivo ? leitura.motivo : "Máscara não encontrou padrão compatível."}</div>
+      <div class="info-row"><span>Próximo passo:</span><br>Conferir se o fabricante selecionado está correto ou validar o código na etiqueta/manual.</div>
     `;
     return;
   }
 
-  acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
+  acervoInfo.innerHTML = `
+    <h2>Máscara não carregada</h2>
+    <div class="info-row">O arquivo <strong>databases/mascaras_fabricantes.js</strong> não foi carregado.</div>
+  `;
 }
 
 function renderAcervoItem(item) {
@@ -1043,7 +1105,30 @@ function renderAcervoItem(item) {
   return `
     <h2>${safeValue(item.modelo, "Condensador")}</h2>
     ${ficha}
-    <div class="note">A classificação de confiança aparece abaixo de cada dado. Campos sem informação validada não aparecem.</div>
+    <div class="note">Resultado encontrado no acervo técnico do fabricante selecionado. Campos sem informação validada não aparecem.</div>
+  `;
+}
+
+function renderMascaraItem(leitura) {
+  const ficha = [
+    renderMascaraField("Fabricante", leitura.fabricante),
+    renderMascaraField("Grupo", leitura.grupo),
+    renderMascaraField("Código do condensador", leitura.codigo),
+    renderMascaraField("Tipo de código", leitura.tipoCodigo),
+    renderMascaraField("Linha provável", leitura.linhaProvavel),
+    renderMascaraField("Tipo provável", leitura.tipoProvavel),
+    renderMascaraField("Tecnologia provável", leitura.tecnologiaProvavel),
+    renderMascaraField("Capacidade provável", leitura.capacidadeProvavel),
+    renderMascaraField("Ciclo provável", leitura.cicloProvavel),
+    renderMascaraField("Confiabilidade da máscara", leitura.confiabilidadeMascara),
+    renderMascaraField("Origem da leitura", leitura.origemLeitura),
+    renderMascaraField("Observação técnica", leitura.observacao)
+  ].join("");
+
+  return `
+    <h2>Etiqueta gerada por máscara</h2>
+    ${ficha}
+    <div class="note">Essa leitura é automática por padrão de engenharia do fabricante selecionado. Não substitui manual, etiqueta oficial ou acervo técnico validado.</div>
   `;
 }
 
@@ -1070,6 +1155,10 @@ function setupSwipe(id, prevFn, nextFn) {
   });
 }
 
+/* =========================================================
+   INIT
+========================================================= */
+
 function initApp() {
   cards = document.querySelectorAll(".card");
   current = 0;
@@ -1087,8 +1176,14 @@ function initApp() {
     acervoSearch.addEventListener("input", searchAcervoTecnico);
   }
 
+  const acervoFabricante = document.getElementById("acervoFabricante");
+  if (acervoFabricante) {
+    acervoFabricante.addEventListener("change", validarFabricanteAcervo);
+  }
+
   renderGas("R410A");
   renderCategoryCarousel();
+  validarFabricanteAcervo();
   renderAcervoIntro();
 }
 
