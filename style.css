@@ -1,19 +1,27 @@
 /* =========================================================
-   HVAC PRO - style.css RESTAURAR APP FUNCIONAL
-
-   USE AGORA PARA CORRIGIR O APP QUE QUEBROU
+   HVAC PRO - style.css CORRECAO TOTAL
 
    INSTRUCAO:
    1. GitHub -> style.css
    2. Apague TUDO
-   3. Cole este arquivo inteiro
+   3. Cole este codigo inteiro
    4. Commit changes
-   5. Abra o app com ?v=7000
+   5. Depois abra o app com: ?v=7100
+
+   O QUE ESTE CSS CORRIGE:
+   - Corrige icone gigante quebrando a tela
+   - Corrige carrossel
+   - Corrige campo de busca fora de lugar
+   - Corrige cards
+   - Corrige telas Gases / Erros / Consultar Equipamento
+   - Remove fundo/imagem quebrada
+   - Mantem visual escuro HVAC PRO
+   - Mantem Consultar Equipamento com visual tipo etiqueta tecnica
 
    IMPORTANTE:
-   - Esta versao NAO usa imagem de fundo.
-   - Esta versao prioriza voltar o layout/carrossel/telas.
-   - Depois que voltar a funcionar, aplicamos o fundo e a etiqueta em bloco pequeno.
+   - Este arquivo NAO usa imagem de fundo.
+   - Primeiro vamos recuperar o app 100% funcional.
+   - Depois aplicamos imagem de fundo com calma.
 ========================================================= */
 
 * {
@@ -27,24 +35,34 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
   background: #03050a;
   color: #ffffff;
-  font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
 
 body {
   background:
-    radial-gradient(circle at top center, rgba(0, 157, 255, 0.16), transparent 34%),
-    radial-gradient(circle at bottom center, rgba(0, 80, 160, 0.10), transparent 45%),
-    #03050a;
+    radial-gradient(circle at top center, rgba(0, 157, 255, 0.18), transparent 32%),
+    radial-gradient(circle at bottom center, rgba(0, 80, 160, 0.12), transparent 48%),
+    linear-gradient(180deg, #050811 0%, #02040a 100%);
 }
+
+button,
+input {
+  font-family: inherit;
+}
+
+/* =========================================================
+   TELAS
+========================================================= */
 
 .screen {
   display: none;
   width: 100%;
   min-height: 100vh;
-  padding: 22px 14px 40px;
+  padding: 22px 14px 38px;
+  background: transparent;
 }
 
 .screen.active {
@@ -58,15 +76,28 @@ body {
   overflow: hidden;
 }
 
+.page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   HOME
+========================================================= */
+
 .logo {
-  margin-top: 28px;
-  margin-bottom: 18px;
+  margin: 34px auto 18px;
+  text-align: center;
   color: #38bdf8;
   font-size: 34px;
   line-height: 1;
   font-weight: 900;
-  letter-spacing: 5px;
-  text-shadow: 0 0 12px rgba(0, 157, 255, 0.85), 0 0 34px rgba(0, 157, 255, 0.45);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 12px rgba(0, 157, 255, 0.90),
+    0 0 34px rgba(0, 157, 255, 0.45);
 }
 
 .home-search {
@@ -78,22 +109,30 @@ body {
 
 .home-search input,
 .search-area input {
+  display: block;
   width: 100%;
-  height: 44px;
+  height: 46px;
   padding: 0 16px;
-  border: 1px solid rgba(56, 189, 248, 0.30);
+  border: 1px solid rgba(56, 189, 248, 0.32);
   border-radius: 13px;
   outline: none;
-  background: rgba(0, 0, 0, 0.48);
+  background: rgba(0, 0, 0, 0.50);
   color: #ffffff;
   font-size: 14px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 18px rgba(0,157,255,0.08);
+  font-weight: 700;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.04),
+    0 0 18px rgba(0,157,255,0.08);
 }
 
 .home-search input::placeholder,
 .search-area input::placeholder {
   color: rgba(255,255,255,0.45);
 }
+
+/* =========================================================
+   CARROSSEL PRINCIPAL
+========================================================= */
 
 .carousel-wrap {
   position: relative;
@@ -118,22 +157,26 @@ body {
   height: 260px;
   padding: 22px 16px;
   border-radius: 26px;
-  border: 1px solid rgba(56, 189, 248, 0.20);
+  border: 1px solid rgba(56, 189, 248, 0.22);
   background: linear-gradient(180deg, rgba(11, 17, 29, 0.96), rgba(2, 5, 11, 0.96));
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255,255,255,0.04);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.56),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: transform .30s ease, opacity .30s ease;
+  transition: transform .30s ease, opacity .30s ease, filter .30s ease;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .card.center {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
   z-index: 5;
+  filter: none;
 }
 
 .card.left {
@@ -161,44 +204,57 @@ body {
 }
 
 .card.hidden {
-  transform: translate(-50%, -50%) scale(.45);
+  transform: translate(-50%, -50%) scale(.42);
   opacity: 0;
   pointer-events: none;
 }
 
+/* CORRECAO PRINCIPAL DO ICONE GIGANTE */
 .icon,
 .manifold-icon,
-.gas-icon {
-  width: 86px;
-  height: 86px;
+.gas-icon,
+.cat-icon {
+  width: 86px !important;
+  height: 86px !important;
+  max-width: 86px !important;
+  max-height: 86px !important;
   margin: 0 auto 24px;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   font-size: 54px;
   line-height: 1;
+  overflow: hidden;
 }
 
+.card svg,
 .manifold-icon svg,
 .gas-icon svg,
 .cat-icon svg {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 86px !important;
+  max-height: 86px !important;
   display: block;
+  object-fit: contain;
 }
 
 .title {
+  max-width: 100%;
+  color: #ffffff;
   font-size: 21px;
   font-weight: 900;
   letter-spacing: 1.5px;
-  line-height: 1.15;
+  line-height: 1.16;
   text-transform: uppercase;
+  text-align: center;
+  word-break: normal;
 }
 
-.blue { color: #38bdf8; }
-.green { color: #22c55e; }
-.red { color: #ff3636; }
-.orange { color: #ff8c1a; }
+.blue { color: #38bdf8 !important; }
+.green { color: #22c55e !important; }
+.red { color: #ff3636 !important; }
+.orange { color: #ff8c1a !important; }
 
 .nav,
 .small-nav {
@@ -223,11 +279,9 @@ body {
   cursor: pointer;
 }
 
-.page {
-  width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
-}
+/* =========================================================
+   TOPO DAS PAGINAS
+========================================================= */
 
 .topbar {
   width: 100%;
@@ -268,7 +322,9 @@ body {
   border-radius: 22px;
   background: rgba(5, 8, 14, 0.88);
   border: 1px solid rgba(56, 189, 248, 0.18);
-  box-shadow: 0 16px 44px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.04);
+  box-shadow:
+    0 16px 44px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
 .mode-title {
@@ -283,6 +339,10 @@ body {
   width: 100%;
   margin: 0 auto 14px;
 }
+
+/* =========================================================
+   GASES
+========================================================= */
 
 .gas-list {
   display: grid;
@@ -402,6 +462,10 @@ body {
   background: rgba(56,189,248,0.08);
 }
 
+/* =========================================================
+   CARROSSEIS INTERNOS - ERROS
+========================================================= */
+
 .error-category-wrap,
 .brand-category-wrap,
 .model-category-wrap,
@@ -450,8 +514,6 @@ body {
 }
 
 .cat-icon {
-  width: 58px;
-  height: 58px;
   margin-bottom: 12px;
 }
 
@@ -511,7 +573,10 @@ body {
   pointer-events: none;
 }
 
-/* CONSULTAR EQUIPAMENTO - visual tipo etiqueta, sem quebrar layout */
+/* =========================================================
+   CONSULTAR EQUIPAMENTO - ETIQUETA TECNICA
+========================================================= */
+
 #acervo .mode-box {
   border-color: rgba(56,189,248,0.25);
 }
@@ -588,6 +653,10 @@ body {
   letter-spacing: .5px;
   text-transform: uppercase;
 }
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
 
 @media (min-width: 700px) {
   .logo {
