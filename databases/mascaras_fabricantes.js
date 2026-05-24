@@ -1,6 +1,6 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
    MÁSCARAS DE FABRICANTES
-   TESTE LG - 3 PADRÕES PRINCIPAIS
+   LG - PADRÕES NOVOS, MULTI SPLIT E ANTIGOS
 
    REGRA:
    - Este arquivo NÃO substitui dado oficial.
@@ -24,7 +24,7 @@ window.mascarasFabricantes = [
     nomeMascara: "LG Split Inverter atual",
     padroesInicio: ["S3", "S4", "U4"],
 
-    regexPrincipal: "^(S3|S4|U4)-?[QW][0-9]{2}[A-Z0-9]+$",
+    regexLimpo: "^(S3|S4|U4)[QW][0-9]{2}[A-Z0-9]+$",
 
     exemplosValidos: [
       "S4-Q12JA3WC",
@@ -70,13 +70,16 @@ window.mascarasFabricantes = [
     nomeMascara: "LG Multi Split unidade externa",
     padroesInicio: ["A2UW", "A3UW", "A4UW", "A5UW"],
 
-    regexPrincipal: "^A[0-9]UW[0-9]{2}[A-Z0-9]+$",
+    regexLimpo: "^A[0-9]UW[0-9]{2}[A-Z0-9]+$",
 
     exemplosValidos: [
+      "A2UW18GFA0",
       "A3UW21GFA0",
       "A3UW24GFA2",
+      "A4UW30GFA2",
       "A5UW36GFA2",
-      "A4UW30GFA2"
+      "A5UW42GFA2",
+      "A5UW48GFA2"
     ],
 
     capacidades: {
@@ -113,12 +116,13 @@ window.mascarasFabricantes = [
     nomeMascara: "LG linha antiga / on-off provável",
     padroesInicio: ["AS"],
 
-    regexPrincipal: "^AS-?[A-Z][0-9]{2,3}[A-Z0-9]+$",
+    regexLimpo: "^AS[A-Z][0-9]{2,3}[A-Z0-9]+$",
 
     exemplosValidos: [
       "AS-W122BRG2",
       "ASW122BRG2",
-      "AS-Q092BRG2"
+      "AS-Q092BRG2",
+      "ASQ092BRG2"
     ],
 
     capacidades: {
@@ -184,8 +188,8 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       continue;
     }
 
-    const regex = new RegExp(mascara.regexPrincipal);
-    const bateRegex = regex.test(codigoOriginal) || regex.test(codigoLimpo);
+    const regex = new RegExp(mascara.regexLimpo);
+    const bateRegex = regex.test(codigoLimpo);
 
     if (!bateRegex) {
       continue;
@@ -195,8 +199,8 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
     let capacidadeProvavel = "";
 
     if (mascara.id === "LG_SPLIT_INVERTER_ATUAL") {
-      const capacidadeMatch = codigoLimpo.match(/(?:S3|S4|U4)[QW]?([0-9]{2})/);
-      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
+      const capacidadeMatch = codigoLimpo.match(/^(S3|S4|U4)[QW]([0-9]{2})/);
+      capacidadeCodigo = capacidadeMatch ? capacidadeMatch[2] : "";
       capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
     }
 
@@ -207,7 +211,7 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
     }
 
     if (mascara.id === "LG_ANTIGO_AS") {
-      const capacidadeMatch = codigoLimpo.match(/^AS[A-Z]?([0-9]{2})/);
+      const capacidadeMatch = codigoLimpo.match(/^AS[A-Z]([0-9]{2})/);
       capacidadeCodigo = capacidadeMatch ? capacidadeMatch[1] : "";
       capacidadeProvavel = mascara.capacidades[capacidadeCodigo] || "";
     }
@@ -215,11 +219,11 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
     let cicloProvavel = "";
 
     if (mascara.id === "LG_SPLIT_INVERTER_ATUAL") {
-      if (codigoOriginal.includes("-Q") || codigoLimpo.includes("Q")) {
+      if (codigoLimpo.includes("Q")) {
         cicloProvavel = "Frio provável / variação Q";
       }
 
-      if (codigoOriginal.includes("-W") || codigoLimpo.includes("W")) {
+      if (codigoLimpo.includes("W")) {
         cicloProvavel = "Quente/Frio provável / variação W";
       }
     }
