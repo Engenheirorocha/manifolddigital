@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HVAC PRO</title>
-<link rel="stylesheet" href="style.css?v=6606">
+<link rel="stylesheet" href="style.css?v=6607">
 </head>
 
 <body>
@@ -202,7 +202,32 @@
   </div>
 
   <div class="mode-box">
-    <div class="mode-title">Consulta pelo código do condensador</div>
+    <div class="mode-title">Etapa 1 — Selecione o fabricante</div>
+
+    <div class="search-area">
+      <select id="acervoFabricante" onchange="if(window.validarFabricanteAcervo){validarFabricanteAcervo();}">
+        <option value="">Selecione o fabricante</option>
+        <option value="LG">LG</option>
+        <option value="MIDEA">Midea / Springer / Carrier</option>
+        <option value="GREE">Gree</option>
+        <option value="ELGIN">Elgin</option>
+        <option value="SAMSUNG">Samsung</option>
+        <option value="CONSUL">Consul</option>
+        <option value="ELECTROLUX">Electrolux</option>
+        <option value="DAIKIN">Daikin</option>
+        <option value="FUJITSU">Fujitsu</option>
+        <option value="KOMECO">Komeco</option>
+        <option value="PHILCO">Philco</option>
+        <option value="AGRATTO">Agratto</option>
+        <option value="TCL">TCL</option>
+      </select>
+    </div>
+
+    <div id="fabricanteStatus" class="fabricante-status">
+      Selecione um fabricante para aplicar a máscara correta.
+    </div>
+
+    <div class="mode-title">Etapa 2 — Digite o código do condensador</div>
 
     <div class="search-area">
       <input id="acervoSearch" type="text" placeholder="Digite o código do condensador" oninput="searchAcervoTecnico()">
@@ -210,18 +235,19 @@
 
     <div class="model-info" id="acervoInfo">
       <h2>Consultar Equipamento</h2>
-      <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
-      <div class="info-row"><span>Importante:</span><br>Não pesquise por marca, fabricante, evaporadora, família ou linha comercial. Use somente o código do condensador.</div>
-      <div class="info-row"><span>Status:</span><br>Banco em construção com dados validados por fonte.</div>
+      <div class="info-row"><span>Como usar:</span><br>Primeiro selecione o fabricante. Depois digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
+      <div class="info-row"><span>Máscara:</span><br>O fabricante selecionado filtra a máscara correta e evita conflito entre padrões de marcas diferentes.</div>
+      <div class="info-row"><span>Teste inicial:</span><br>Máscara LG ativa para códigos como S4-Q12JA3WC, S3-Q12JA31B e S4-W18KL3WA.</div>
     </div>
   </div>
 </div>
 
-<script src="databases/gases.js?v=6606"></script>
-<script src="databases/modelos.js?v=6606"></script>
-<script src="databases/erros.js?v=6606"></script>
-<script src="databases/acervo_tecnico.js?v=6606"></script>
-<script src="app.js?v=6606"></script>
+<script src="databases/gases.js?v=6607"></script>
+<script src="databases/modelos.js?v=6607"></script>
+<script src="databases/erros.js?v=6607"></script>
+<script src="databases/acervo_tecnico.js?v=6607"></script>
+<script src="databases/mascaras_fabricantes.js?v=6607"></script>
+<script src="app.js?v=6607"></script>
 
 </body>
 </html>
