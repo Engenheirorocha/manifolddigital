@@ -1,29 +1,3 @@
-/* =========================================================
-   HVAC PRO - style.css CORRECAO TOTAL
-
-   INSTRUCAO:
-   1. GitHub -> style.css
-   2. Apague TUDO
-   3. Cole este codigo inteiro
-   4. Commit changes
-   5. Depois abra o app com: ?v=7100
-
-   O QUE ESTE CSS CORRIGE:
-   - Corrige icone gigante quebrando a tela
-   - Corrige carrossel
-   - Corrige campo de busca fora de lugar
-   - Corrige cards
-   - Corrige telas Gases / Erros / Consultar Equipamento
-   - Remove fundo/imagem quebrada
-   - Mantem visual escuro HVAC PRO
-   - Mantem Consultar Equipamento com visual tipo etiqueta tecnica
-
-   IMPORTANTE:
-   - Este arquivo NAO usa imagem de fundo.
-   - Primeiro vamos recuperar o app 100% funcional.
-   - Depois aplicamos imagem de fundo com calma.
-========================================================= */
-
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
