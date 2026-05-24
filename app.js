@@ -7,7 +7,7 @@
    - A ficha técnica mostra os dados em branco/cinza forte, padrão profissional.
    - A confiança aparece escrita abaixo do dado: Oficial / Confiável / Sugerido.
    - Campo vazio, fraco ou sem informação útil não aparece.
-   - Link de manual/site oficial continua destacado e clicável.
+   - No final da ficha aparece somente o link do Manual de Instalação do fabricante.
 */
 
 const gasData = window.gasData || {};
@@ -164,7 +164,7 @@ function renderAcervoManual(label, value, text) {
   if (!value || !String(value).startsWith("http")) return "";
 
   return `
-    <div class="info-row">
+    <div class="info-row manual-row">
       <span>${label}:</span><br>
       <a href="${value}" target="_blank" rel="noopener">${text}</a>
     </div>
@@ -969,7 +969,7 @@ function renderAcervoIntro() {
     <div class="info-row"><span>Como usar:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
     <div class="info-row"><span>Regra:</span><br>Não pesquise por marca, fabricante, família, linha comercial, evaporadora ou unidade interna.</div>
     <div class="info-row"><span>Confiança:</span><br>Abaixo de cada dado aparecerá: Oficial, Confiável / complementar ou Sugerido / campo.</div>
-    <div class="info-row"><span>Visual:</span><br>Os dados usam branco/cinza profissional. Links oficiais aparecem destacados para abrir o manual ou a fonte.</div>
+    <div class="info-row"><span>Manual:</span><br>No final da ficha, o app mostra o link direto do manual de instalação do fabricante quando disponível.</div>
   `;
 }
 
@@ -1036,10 +1036,8 @@ function renderAcervoItem(item) {
     renderAcervoField("Tubulação", item.tubulacao, item, "tubulacao"),
     renderAcervoField("Tubulação líquido / alta", item.tubulacaoAlta, item, "tubulacaoAlta"),
     renderAcervoField("Tubulação sucção / baixa", item.tubulacaoBaixa, item, "tubulacaoBaixa"),
-    renderAcervoManual("Manual de instalação", item.manualInstalacao, "🔗 Abrir manual oficial de instalação"),
-    renderAcervoManual("Manual técnico/manutenção", item.manualManutencao, "🔗 Abrir manual técnico/manutenção"),
-    renderAcervoManual("Página oficial", item.paginaOficial, "🔗 Abrir página oficial do fabricante"),
-    renderAcervoTextField("Fonte", item.fonte)
+    renderAcervoTextField("Fonte", item.fonte),
+    renderAcervoManual("Manual de instalação", item.manualInstalacao, "🔗 Abrir manual de instalação do fabricante")
   ].join("");
 
   return `
