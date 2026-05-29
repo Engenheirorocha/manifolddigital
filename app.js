@@ -1,18 +1,21 @@
 /* HVAC PRO - app.js
-   ARQUIVO COMPLETO ESTÁVEL - v6621
+   ARQUIVO COMPLETO ESTÁVEL - v6622
 
-   Correção principal:
-   - A etiqueta gerada por máscara agora exibe campos separados:
-     Gás provável
-     Tensão provável
-     Corrente estimada
-     Tubulação provável
+   Atualização desta versão:
+   - Melhora visual da etiqueta gerada por máscara.
+   - Remove repetição visual "Leitura por máscara" em cada campo.
+   - Organiza a ficha em blocos:
+     IDENTIFICAÇÃO
+     EQUIPAMENTO
+     DADOS TÉCNICOS PROVÁVEIS
+     CONFIANÇA DA LEITURA
 
-   Regras:
+   Regras mantidas:
    - Fabricante selecionado trava a busca.
    - Se LG estiver selecionado, o app não retorna Midea.
    - Primeiro busca código exato no acervo.
    - Se não achar, aplica máscara do fabricante selecionado.
+   - Se a máscara não reconhecer, não gera etiqueta.
 */
 
 const gasData = window.gasData || {};
@@ -166,10 +169,9 @@ function renderMascaraField(label, value) {
   if (isWeakAcervoValue(value)) return "";
 
   return `
-    <div class="info-row">
+    <div class="info-row mascara-row">
       <span>${label}:</span><br>
       <strong style="color:#f8fafc !important;">${value}</strong>
-      <small style="display:block;opacity:.72;margin-top:4px;color:#94a3b8;">Leitura por máscara</small>
     </div>
   `;
 }
@@ -1030,7 +1032,7 @@ function renderAcervoIntro() {
     <div class="info-row"><span>Etapa 1:</span><br>Selecione o fabricante do equipamento.</div>
     <div class="info-row"><span>Etapa 2:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
     <div class="info-row"><span>Máscara:</span><br>O fabricante selecionado limita a leitura ao padrão correto e evita conflito entre marcas.</div>
-    <div class="info-row"><span>Versão:</span><br>app.js v6621 — exibe gás, tensão, corrente e tubulação provável.</div>
+    <div class="info-row"><span>Versão:</span><br>app.js v6622 — ficha por máscara mais limpa e organizada.</div>
   `;
 }
 
@@ -1114,31 +1116,95 @@ function renderAcervoItem(item) {
 }
 
 function renderMascaraItem(leitura) {
-  const ficha = [
+  const fabricante = leitura.fabricante || "Fabricante";
+  const codigo = leitura.codigo || "Código informado";
+
+  const blocoIdentificacao = [
     renderMascaraField("Fabricante", leitura.fabricante),
-    renderMascaraField("Grupo", leitura.grupo),
     renderMascaraField("Código do condensador", leitura.codigo),
-    renderMascaraField("Máscara aplicada", leitura.mascaraAplicada),
+    renderMascaraField("Grupo", leitura.grupo),
+    renderMascaraField("Máscara aplicada", leitura.mascaraAplicada)
+  ].join("");
+
+  const blocoEquipamento = [
     renderMascaraField("Tipo de código", leitura.tipoCodigo),
     renderMascaraField("Linha provável", leitura.linhaProvavel),
     renderMascaraField("Tipo provável", leitura.tipoProvavel),
     renderMascaraField("Tecnologia provável", leitura.tecnologiaProvavel),
     renderMascaraField("Capacidade provável", leitura.capacidadeProvavel),
-    renderMascaraField("Ciclo provável", leitura.cicloProvavel),
-    renderMascaraField("Gás provável", leitura.gasProvavel),
+    renderMascaraField("Ciclo provável", leitura.cicloProvavel)
+  ].join("");
+
+  const blocoTecnico = [
+    renderMascaraField("Gás provável", melhorarTextoGasProvavel(leitura.gasProvavel)),
     renderMascaraField("Tensão provável", leitura.tensaoProvavel),
     renderMascaraField("Corrente estimada", leitura.correnteEstimada),
-    renderMascaraField("Tubulação provável", leitura.tubulacaoProvavel),
+    renderMascaraField("Tubulação provável", leitura.tubulacaoProvavel)
+  ].join("");
+
+  const blocoConfianca = [
     renderMascaraField("Confiabilidade da máscara", leitura.confiabilidadeMascara),
     renderMascaraField("Origem da leitura", leitura.origemLeitura),
     renderMascaraField("Observação técnica", leitura.observacao)
   ].join("");
 
   return `
-    <h2>Etiqueta gerada por máscara</h2>
-    ${ficha}
-    <div class="note">Essa leitura é automática por padrão de engenharia do fabricante selecionado. Dados como gás, tensão, corrente e tubulação são prováveis/estimados e devem ser validados na etiqueta ou manual.</div>
+    <h2>Etiqueta Técnica Provável</h2>
+
+    <div class="info-row" style="border-color:rgba(255,140,26,.45);background:rgba(255,140,26,.08);">
+      <span>Status da leitura:</span><br>
+      <strong style="color:#ffb86b !important;">🟠 Leitura automática por máscara do fabricante</strong>
+      <div style="font-size:11px;opacity:.78;margin-top:6px;line-height:1.45;">
+        Esta ficha foi gerada por padrão de engenharia. Não é ficha oficial do fabricante.
+      </div>
+    </div>
+
+    <div class="info-row" style="border-color:rgba(0,157,255,.45);background:rgba(0,157,255,.07);">
+      <span>Resumo:</span><br>
+      <strong style="color:#f8fafc !important;">${fabricante} — ${codigo}</strong>
+    </div>
+
+    <h3 style="color:#38bdf8;margin:18px 0 10px;font-size:15px;letter-spacing:1px;">
+      IDENTIFICAÇÃO
+    </h3>
+    ${blocoIdentificacao}
+
+    <h3 style="color:#38bdf8;margin:18px 0 10px;font-size:15px;letter-spacing:1px;">
+      EQUIPAMENTO
+    </h3>
+    ${blocoEquipamento}
+
+    <h3 style="color:#38bdf8;margin:18px 0 10px;font-size:15px;letter-spacing:1px;">
+      DADOS TÉCNICOS PROVÁVEIS
+    </h3>
+    ${blocoTecnico}
+
+    <h3 style="color:#38bdf8;margin:18px 0 10px;font-size:15px;letter-spacing:1px;">
+      CONFIANÇA DA LEITURA
+    </h3>
+    ${blocoConfianca}
+
+    <div class="note" style="border-color:rgba(255,140,26,.45);background:rgba(255,140,26,.08);">
+      <strong>Aviso técnico:</strong><br>
+      Dados como gás, tensão, corrente e tubulação são prováveis/estimados. Antes de trocar peça, carregar fluido, dimensionar disjuntor ou fechar diagnóstico, validar na etiqueta da unidade externa ou no manual oficial.
+    </div>
   `;
+}
+
+function melhorarTextoGasProvavel(texto) {
+  if (isWeakAcervoValue(texto)) return "";
+
+  const normalizado = normalizeSearchText(texto);
+
+  if (
+    normalizado.includes("r-410a") &&
+    normalizado.includes("r-32") &&
+    normalizado.includes("r-22")
+  ) {
+    return "Validar na etiqueta — pode variar entre R-410A, R-32 ou R-22 conforme geração do equipamento";
+  }
+
+  return texto;
 }
 
 /* =========================================================
