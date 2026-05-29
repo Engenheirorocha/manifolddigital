@@ -1,5 +1,5 @@
 /* HVAC PRO - databases/mascaras_fabricantes.js
-   MÁSCARAS DE FABRICANTES - v6651
+   MÁSCARAS DE FABRICANTES - v6652 SEM FALLBACK
 
    FOCO DESTA VERSÃO:
    - Corrige LG real de campo:
@@ -11,7 +11,9 @@
      ASUQ122B4A0
      ASUW123EUH0
 
-   - Mantém fallback inteligente por fabricante.
+   - Remove fallback automático.
+   - Fabricante selecionado trava a leitura.
+   - Se não bater com máscara real do fabricante, retorna "encontrado: false".
    - Dados gerados são prováveis/estimados, nunca oficiais.
 */
 
@@ -673,7 +675,7 @@ window.mascarasFabricantes = [
 ];
 
 /* =========================================================
-   INTERPRETADOR GLOBAL COM FALLBACK POR FABRICANTE
+   INTERPRETADOR GLOBAL SEM FALLBACK
 ========================================================= */
 
 window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInformado) {
@@ -708,7 +710,7 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
     return m ? m[1] : "";
   }
 
-  function montarResultado(mascara, capacidadeCodigo, fallback) {
+  function montarResultado(mascara, capacidadeCodigo) {
     const capacidadeProvavel = capacidadeCodigo ? (CAP_PADRAO[capacidadeCodigo] || "") : "";
 
     const referencia = capacidadeCodigo
@@ -732,26 +734,24 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
 
     return {
       encontrado: true,
-      tipoResultado: fallback ? "fallback_fabricante" : "mascara",
+      tipoResultado: "mascara",
       fabricante: fabricante,
       grupo: mascara.grupo,
       codigo: codigoOriginal,
-      mascaraAplicada: fallback ? "Fallback inteligente do fabricante " + fabricante : mascara.nomeMascara,
-      tipoCodigo: fallback ? "Código do fabricante reconhecido por fallback" : mascara.leitura.tipoCodigo,
-      linhaProvavel: fallback ? "Linha não identificada pela máscara específica" : mascara.leitura.linhaProvavel,
-      tipoProvavel: fallback ? "Equipamento provável do fabricante selecionado" : mascara.leitura.tipoEquipamento,
-      tecnologiaProvavel: fallback ? "Tecnologia não confirmada pela máscara" : mascara.leitura.tecnologia,
+      mascaraAplicada: mascara.nomeMascara,
+      tipoCodigo: mascara.leitura.tipoCodigo,
+      linhaProvavel: mascara.leitura.linhaProvavel,
+      tipoProvavel: mascara.leitura.tipoEquipamento,
+      tecnologiaProvavel: mascara.leitura.tecnologia,
       capacidadeProvavel: capacidadeProvavel,
       cicloProvavel: cicloProvavel,
       gasProvavel: referencia ? referencia.gasProvavel : "",
       tensaoProvavel: referencia ? referencia.tensaoProvavel : "",
       correnteEstimada: referencia ? referencia.correnteEstimada : "",
       tubulacaoProvavel: referencia ? referencia.tubulacaoProvavel : "",
-      confiabilidadeMascara: fallback ? "Baixa / fallback" : mascara.confiabilidadeGeral,
-      origemLeitura: fallback ? "Fabricante selecionado pelo técnico + leitura genérica do código." : mascara.leitura.origemLeitura,
-      observacao: fallback
-        ? "O código não bateu em uma máscara específica, mas foi aceito pelo fabricante selecionado. Validar etiqueta/manual antes de qualquer decisão técnica."
-        : mascara.leitura.observacao
+      confiabilidadeMascara: mascara.confiabilidadeGeral,
+      origemLeitura: mascara.leitura.origemLeitura,
+      observacao: mascara.leitura.observacao
     };
   }
 
@@ -778,11 +778,11 @@ window.interpretarMascaraFabricante = function (fabricanteInformado, codigoInfor
       capacidadeCodigo = extrairCapacidadeGenerica(codigoLimpo);
     }
 
-    return montarResultado(mascara, capacidadeCodigo, false);
+    return montarResultado(mascara, capacidadeCodigo);
   }
 
-  const mascaraBase = mascarasDoFabricante[0];
-  const capacidadeFallback = extrairCapacidadeGenerica(codigoLimpo);
-
-  return montarResultado(mascaraBase, capacidadeFallback, true);
+  return {
+    encontrado: false,
+    motivo: "O código não bateu com nenhuma máscara ativa do fabricante selecionado. Nenhum fallback foi aplicado."
+  };
 };
