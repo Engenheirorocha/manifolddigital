@@ -1,991 +1,916 @@
-/* =========================================================
-   HVAC PRO - APP.JS COMPLETO
-   Versão estável sem fallback genérico
-   Pode apagar o app.js atual e colar este inteiro
-========================================================= */
+/* HVAC PRO - app.js
+   ARQUIVO COMPLETO ESTÁVEL - v6621
+
+   Correção principal:
+   - A etiqueta gerada por máscara agora exibe campos separados:
+     Gás provável
+     Tensão provável
+     Corrente estimada
+     Tubulação provável
+
+   Regras:
+   - Fabricante selecionado trava a busca.
+   - Se LG estiver selecionado, o app não retorna Midea.
+   - Primeiro busca código exato no acervo.
+   - Se não achar, aplica máscara do fabricante selecionado.
+*/
+
+const gasData = window.gasData || {};
+const errorCategories = window.errorCategories || [];
+const brandsByCategory = window.brandsByCategory || {};
+const modelsByBrand = window.modelsByBrand || {};
+const errorCodesByModel = window.errorCodesByModel || {};
+
+let cards = [];
+let current = 0;
+let startX = 0;
+let endX = 0;
+
+let catCurrent = 0;
+let brandCurrent = 0;
+let modelCurrent = 0;
+let codeCurrent = 0;
 
 /* =========================================================
-   ESTADO GLOBAL
+   FUNÇÕES GERAIS
 ========================================================= */
 
-let homeIndex = 0;
+function normalizeSearchText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
 
-let selectedErrorType = null;
-let selectedBrand = null;
-let selectedModel = null;
+function normalizeAcervoCode(value) {
+  return normalizeSearchText(value).replace(/[^a-z0-9]/g, "");
+}
 
-let categoryIndex = 0;
-let brandIndex = 0;
-let modelIndex = 0;
-let codeIndex = 0;
+function safeValue(value, fallback) {
+  return value || fallback || "Não informado";
+}
 
-let filteredTypes = [];
-let filteredBrands = [];
-let filteredModels = [];
-let filteredCodes = [];
+function getAcervoTecnico() {
+  if (Array.isArray(window.acervoTecnico)) return window.acervoTecnico;
+  return [];
+}
+
+function isWeakAcervoValue(value) {
+  const text = normalizeSearchText(value);
+
+  if (!text) return true;
+  if (text === "-") return true;
+  if (text === "nao informado" || text === "não informado") return true;
+  if (text.includes("nao informado")) return true;
+  if (text.includes("não informado")) return true;
+  if (text.includes("validar etiqueta")) return true;
+  if (text.includes("validar manual")) return true;
+  if (text.includes("confirmar no fabricante")) return true;
+  if (text.includes("confirmar no manual")) return true;
+
+  return false;
+}
 
 /* =========================================================
-   INICIALIZAÇÃO
+   CORES / CONFIANÇA DO ACERVO
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
-  iniciarApp();
-});
+function getAcervoSourceText(item, fieldKey) {
+  const fontesCampos = item && item.fontesCampos ? item.fontesCampos : {};
+  const confiancaCampos = item && item.confiancaCampos ? item.confiancaCampos : {};
 
-function iniciarApp() {
-  corrigirCardsHome();
-  updateHomeCarousel();
-  initGases();
-  initErros();
-  validarFabricanteAcervo();
+  return normalizeSearchText([
+    fontesCampos[fieldKey] || "",
+    confiancaCampos[fieldKey] || "",
+    item && item.fonteTipo ? item.fonteTipo : "",
+    item && item.nivelConfianca ? item.nivelConfianca : "",
+    item && item.status ? item.status : "",
+    item && item.fonte ? item.fonte : "",
+    item && item.observacaoFonte ? item.observacaoFonte : ""
+  ].join(" "));
+}
 
-  setTimeout(function () {
-    updateHomeCarousel();
-  }, 200);
+function getAcervoColorStyle(item, fieldKey) {
+  const source = getAcervoSourceText(item, fieldKey);
+
+  const isSuggested =
+    source.includes("informacao_sugerida") ||
+    source.includes("informação_sugerida") ||
+    source.includes("informacao sugerida") ||
+    source.includes("informação sugerida") ||
+    source.includes("sugerida") ||
+    source.includes("sugerido") ||
+    source.includes("sugestao") ||
+    source.includes("sugestão") ||
+    source.includes("internet") ||
+    source.includes("usuario") ||
+    source.includes("usuário") ||
+    source.includes("relato") ||
+    source.includes("campo");
+
+  if (isSuggested) {
+    return {
+      color: "#94a3b8",
+      label: "Sugerido / campo"
+    };
+  }
+
+  const isTrustedNonOfficial =
+    source.includes("confiavel_nao_oficial") ||
+    source.includes("confiável_não_oficial") ||
+    source.includes("confiavel nao oficial") ||
+    source.includes("confiável não oficial") ||
+    source.includes("nao_oficial") ||
+    source.includes("não_oficial") ||
+    source.includes("nao oficial") ||
+    source.includes("não oficial") ||
+    source.includes("distribuidor") ||
+    source.includes("autorizado") ||
+    source.includes("catalogo tecnico") ||
+    source.includes("catálogo técnico") ||
+    source.includes("fonte tecnica") ||
+    source.includes("fonte técnica") ||
+    source.includes("revenda") ||
+    source.includes("pdf tecnico") ||
+    source.includes("pdf técnico");
+
+  if (isTrustedNonOfficial) {
+    return {
+      color: "#94a3b8",
+      label: "Confiável / complementar"
+    };
+  }
+
+  return {
+    color: "#94a3b8",
+    label: "Oficial"
+  };
+}
+
+function renderAcervoField(label, value, item, fieldKey) {
+  if (isWeakAcervoValue(value)) return "";
+
+  const style = getAcervoColorStyle(item, fieldKey);
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong style="color:#f8fafc !important;">${value}</strong>
+      <small style="display:block;opacity:.80;margin-top:4px;color:${style.color};">${style.label}</small>
+    </div>
+  `;
+}
+
+function renderMascaraField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong style="color:#f8fafc !important;">${value}</strong>
+      <small style="display:block;opacity:.72;margin-top:4px;color:#94a3b8;">Leitura por máscara</small>
+    </div>
+  `;
+}
+
+function renderAcervoTextField(label, value) {
+  if (isWeakAcervoValue(value)) return "";
+
+  return `
+    <div class="info-row">
+      <span>${label}:</span><br>
+      <strong style="color:#f8fafc !important;">${value}</strong>
+    </div>
+  `;
+}
+
+function renderAcervoManual(label, value, text) {
+  if (!value || !String(value).startsWith("http")) return "";
+
+  return `
+    <div class="info-row manual-row">
+      <span>${label}:</span><br>
+      <a href="${value}" target="_blank" rel="noopener">${text}</a>
+    </div>
+  `;
+}
+
+/* =========================================================
+   CARROSSEL PRINCIPAL
+========================================================= */
+
+function updateCarousel() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
+
+  cards.forEach((card, index) => {
+    card.className = "card";
+
+    const left = (current - 1 + cards.length) % cards.length;
+    const right = (current + 1) % cards.length;
+    const farLeft = (current - 2 + cards.length) % cards.length;
+    const farRight = (current + 2) % cards.length;
+
+    if (index === current) {
+      card.classList.add("center");
+    } else if (index === left) {
+      card.classList.add("left");
+    } else if (index === right) {
+      card.classList.add("right");
+    } else if (index === farLeft) {
+      card.classList.add("far-left");
+    } else if (index === farRight) {
+      card.classList.add("far-right");
+    } else {
+      card.classList.add("hidden");
+    }
+  });
+}
+
+function next() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
+  current = (current + 1) % cards.length;
+  updateCarousel();
+}
+
+function prev() {
+  cards = document.querySelectorAll(".card");
+  if (!cards.length) return;
+  current = (current - 1 + cards.length) % cards.length;
+  updateCarousel();
+}
+
+function searchHome() {
+  const input = document.getElementById("homeSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  if (value.length < 2) return;
+
+  const map = [
+    { keys: ["manifold", "pressao", "pressão"], index: 0 },
+    { keys: ["erros", "erro", "defeito", "defeitos"], index: 1 },
+    { keys: ["testes", "teste", "multimetro", "multímetro"], index: 2 },
+    { keys: ["gases", "gas", "gás", "refrigerante"], index: 3 },
+    { keys: ["modelos", "modelo", "equipamento"], index: 4 },
+    { keys: ["acervo", "acervo tecnico", "acervo técnico", "manual", "manuais", "manual tecnico", "manual técnico", "consultar equipamento", "condensador", "condensadora"], index: 5 }
+  ];
+
+  const found = map.find((item) => {
+    return item.keys.some((key) => {
+      const cleanKey = normalizeSearchText(key);
+      return cleanKey.includes(value) || value.includes(cleanKey);
+    });
+  });
+
+  if (found) {
+    current = found.index;
+    updateCarousel();
+  }
+}
+
+function setupMainSwipe() {
+  const carousel = document.getElementById("carousel");
+  if (!carousel) return;
+
+  carousel.addEventListener("touchstart", (event) => {
+    startX = event.touches[0].clientX;
+  });
+
+  carousel.addEventListener("touchend", (event) => {
+    endX = event.changedTouches[0].clientX;
+    const diff = endX - startX;
+    if (diff > 45) prev();
+    if (diff < -45) next();
+  });
 }
 
 /* =========================================================
    TELAS
 ========================================================= */
 
-window.openScreen = function (screenId) {
-  const screens = document.querySelectorAll(".screen");
-
-  screens.forEach(function (screen) {
+function openScreen(id) {
+  document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.remove("active");
   });
 
-  const target = document.getElementById(screenId);
+  const screen = document.getElementById(id);
+  if (!screen) return;
+  screen.classList.add("active");
 
-  if (target) {
-    target.classList.add("active");
-    window.scrollTo(0, 0);
+  if (id === "home") updateCarousel();
+
+  if (id === "gases") {
+    const gases = document.getElementById("gases");
+    if (gases) gases.scrollTop = 0;
   }
 
-  if (screenId === "home") {
-    setTimeout(updateHomeCarousel, 100);
+  if (id === "erros") {
+    const erros = document.getElementById("erros");
+    if (erros) erros.scrollTop = 0;
+
+    const typeStep = document.getElementById("typeStep");
+    const brandStep = document.getElementById("brandStep");
+    const modelStep = document.getElementById("modelStep");
+    const codeStep = document.getElementById("codeStep");
+
+    if (typeStep) typeStep.style.display = "block";
+    if (brandStep) brandStep.style.display = "none";
+    if (modelStep) modelStep.style.display = "none";
+    if (codeStep) codeStep.style.display = "none";
+
+    renderCategoryCarousel();
   }
 
-  if (screenId === "gases") {
-    initGases();
-  }
+  if (id === "acervo") {
+    const acervo = document.getElementById("acervo");
+    if (acervo) acervo.scrollTop = 0;
 
-  if (screenId === "erros") {
-    initErros();
-  }
-
-  if (screenId === "acervo") {
     validarFabricanteAcervo();
+
+    const acervoSearch = document.getElementById("acervoSearch");
+    if (acervoSearch && !acervoSearch.value.trim()) {
+      renderAcervoIntro();
+    }
   }
-};
-
-/* =========================================================
-   HOME / CARROSSEL PRINCIPAL
-========================================================= */
-
-function corrigirCardsHome() {
-  const carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  const cards = carousel.querySelectorAll(".card");
-
-  cards.forEach(function (card) {
-    card.style.display = "flex";
-    card.style.visibility = "visible";
-    card.style.opacity = "1";
-  });
-
-  const titles = carousel.querySelectorAll(".title");
-
-  titles.forEach(function (title) {
-    const texto = normalizarTexto(title.innerText);
-
-    if (texto.includes("MANIFOLD")) {
-      const card = title.closest(".card");
-      if (card) {
-        card.onclick = function () {
-          abrirModuloEmDesenvolvimento("MANIFOLD");
-        };
-      }
-    }
-
-    if (texto.includes("TESTES")) {
-      const card = title.closest(".card");
-      if (card) {
-        card.onclick = function () {
-          abrirModuloEmDesenvolvimento("TESTES");
-        };
-      }
-    }
-
-    if (texto.includes("MODELOS")) {
-      const card = title.closest(".card");
-      if (card) {
-        card.onclick = function () {
-          abrirModuloEmDesenvolvimento("MODELOS");
-        };
-      }
-    }
-  });
 }
-
-function abrirModuloEmDesenvolvimento(nome) {
-  const box = criarAvisoTemporario(
-    nome,
-    "Este módulo ainda está em preparação. A estrutura já existe, mas vamos ativar essa tela depois sem mexer na base aprovada."
-  );
-
-  document.body.appendChild(box);
-
-  setTimeout(function () {
-    box.remove();
-  }, 2600);
-}
-
-function criarAvisoTemporario(titulo, texto) {
-  const div = document.createElement("div");
-
-  div.style.position = "fixed";
-  div.style.left = "50%";
-  div.style.top = "30px";
-  div.style.transform = "translateX(-50%)";
-  div.style.zIndex = "9999";
-  div.style.background = "#08111f";
-  div.style.color = "#fff";
-  div.style.border = "1px solid rgba(0,157,255,.55)";
-  div.style.borderRadius = "16px";
-  div.style.boxShadow = "0 0 25px rgba(0,157,255,.35)";
-  div.style.padding = "18px 22px";
-  div.style.maxWidth = "420px";
-  div.style.width = "calc(100% - 40px)";
-  div.style.textAlign = "center";
-  div.style.fontFamily = "Arial, sans-serif";
-
-  div.innerHTML = `
-    <strong style="color:#28bfff;font-size:18px;">${escaparHTML(titulo)}</strong>
-    <div style="margin-top:8px;font-size:14px;line-height:1.4;">${escaparHTML(texto)}</div>
-  `;
-
-  return div;
-}
-
-window.updateHomeCarousel = function () {
-  const carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  const cards = Array.from(carousel.querySelectorAll(".card")).filter(function (card) {
-    return card.style.display !== "none";
-  });
-
-  if (!cards.length) {
-    carousel.style.transform = "translateX(0)";
-    return;
-  }
-
-  if (homeIndex < 0) homeIndex = 0;
-  if (homeIndex >= cards.length) homeIndex = cards.length - 1;
-
-  const card = cards[0];
-  const cardWidth = card.offsetWidth || 260;
-  const gap = obterGap(carousel, 24);
-  const move = homeIndex * (cardWidth + gap);
-
-  carousel.style.transition = "transform .35s ease";
-  carousel.style.transform = "translateX(-" + move + "px)";
-};
-
-window.next = function () {
-  const carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  const cards = Array.from(carousel.querySelectorAll(".card")).filter(function (card) {
-    return card.style.display !== "none";
-  });
-
-  if (!cards.length) return;
-
-  homeIndex++;
-
-  if (homeIndex >= cards.length) {
-    homeIndex = 0;
-  }
-
-  updateHomeCarousel();
-};
-
-window.prev = function () {
-  const carousel = document.getElementById("carousel");
-  if (!carousel) return;
-
-  const cards = Array.from(carousel.querySelectorAll(".card")).filter(function (card) {
-    return card.style.display !== "none";
-  });
-
-  if (!cards.length) return;
-
-  homeIndex--;
-
-  if (homeIndex < 0) {
-    homeIndex = cards.length - 1;
-  }
-
-  updateHomeCarousel();
-};
-
-window.searchHome = function () {
-  const input = document.getElementById("homeSearch");
-  const carousel = document.getElementById("carousel");
-
-  if (!input || !carousel) return;
-
-  const termo = normalizarTexto(input.value);
-  const cards = carousel.querySelectorAll(".card");
-
-  if (!termo) {
-    cards.forEach(function (card) {
-      card.style.display = "flex";
-      card.style.visibility = "visible";
-      card.style.opacity = "1";
-    });
-
-    homeIndex = 0;
-    updateHomeCarousel();
-    return;
-  }
-
-  let encontrou = false;
-
-  cards.forEach(function (card) {
-    const texto = normalizarTexto(card.innerText);
-
-    if (texto.includes(termo)) {
-      card.style.display = "flex";
-      card.style.visibility = "visible";
-      card.style.opacity = "1";
-      encontrou = true;
-    } else {
-      card.style.display = "none";
-    }
-  });
-
-  homeIndex = 0;
-  updateHomeCarousel();
-
-  if (!encontrou) {
-    carousel.style.transform = "translateX(0)";
-  }
-};
 
 /* =========================================================
    GASES
 ========================================================= */
 
-function initGases() {
-  const info = document.getElementById("gasInfo");
-  if (!info) return;
+function renderGas(name) {
+  const key = String(name || "").toUpperCase();
+  const gas = gasData[key];
+  const gasInfo = document.getElementById("gasInfo");
 
-  if (!info.innerHTML.trim()) {
-    mostrarGas("R410A");
+  if (!gasInfo) return;
+
+  if (!gas) {
+    gasInfo.innerHTML = `
+      <h2>Não encontrado</h2>
+      <div class="info-row">Digite um gás válido.</div>
+    `;
+    return;
   }
+
+  const ptRows = Array.isArray(gas.pt)
+    ? gas.pt.map((row) => `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("")
+    : "";
+
+  gasInfo.innerHTML = `
+    <h2>${gas.nome || key}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${gas.tipo || "-"}</div>
+    <div class="info-row"><span>Composição:</span><br>${gas.composicao || "-"}</div>
+    <div class="info-row"><span>Aplicação:</span><br>${gas.aplicacao || "-"}</div>
+    <div class="info-row"><span>Óleo:</span><br>${gas.oleo || "-"}</div>
+    <div class="info-row"><span>Segurança:</span><br>${gas.seguranca || "-"}</div>
+    <div class="info-row"><span>GWP:</span><br>${gas.gwp || "-"}</div>
+    <div class="info-row"><span>ODP:</span><br>${gas.odp || "-"}</div>
+    <div class="info-row"><span>Ebulição:</span><br>${gas.ebulição || gas.ebulicao || "-"}</div>
+    <div class="info-row"><span>Crítica:</span><br>${gas.critica || "-"}</div>
+    <div class="info-row"><span>Pressão crítica:</span><br>${gas.pressaoCritica || "-"}</div>
+    <div class="info-row"><span>Glide:</span><br>${gas.glide || "-"}</div>
+    <div class="info-row"><span>Transferência:</span><br>${gas.transferencia || "-"}</div>
+    <div class="info-row"><span>Evaporação típica:</span><br>${gas.faixaEvaporacao || "-"}</div>
+    <div class="info-row"><span>Condensação típica:</span><br>${gas.faixaCondensacao || "-"}</div>
+    <div class="info-row"><span>Campo:</span><br>${gas.campo || "-"}</div>
+    <div class="info-row">
+      <span>Tabela PT resumida:</span>
+      ${ptRows ? `<table class="pt-table"><thead><tr><th>Temp.</th><th>Pressão</th></tr></thead><tbody>${ptRows}</tbody></table>` : `<div class="note">Tabela PT ainda não cadastrada para este gás.</div>`}
+      <div class="note">Valores aproximados para referência rápida. Conferir tabela oficial para ajuste fino.</div>
+    </div>
+  `;
 }
 
-window.selectGas = function (gas, elemento) {
-  const chips = document.querySelectorAll(".gas-chip");
+function selectGas(name, element) {
+  document.querySelectorAll(".gas-chip").forEach((chip) => chip.classList.remove("active-gas"));
+  if (element) element.classList.add("active-gas");
 
-  chips.forEach(function (chip) {
-    chip.classList.remove("active-gas");
-  });
+  const gasSearch = document.getElementById("gasSearch");
+  if (gasSearch) gasSearch.value = name;
 
-  if (elemento) {
-    elemento.classList.add("active-gas");
-  }
+  renderGas(name);
+}
 
-  mostrarGas(gas);
-};
-
-window.searchGas = function () {
+function searchGas() {
   const input = document.getElementById("gasSearch");
   if (!input) return;
 
-  const termo = normalizarTexto(input.value);
-
-  if (!termo) {
-    mostrarGas("R410A");
-    return;
-  }
-
-  const gases = obterBaseGases();
-  const gasEncontrado = gases.find(function (item) {
-    const nome = normalizarTexto(item.nome || item.gas || item.codigo || "");
-    return nome.includes(termo);
-  });
-
-  if (gasEncontrado) {
-    renderGasInfo(gasEncontrado);
-    return;
-  }
-
-  const gasPadrao = criarGasPadrao(input.value);
-
-  renderGasInfo(gasPadrao, true);
-};
-
-function mostrarGas(gas) {
-  const gases = obterBaseGases();
-
-  const encontrado = gases.find(function (item) {
-    const nome = normalizarTexto(item.nome || item.gas || item.codigo || "");
-    return nome === normalizarTexto(gas);
-  });
-
-  if (encontrado) {
-    renderGasInfo(encontrado);
-    return;
-  }
-
-  renderGasInfo(criarGasPadrao(gas), true);
+  const value = input.value.trim();
+  if (value.length >= 2) renderGas(value);
 }
 
-function obterBaseGases() {
-  const base =
-    window.GASES ||
-    window.gases ||
-    window.gasesData ||
-    window.BASE_GASES ||
-    [];
+/* =========================================================
+   ÍCONES DO MÓDULO ERROS
+========================================================= */
 
-  if (Array.isArray(base) && base.length) {
-    return base;
-  }
+function svgSplit() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="15" y="25" width="70" height="32" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M24 44H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 62C42 68 58 68 66 62" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgCassete() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="18" width="56" height="56" rx="8" stroke="#ff3636" stroke-width="6"/><rect x="36" y="32" width="28" height="28" rx="5" stroke="#ff3636" stroke-width="5"/><path d="M50 20V32M50 60V72M24 46H36M64 46H76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+function svgJanela() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="22" y="20" width="56" height="60" rx="8" stroke="#ff3636" stroke-width="6"/><path d="M30 38H70" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M34 52H66M34 63H66" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><circle cx="67" cy="70" r="4" fill="#ff3636"/></svg>`;
+}
+
+function svgPisoTeto() {
+  return `<svg viewBox="0 0 100 100" fill="none"><rect x="18" y="24" width="64" height="28" rx="7" stroke="#ff3636" stroke-width="6"/><path d="M28 42H72" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/><path d="M30 58V76M50 58V76M70 58V76" stroke="#ff3636" stroke-width="5" stroke-linecap="round"/></svg>`;
+}
+
+/* =========================================================
+   ERROS
+========================================================= */
+
+function activeCategory() {
+  return errorCategories[catCurrent]?.name || "";
+}
+
+function activeBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  return brands[brandCurrent] || "";
+}
+
+function activeModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  return models[modelCurrent] || "";
+}
+
+function getCodes() {
+  const key = activeBrand() + "|" + activeModel();
+  const codes = errorCodesByModel[key];
+
+  if (Array.isArray(codes) && codes.length) return codes;
 
   return [
     {
-      nome: "R410A",
-      tipo: "HFC",
-      uso: "Split residencial e comercial leve",
-      inflamabilidade: "A1",
-      observacao: "Muito comum em splits inverter e convencionais mais recentes."
+      code: "E1",
+      title: "Falha genérica",
+      cause: "Código ainda não refinado para este modelo.",
+      test: "Verificar alimentação, sensores, comunicação e placas.",
+      solution: "Cadastrar diagnóstico específico na próxima etapa.",
+      sourceLevel: "DIAGNOSTICO_CAMPO"
     },
     {
-      nome: "R22",
-      tipo: "HCFC",
-      uso: "Equipamentos antigos",
-      inflamabilidade: "A1",
-      observacao: "Fluido antigo, com restrições ambientais. Muito encontrado em máquinas mais velhas."
-    },
-    {
-      nome: "R32",
-      tipo: "HFC",
-      uso: "Splits modernos",
-      inflamabilidade: "A2L",
-      observacao: "Levemente inflamável. Exige atenção técnica e boas práticas."
-    },
-    {
-      nome: "R134A",
-      tipo: "HFC",
-      uso: "Refrigeração leve e automotiva",
-      inflamabilidade: "A1",
-      observacao: "Muito usado em aplicações de média temperatura."
-    },
-    {
-      nome: "R404A",
-      tipo: "HFC",
-      uso: "Refrigeração comercial",
-      inflamabilidade: "A1",
-      observacao: "Comum em freezer, balcões e câmaras antigas."
-    },
-    {
-      nome: "R600A",
-      tipo: "HC",
-      uso: "Refrigeradores domésticos",
-      inflamabilidade: "A3",
-      observacao: "Isobutano. Inflamável. Usar carga correta e cuidado em solda/manutenção."
-    },
-    {
-      nome: "R290",
-      tipo: "HC",
-      uso: "Refrigeração comercial moderna",
-      inflamabilidade: "A3",
-      observacao: "Propano. Inflamável. Exige procedimento técnico seguro."
+      code: "E3",
+      title: "Ventilador / sensor",
+      cause: "Possível falha no motor, sensor ou rotação.",
+      test: "Verificar motor, capacitor, sensor Hall e placa.",
+      solution: "Corrigir componente defeituoso.",
+      sourceLevel: "DIAGNOSTICO_CAMPO"
     }
   ];
 }
 
-function criarGasPadrao(nome) {
-  return {
-    nome: nome,
-    tipo: "",
-    uso: "",
-    inflamabilidade: "",
-    observacao: "Gás ainda não cadastrado na base local."
+function formatSourceLevel(sourceLevel) {
+  const map = {
+    DIAGNOSTICO_CAMPO: "Diagnóstico de campo",
+    VALIDAR_MANUAL_MODELO: "Validar no manual do modelo",
+    BASE_APP_ORIGINAL: "Base original do app",
+    BASE_APP_ORIGINAL_VALIDAR_MANUAL: "Base original do app / validar manual",
+    OFICIAL_SAMSUNG_SUPORTE: "Suporte oficial Samsung",
+    OFICIAL_MIDEA_FREEMATCH: "Manual técnico Midea FreeMatch",
+    OFICIAL_MIDEA_PORTATIL_REFERENCIA: "Referência oficial Midea",
+    OFICIAL_FUJITSU_MANUAL_LED: "Manual Fujitsu / leitura por LED",
+    OFICIAL_CONSUL_SUPORTE_GERAL: "Suporte oficial Consul",
+    OFICIAL_TRANE_U_MATCH: "Manual técnico Trane",
+    LISTA_TECNICA_NAO_OFICIAL_VALIDAR: "Lista técnica não oficial / validar"
   };
+
+  return map[sourceLevel] || sourceLevel || "Não informado";
 }
 
-function renderGasInfo(gas, naoEncontrado) {
-  const box = document.getElementById("gasInfo");
+function renderCategoryCarousel() {
+  const box = document.getElementById("categoryCarousel");
   if (!box) return;
 
-  const campos = [];
-
-  addCampo(campos, "GÁS", gas.nome || gas.gas || gas.codigo);
-  addCampo(campos, "TIPO", gas.tipo);
-  addCampo(campos, "USO", gas.uso || gas.aplicacao);
-  addCampo(campos, "INFLAMABILIDADE", gas.inflamabilidade || gas.classe);
-  addCampo(campos, "PRESSÃO BAIXA", gas.baixa || gas.pressaoBaixa);
-  addCampo(campos, "PRESSÃO ALTA", gas.alta || gas.pressaoAlta);
-  addCampo(campos, "OBSERVAÇÃO", gas.observacao || gas.obs);
-
-  box.innerHTML = `
-    <h2>${naoEncontrado ? "Gás não encontrado" : "Informações do Gás"}</h2>
-    ${naoEncontrado ? '<div class="confidence danger">⚠️ Sem cadastro completo</div>' : '<div class="confidence official">🟢 Informação local disponível</div>'}
-    ${campos.join("")}
-  `;
-}
-
-/* =========================================================
-   ERROS - BASE E FLUXO
-========================================================= */
-
-function initErros() {
-  filteredTypes = obterTiposErro();
-  renderTiposErro();
-}
-
-function obterBaseErros() {
-  const base =
-    window.ERROS ||
-    window.erros ||
-    window.errosData ||
-    window.BASE_ERROS ||
-    [];
-
-  if (Array.isArray(base) && base.length) {
-    return base;
-  }
-
-  return [
-    {
-      tipo: "Split",
-      marca: "Midea / Carrier / Springer",
-      modelo: "Split Inverter",
-      codigo: "E1",
-      defeito: "Erro de comunicação entre unidade interna e externa.",
-      causa: "Fiação, bornes, placa interna, placa externa ou falha de comunicação.",
-      solucao: "Verificar alimentação, cabo de comunicação, bornes, aterramento e placas."
-    },
-    {
-      tipo: "Split",
-      marca: "LG",
-      modelo: "Dual Inverter",
-      codigo: "CH05",
-      defeito: "Falha de comunicação entre evaporadora e condensadora.",
-      causa: "Cabo de comunicação, alimentação, placa ou mau contato.",
-      solucao: "Verificar interligação, tensão, aterramento e conectores."
-    },
-    {
-      tipo: "Split",
-      marca: "Samsung",
-      modelo: "WindFree / Digital Inverter",
-      codigo: "E101",
-      defeito: "Erro de comunicação.",
-      causa: "Falha de comunicação entre placas.",
-      solucao: "Conferir cabo de comunicação e alimentação das unidades."
-    }
-  ];
-}
-
-function obterTiposErro() {
-  const base = obterBaseErros();
-  const mapa = {};
-
-  base.forEach(function (item) {
-    const tipo = item.tipo || item.equipamento || "Outros";
-    mapa[tipo] = true;
-  });
-
-  return Object.keys(mapa);
-}
-
-function obterMarcasPorTipo(tipo) {
-  const base = obterBaseErros();
-  const mapa = {};
-
-  base.forEach(function (item) {
-    if (normalizarTexto(item.tipo || item.equipamento || "Outros") === normalizarTexto(tipo)) {
-      const marca = item.marca || item.fabricante || "Outros";
-      mapa[marca] = true;
-    }
-  });
-
-  return Object.keys(mapa);
-}
-
-function obterModelosPorMarca(tipo, marca) {
-  const base = obterBaseErros();
-  const mapa = {};
-
-  base.forEach(function (item) {
-    const itemTipo = normalizarTexto(item.tipo || item.equipamento || "Outros");
-    const itemMarca = normalizarTexto(item.marca || item.fabricante || "Outros");
-
-    if (itemTipo === normalizarTexto(tipo) && itemMarca === normalizarTexto(marca)) {
-      const modelo = item.modelo || item.linha || "Linha geral";
-      mapa[modelo] = true;
-    }
-  });
-
-  return Object.keys(mapa);
-}
-
-function obterCodigosPorModelo(tipo, marca, modelo) {
-  const base = obterBaseErros();
-
-  return base.filter(function (item) {
-    const itemTipo = normalizarTexto(item.tipo || item.equipamento || "Outros");
-    const itemMarca = normalizarTexto(item.marca || item.fabricante || "Outros");
-    const itemModelo = normalizarTexto(item.modelo || item.linha || "Linha geral");
-
-    return (
-      itemTipo === normalizarTexto(tipo) &&
-      itemMarca === normalizarTexto(marca) &&
-      itemModelo === normalizarTexto(modelo)
-    );
-  });
-}
-
-/* =========================================================
-   ERROS - TIPO
-========================================================= */
-
-window.searchErrorType = function () {
-  const input = document.getElementById("errorTypeSearch");
-  const termo = input ? normalizarTexto(input.value) : "";
-
-  const tipos = obterTiposErro();
-
-  if (!termo) {
-    filteredTypes = tipos;
-  } else {
-    filteredTypes = tipos.filter(function (tipo) {
-      return normalizarTexto(tipo).includes(termo);
-    });
-  }
-
-  categoryIndex = 0;
-  renderTiposErro();
-};
-
-function renderTiposErro() {
-  const carousel = document.getElementById("categoryCarousel");
-  if (!carousel) return;
-
-  if (!filteredTypes.length) {
-    carousel.innerHTML = cardMiniVazio("Nenhum tipo encontrado");
-    return;
-  }
-
-  carousel.innerHTML = filteredTypes.map(function (tipo) {
-    return `
-      <div class="error-category-card" onclick="selecionarTipoErro('${encodeJS(tipo)}')">
-        <div class="icon orange">❄️</div>
-        <div class="title blue">${escaparHTML(tipo)}</div>
-      </div>
-    `;
-  }).join("");
+  box.innerHTML = errorCategories.map((cat, index) => `
+    <div class="category-card" onclick="selectTypeAndOpenBrand(${index})">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-title">${cat.name}</div>
+    </div>
+  `).join("");
 
   updateCategoryCarousel();
 }
 
-window.selecionarTipoErro = function (tipo) {
-  selectedErrorType = tipo;
-  selectedBrand = null;
-  selectedModel = null;
+function updateCategoryCarousel() {
+  const catCards = document.querySelectorAll(".category-card");
+  if (!catCards.length) return;
 
-  filteredBrands = obterMarcasPorTipo(tipo);
+  catCards.forEach((card, index) => {
+    card.className = "category-card";
+    const left = (catCurrent - 1 + catCards.length) % catCards.length;
+    const right = (catCurrent + 1) % catCards.length;
+
+    if (index === catCurrent) card.classList.add("cat-center");
+    else if (index === left) card.classList.add("cat-left");
+    else if (index === right) card.classList.add("cat-right");
+    else card.classList.add("cat-hidden");
+  });
+}
+
+function nextCategory() {
+  if (!errorCategories.length) return;
+  catCurrent = (catCurrent + 1) % errorCategories.length;
+  updateCategoryCarousel();
+}
+
+function prevCategory() {
+  if (!errorCategories.length) return;
+  catCurrent = (catCurrent - 1 + errorCategories.length) % errorCategories.length;
+  updateCategoryCarousel();
+}
+
+function searchErrorType() {
+  const input = document.getElementById("errorTypeSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  if (value.length < 2) return;
+
+  const index = errorCategories.findIndex((cat) => {
+    return cat.search.some((term) => {
+      const cleanTerm = normalizeSearchText(term);
+      return cleanTerm.includes(value) || value.includes(cleanTerm);
+    });
+  });
+
+  if (index >= 0) {
+    catCurrent = index;
+    updateCategoryCarousel();
+  }
+}
+
+function selectTypeAndOpenBrand(index) {
+  catCurrent = index;
+  brandCurrent = 0;
 
   document.getElementById("typeStep").style.display = "none";
   document.getElementById("brandStep").style.display = "block";
   document.getElementById("modelStep").style.display = "none";
   document.getElementById("codeStep").style.display = "none";
 
-  brandIndex = 0;
-  renderMarcas();
-};
-
-window.prevCategory = function () {
-  if (!filteredTypes.length) return;
-
-  categoryIndex--;
-
-  if (categoryIndex < 0) {
-    categoryIndex = filteredTypes.length - 1;
-  }
-
-  updateCategoryCarousel();
-};
-
-window.nextCategory = function () {
-  if (!filteredTypes.length) return;
-
-  categoryIndex++;
-
-  if (categoryIndex >= filteredTypes.length) {
-    categoryIndex = 0;
-  }
-
-  updateCategoryCarousel();
-};
-
-function updateCategoryCarousel() {
-  const carousel = document.getElementById("categoryCarousel");
-  if (!carousel) return;
-
-  moverCarouselGenerico(carousel, categoryIndex);
+  renderBrandCarousel();
 }
 
-/* =========================================================
-   ERROS - MARCAS
-========================================================= */
+function backToType() {
+  document.getElementById("brandStep").style.display = "none";
+  document.getElementById("modelStep").style.display = "none";
+  document.getElementById("codeStep").style.display = "none";
+  document.getElementById("typeStep").style.display = "block";
+}
 
-window.searchBrand = function () {
-  const input = document.getElementById("brandSearch");
-  const termo = input ? normalizarTexto(input.value) : "";
+function renderBrandCarousel() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  const box = document.getElementById("brandCarousel");
+  if (!box) return;
 
-  const marcas = obterMarcasPorTipo(selectedErrorType);
-
-  if (!termo) {
-    filteredBrands = marcas;
-  } else {
-    filteredBrands = marcas.filter(function (marca) {
-      return normalizarTexto(marca).includes(termo);
-    });
-  }
-
-  brandIndex = 0;
-  renderMarcas();
-};
-
-function renderMarcas() {
-  const carousel = document.getElementById("brandCarousel");
-  if (!carousel) return;
-
-  if (!filteredBrands.length) {
-    carousel.innerHTML = cardMiniVazio("Nenhuma marca encontrada");
-    return;
-  }
-
-  carousel.innerHTML = filteredBrands.map(function (marca) {
-    return `
-      <div class="brand-category-card" onclick="selecionarMarcaErro('${encodeJS(marca)}')">
-        <div class="icon red">⚠️</div>
-        <div class="title blue">${escaparHTML(marca)}</div>
-      </div>
-    `;
-  }).join("");
+  box.innerHTML = brands.map((brand, index) => `
+    <div class="brand-card" onclick="selectBrandAndOpenModel(${index})">
+      <div class="brand-title">${brand}</div>
+      <div class="brand-sub">${activeCategory()}</div>
+    </div>
+  `).join("");
 
   updateBrandCarousel();
 }
 
-window.selecionarMarcaErro = function (marca) {
-  selectedBrand = marca;
-  selectedModel = null;
+function updateBrandCarousel() {
+  const brandCards = document.querySelectorAll(".brand-card");
+  if (!brandCards.length) return;
 
-  filteredModels = obterModelosPorMarca(selectedErrorType, selectedBrand);
+  brandCards.forEach((card, index) => {
+    card.className = "brand-card";
+    const left = (brandCurrent - 1 + brandCards.length) % brandCards.length;
+    const right = (brandCurrent + 1) % brandCards.length;
 
-  document.getElementById("typeStep").style.display = "none";
+    if (index === brandCurrent) card.classList.add("brand-center");
+    else if (index === left) card.classList.add("brand-left");
+    else if (index === right) card.classList.add("brand-right");
+    else card.classList.add("brand-hidden");
+  });
+}
+
+function nextBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  if (!brands.length) return;
+  brandCurrent = (brandCurrent + 1) % brands.length;
+  updateBrandCarousel();
+}
+
+function prevBrand() {
+  const brands = brandsByCategory[activeCategory()] || [];
+  if (!brands.length) return;
+  brandCurrent = (brandCurrent - 1 + brands.length) % brands.length;
+  updateBrandCarousel();
+}
+
+function searchBrand() {
+  const input = document.getElementById("brandSearch");
+  if (!input) return;
+
+  const value = normalizeSearchText(input.value);
+  if (value.length < 1) return;
+
+  const brands = brandsByCategory[activeCategory()] || [];
+  const index = brands.findIndex((brand) => {
+    const cleanBrand = normalizeSearchText(brand);
+    return cleanBrand.includes(value) || value.includes(cleanBrand);
+  });
+
+  if (index >= 0) {
+    brandCurrent = index;
+    updateBrandCarousel();
+  }
+}
+
+function selectBrandAndOpenModel(index) {
+  brandCurrent = index;
+  modelCurrent = 0;
+
   document.getElementById("brandStep").style.display = "none";
   document.getElementById("modelStep").style.display = "block";
   document.getElementById("codeStep").style.display = "none";
 
-  modelIndex = 0;
-  renderModelos();
-};
+  const modelSearch = document.getElementById("modelSearch");
+  if (modelSearch) modelSearch.value = "";
 
-window.prevBrand = function () {
-  if (!filteredBrands.length) return;
-
-  brandIndex--;
-
-  if (brandIndex < 0) {
-    brandIndex = filteredBrands.length - 1;
-  }
-
-  updateBrandCarousel();
-};
-
-window.nextBrand = function () {
-  if (!filteredBrands.length) return;
-
-  brandIndex++;
-
-  if (brandIndex >= filteredBrands.length) {
-    brandIndex = 0;
-  }
-
-  updateBrandCarousel();
-};
-
-function updateBrandCarousel() {
-  const carousel = document.getElementById("brandCarousel");
-  if (!carousel) return;
-
-  moverCarouselGenerico(carousel, brandIndex);
+  renderModelCarousel();
 }
 
-window.backToType = function () {
-  document.getElementById("typeStep").style.display = "block";
-  document.getElementById("brandStep").style.display = "none";
+function backToBrand() {
   document.getElementById("modelStep").style.display = "none";
   document.getElementById("codeStep").style.display = "none";
-};
+  document.getElementById("brandStep").style.display = "block";
+}
 
-/* =========================================================
-   ERROS - MODELOS
-========================================================= */
+function renderModelCarousel() {
+  const brand = activeBrand();
+  const models = modelsByBrand[brand] || ["Modelo não cadastrado"];
+  const box = document.getElementById("modelCarousel");
+  if (!box) return;
 
-window.searchModel = function () {
-  const input = document.getElementById("modelSearch");
-  const termo = input ? normalizarTexto(input.value) : "";
+  box.innerHTML = models.map((model, index) => `
+    <div class="model-card" onclick="selectModelAndOpenCodes(${index})">
+      <div class="model-title">${model}</div>
+      <div class="model-sub">${brand}</div>
+    </div>
+  `).join("");
 
-  const modelos = obterModelosPorMarca(selectedErrorType, selectedBrand);
+  updateModelCarousel();
+  renderModelInfo();
+}
 
-  if (!termo) {
-    filteredModels = modelos;
-  } else {
-    filteredModels = modelos.filter(function (modelo) {
-      return normalizarTexto(modelo).includes(termo);
-    });
-  }
+function updateModelCarousel() {
+  const modelCards = document.querySelectorAll(".model-card");
+  if (!modelCards.length) return;
 
-  modelIndex = 0;
-  renderModelos();
-};
+  modelCards.forEach((card, index) => {
+    card.className = "model-card";
+    const left = (modelCurrent - 1 + modelCards.length) % modelCards.length;
+    const right = (modelCurrent + 1) % modelCards.length;
 
-function renderModelos() {
-  const carousel = document.getElementById("modelCarousel");
-  const info = document.getElementById("modelInfo");
+    if (index === modelCurrent) card.classList.add("model-center");
+    else if (index === left) card.classList.add("model-left");
+    else if (index === right) card.classList.add("model-right");
+    else card.classList.add("model-hidden");
+  });
 
-  if (!carousel) return;
+  renderModelInfo();
+}
 
-  if (!filteredModels.length) {
-    carousel.innerHTML = cardMiniVazio("Nenhum modelo encontrado");
-    if (info) info.innerHTML = "";
-    return;
-  }
-
-  carousel.innerHTML = filteredModels.map(function (modelo) {
-    return `
-      <div class="model-category-card" onclick="selecionarModeloErro('${encodeJS(modelo)}')">
-        <div class="icon blue">📟</div>
-        <div class="title blue">${escaparHTML(modelo)}</div>
-      </div>
-    `;
-  }).join("");
-
-  if (info) {
-    info.innerHTML = `
-      <h2>${escaparHTML(selectedBrand || "")}</h2>
-      <div class="info-row">
-        <span>Tipo selecionado:</span><br>${escaparHTML(selectedErrorType || "")}
-      </div>
-      <div class="info-row">
-        <span>Escolha uma linha/modelo:</span><br>Depois selecione o código de erro.
-      </div>
-    `;
-  }
-
+function nextModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  if (!models.length) return;
+  modelCurrent = (modelCurrent + 1) % models.length;
   updateModelCarousel();
 }
 
-window.selecionarModeloErro = function (modelo) {
-  selectedModel = modelo;
+function prevModel() {
+  const models = modelsByBrand[activeBrand()] || [];
+  if (!models.length) return;
+  modelCurrent = (modelCurrent - 1 + models.length) % models.length;
+  updateModelCarousel();
+}
 
-  filteredCodes = obterCodigosPorModelo(selectedErrorType, selectedBrand, selectedModel);
+function searchModel() {
+  const input = document.getElementById("modelSearch");
+  if (!input) return;
 
-  document.getElementById("typeStep").style.display = "none";
-  document.getElementById("brandStep").style.display = "none";
+  const value = normalizeSearchText(input.value);
+  const models = modelsByBrand[activeBrand()] || [];
+
+  if (value.length < 1) {
+    renderModelInfo();
+    return;
+  }
+
+  const index = models.findIndex((model) => {
+    const cleanModel = normalizeSearchText(model);
+    return cleanModel.includes(value) || value.includes(cleanModel);
+  });
+
+  if (index >= 0) {
+    modelCurrent = index;
+    updateModelCarousel();
+  } else {
+    const modelInfo = document.getElementById("modelInfo");
+    if (modelInfo) {
+      modelInfo.innerHTML = `
+        <h2>Modelo informado</h2>
+        <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+        <div class="info-row"><span>Modelo/Série digitado:</span><br>${input.value}</div>
+      `;
+    }
+  }
+}
+
+function renderModelInfo() {
+  const modelInfo = document.getElementById("modelInfo");
+  if (!modelInfo) return;
+
+  modelInfo.innerHTML = `
+    <h2>${activeBrand()}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Modelo/Linha selecionado:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Próximo passo:</span><br>Toque no card do modelo para ver os códigos de erro.</div>
+  `;
+}
+
+function selectModelAndOpenCodes(index) {
+  modelCurrent = index;
+  codeCurrent = 0;
+
   document.getElementById("modelStep").style.display = "none";
   document.getElementById("codeStep").style.display = "block";
 
-  codeIndex = 0;
-  renderCodigos();
-};
+  const codeSearch = document.getElementById("codeSearch");
+  if (codeSearch) codeSearch.value = "";
 
-window.prevModel = function () {
-  if (!filteredModels.length) return;
-
-  modelIndex--;
-
-  if (modelIndex < 0) {
-    modelIndex = filteredModels.length - 1;
-  }
-
-  updateModelCarousel();
-};
-
-window.nextModel = function () {
-  if (!filteredModels.length) return;
-
-  modelIndex++;
-
-  if (modelIndex >= filteredModels.length) {
-    modelIndex = 0;
-  }
-
-  updateModelCarousel();
-};
-
-function updateModelCarousel() {
-  const carousel = document.getElementById("modelCarousel");
-  if (!carousel) return;
-
-  moverCarouselGenerico(carousel, modelIndex);
+  renderCodeCarousel();
 }
 
-window.backToBrand = function () {
-  document.getElementById("typeStep").style.display = "none";
-  document.getElementById("brandStep").style.display = "block";
-  document.getElementById("modelStep").style.display = "none";
+function backToModel() {
   document.getElementById("codeStep").style.display = "none";
-};
+  document.getElementById("modelStep").style.display = "block";
+}
 
-/* =========================================================
-   ERROS - CÓDIGOS
-========================================================= */
+function renderCodeCarousel() {
+  const codes = getCodes();
+  const box = document.getElementById("codeCarousel");
+  if (!box) return;
 
-window.searchCode = function () {
+  box.innerHTML = codes.map((item) => `
+    <div class="code-card">
+      <div class="code-title">${item.code}</div>
+      <div class="code-sub">${item.title}</div>
+    </div>
+  `).join("");
+
+  updateCodeCarousel();
+  renderCodeInfo();
+}
+
+function updateCodeCarousel() {
+  const codeCards = document.querySelectorAll(".code-card");
+  if (!codeCards.length) return;
+
+  codeCards.forEach((card, index) => {
+    card.className = "code-card";
+    const left = (codeCurrent - 1 + codeCards.length) % codeCards.length;
+    const right = (codeCurrent + 1) % codeCards.length;
+
+    if (index === codeCurrent) card.classList.add("code-center");
+    else if (index === left) card.classList.add("code-left");
+    else if (index === right) card.classList.add("code-right");
+    else card.classList.add("code-hidden");
+  });
+
+  renderCodeInfo();
+}
+
+function nextCode() {
+  const codes = getCodes();
+  if (!codes.length) return;
+  codeCurrent = (codeCurrent + 1) % codes.length;
+  updateCodeCarousel();
+}
+
+function prevCode() {
+  const codes = getCodes();
+  if (!codes.length) return;
+  codeCurrent = (codeCurrent - 1 + codes.length) % codes.length;
+  updateCodeCarousel();
+}
+
+function searchCode() {
   const input = document.getElementById("codeSearch");
-  const termo = input ? normalizarTexto(input.value) : "";
+  const codeInfo = document.getElementById("codeInfo");
+  if (!input) return;
 
-  const codigos = obterCodigosPorModelo(selectedErrorType, selectedBrand, selectedModel);
+  const value = normalizeSearchText(input.value);
+  const codes = getCodes();
 
-  if (!termo) {
-    filteredCodes = codigos;
-  } else {
-    filteredCodes = codigos.filter(function (item) {
-      return normalizarTexto(item.codigo || item.code || "").includes(termo);
-    });
-  }
-
-  codeIndex = 0;
-  renderCodigos();
-};
-
-function renderCodigos() {
-  const carousel = document.getElementById("codeCarousel");
-  const info = document.getElementById("codeInfo");
-
-  if (!carousel) return;
-
-  if (!filteredCodes.length) {
-    carousel.innerHTML = cardMiniVazio("Nenhum código encontrado");
-    if (info) {
-      info.innerHTML = `
-        <h2>Sem código cadastrado</h2>
-        <div class="confidence danger">⚠️ Sem resultado seguro</div>
-        <div class="info-row">Não há código cadastrado para esta combinação.</div>
-      `;
-    }
+  if (value.length < 1) {
+    renderCodeInfo();
     return;
   }
 
-  carousel.innerHTML = filteredCodes.map(function (item, index) {
-    return `
-      <div class="code-category-card" onclick="selecionarCodigoErro(${index})">
-        <div class="icon red">⚠️</div>
-        <div class="title red">${escaparHTML(item.codigo || item.code || "")}</div>
-      </div>
-    `;
-  }).join("");
+  const index = codes.findIndex((item) => {
+    const sourceText = formatSourceLevel(item.sourceLevel);
+    const fullText = normalizeSearchText([item.code, item.title, item.cause, item.test, item.solution, item.sourceLevel, sourceText].join(" "));
+    const cleanCode = normalizeSearchText(item.code);
+    return fullText.includes(value) || value.includes(cleanCode);
+  });
 
-  if (info) {
-    renderCodigoInfo(filteredCodes[0]);
+  if (index >= 0) {
+    codeCurrent = index;
+    updateCodeCarousel();
+    return;
   }
 
-  updateCodeCarousel();
+  if (codeInfo) {
+    codeInfo.innerHTML = `
+      <h2>Nada encontrado</h2>
+      <div class="info-row"><span>Busca:</span><br>${input.value}</div>
+      <div class="info-row">Nenhum defeito deste modelo contém esse termo.</div>
+      <div class="info-row"><span>Dica:</span><br>Tente buscar por código, sensor, comunicação, compressor, ventilador, baixa carga, alta pressão, dreno ou placa.</div>
+    `;
+  }
 }
 
-window.selecionarCodigoErro = function (index) {
-  const item = filteredCodes[index];
+function renderCodeInfo() {
+  const codeInfo = document.getElementById("codeInfo");
+  const codes = getCodes();
+  const item = codes[codeCurrent];
+  if (!codeInfo || !item) return;
 
-  if (item) {
-    renderCodigoInfo(item);
-  }
-};
+  const sourceText = formatSourceLevel(item.sourceLevel);
 
-function renderCodigoInfo(item) {
-  const info = document.getElementById("codeInfo");
-  if (!info) return;
-
-  const campos = [];
-
-  addCampo(campos, "TIPO", item.tipo || item.equipamento);
-  addCampo(campos, "MARCA", item.marca || item.fabricante);
-  addCampo(campos, "MODELO / LINHA", item.modelo || item.linha);
-  addCampo(campos, "CÓDIGO", item.codigo || item.code);
-  addCampo(campos, "DEFEITO", item.defeito || item.descricao);
-  addCampo(campos, "CAUSA PROVÁVEL", item.causa || item.causaProvavel);
-  addCampo(campos, "SOLUÇÃO", item.solucao || item.procedimento);
-  addCampo(campos, "OBSERVAÇÃO", item.observacao || item.obs);
-  addCampo(campos, "FONTE", item.fonte);
-
-  info.innerHTML = `
-    <h2>Diagnóstico do Código</h2>
-    <div class="confidence official">🟢 Informação cadastrada na base local</div>
-    ${campos.join("")}
+  codeInfo.innerHTML = `
+    <h2>${item.code} - ${item.title}</h2>
+    <div class="info-row"><span>Tipo:</span><br>${activeCategory()}</div>
+    <div class="info-row"><span>Marca:</span><br>${activeBrand()}</div>
+    <div class="info-row"><span>Modelo/Linha:</span><br>${activeModel()}</div>
+    <div class="info-row"><span>Causa provável:</span><br>${item.cause || "-"}</div>
+    <div class="info-row"><span>Teste em campo:</span><br>${item.test || "-"}</div>
+    <div class="info-row"><span>Solução sugerida:</span><br>${item.solution || "-"}</div>
+    <div class="info-row"><span>Fonte/base:</span><br>${sourceText}</div>
   `;
 }
 
-window.prevCode = function () {
-  if (!filteredCodes.length) return;
-
-  codeIndex--;
-
-  if (codeIndex < 0) {
-    codeIndex = filteredCodes.length - 1;
-  }
-
-  updateCodeCarousel();
-};
-
-window.nextCode = function () {
-  if (!filteredCodes.length) return;
-
-  codeIndex++;
-
-  if (codeIndex >= filteredCodes.length) {
-    codeIndex = 0;
-  }
-
-  updateCodeCarousel();
-};
-
-function updateCodeCarousel() {
-  const carousel = document.getElementById("codeCarousel");
-  if (!carousel) return;
-
-  moverCarouselGenerico(carousel, codeIndex);
-}
-
-window.backToModel = function () {
-  document.getElementById("typeStep").style.display = "none";
-  document.getElementById("brandStep").style.display = "none";
-  document.getElementById("modelStep").style.display = "block";
-  document.getElementById("codeStep").style.display = "none";
-};
-
 /* =========================================================
-   CONSULTAR EQUIPAMENTO / ACERVO
-   SEM FALLBACK GENÉRICO
+   CONSULTAR EQUIPAMENTO / ACERVO + MÁSCARA
 ========================================================= */
 
-window.validarFabricanteAcervo = function () {
+function getFabricanteSelecionado() {
   const select = document.getElementById("acervoFabricante");
+  if (!select) return "";
+  return String(select.value || "").trim().toUpperCase();
+}
+
+function marcaCombinaComFabricanteSelecionado(marcaItem, fabricanteSelecionado) {
+  const marca = normalizeSearchText(marcaItem);
+  const fabricante = normalizeSearchText(fabricanteSelecionado);
+
+  if (!fabricante) return false;
+  if (!marca) return false;
+
+  const grupos = {
+    lg: ["lg"],
+    midea: ["midea", "springer", "carrier"],
+    gree: ["gree"],
+    elgin: ["elgin"],
+    samsung: ["samsung"],
+    consul: ["consul"],
+    electrolux: ["electrolux"],
+    daikin: ["daikin"],
+    fujitsu: ["fujitsu"],
+    komeco: ["komeco"],
+    philco: ["philco"],
+    agratto: ["agratto"],
+    tcl: ["tcl"]
+  };
+
+  const lista = grupos[fabricante] || [fabricante];
+
+  return lista.some((nome) => {
+    return marca === nome || marca.includes(nome) || nome.includes(marca);
+  });
+}
+
+function validarFabricanteAcervo() {
+  const fabricante = getFabricanteSelecionado();
   const status = document.getElementById("fabricanteStatus");
+  const acervoInfo = document.getElementById("acervoInfo");
 
-  if (!select || !status) return;
-
-  const fabricante = select.value;
+  if (!status) return;
 
   if (!fabricante) {
     status.innerHTML = "Selecione um fabricante para aplicar a máscara correta.";
@@ -993,333 +918,282 @@ window.validarFabricanteAcervo = function () {
     return;
   }
 
-  status.innerHTML = "Fabricante selecionado: <strong>" + nomeFabricante(fabricante) + "</strong>. A consulta usará somente a máscara deste fabricante.";
-  status.className = "fabricante-status ok";
+  const mascaras = Array.isArray(window.mascarasFabricantes) ? window.mascarasFabricantes : [];
+
+  const mascaraExiste = mascaras.some((item) => {
+    return String(item.fabricante || "").toUpperCase() === fabricante;
+  });
+
+  if (mascaraExiste) {
+    status.innerHTML = "✅ Fabricante validado: " + fabricante;
+    status.className = "fabricante-status fabricante-ok";
+  } else {
+    status.innerHTML = "⚠ Fabricante selecionado, mas a máscara ainda não está cadastrada.";
+    status.className = "fabricante-status fabricante-alerta";
+  }
 
   const input = document.getElementById("acervoSearch");
 
   if (input && input.value.trim()) {
     searchAcervoTecnico();
+  } else if (acervoInfo) {
+    renderAcervoIntro();
   }
-};
+}
 
-window.searchAcervoTecnico = function () {
-  const fabricante = document.getElementById("acervoFabricante")?.value || "";
+window.validarFabricanteAcervo = validarFabricanteAcervo;
+
+function getAcervoSearchTextParts(item) {
+  const codigos = Array.isArray(item && item.codigoBusca) ? item.codigoBusca : [];
+
+  return {
+    codigos: codigos.filter(Boolean),
+    modelo: item && item.modelo ? item.modelo : "",
+    tipoCodigo: item && item.tipoCodigo ? item.tipoCodigo : "",
+    marca: item && item.marca ? item.marca : ""
+  };
+}
+
+function isCondensadoraAcervo(item) {
+  const tipoCodigo = normalizeSearchText(item && item.tipoCodigo ? item.tipoCodigo : "condensadora");
+
+  if (!tipoCodigo) return true;
+
+  return (
+    tipoCodigo.includes("condensadora") ||
+    tipoCodigo.includes("condensador") ||
+    tipoCodigo.includes("unidade externa") ||
+    tipoCodigo.includes("externa")
+  );
+}
+
+function getAcervoSearchRank(item, searchValue, fabricanteSelecionado) {
+  if (!item) return 99;
+  if (!isCondensadoraAcervo(item)) return 99;
+
+  const parts = getAcervoSearchTextParts(item);
+
+  if (!marcaCombinaComFabricanteSelecionado(parts.marca, fabricanteSelecionado)) {
+    return 99;
+  }
+
+  const rawSearch = normalizeSearchText(searchValue);
+  const compactSearch = normalizeAcervoCode(searchValue);
+
+  if (compactSearch.length < 3) return 99;
+
+  const codigos = parts.codigos.map((codigo) => ({
+    raw: normalizeSearchText(codigo),
+    compact: normalizeAcervoCode(codigo)
+  })).filter((codigo) => codigo.compact);
+
+  const modeloRaw = normalizeSearchText(parts.modelo);
+  const modeloCompact = normalizeAcervoCode(parts.modelo);
+
+  if (codigos.some((codigo) => codigo.compact === compactSearch || codigo.raw === rawSearch)) {
+    return 0;
+  }
+
+  if (modeloCompact === compactSearch || modeloRaw === rawSearch) {
+    return 1;
+  }
+
+  return 99;
+}
+
+function getAcervoSearchResults(baseAcervo, searchValue, fabricanteSelecionado) {
+  const ranked = baseAcervo
+    .map((item, index) => ({
+      item,
+      index,
+      rank: getAcervoSearchRank(item, searchValue, fabricanteSelecionado)
+    }))
+    .filter((result) => result.rank < 99)
+    .sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return a.index - b.index;
+    });
+
+  if (!ranked.length) return [];
+
+  const bestRank = ranked[0].rank;
+
+  return ranked.filter((result) => result.rank === bestRank).map((result) => result.item);
+}
+
+function renderAcervoIntro() {
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!acervoInfo) return;
+
+  acervoInfo.innerHTML = `
+    <h2>Consultar Equipamento</h2>
+    <div class="info-row"><span>Etapa 1:</span><br>Selecione o fabricante do equipamento.</div>
+    <div class="info-row"><span>Etapa 2:</span><br>Digite o código exato do condensador conforme a etiqueta da unidade externa.</div>
+    <div class="info-row"><span>Máscara:</span><br>O fabricante selecionado limita a leitura ao padrão correto e evita conflito entre marcas.</div>
+    <div class="info-row"><span>Versão:</span><br>app.js v6621 — exibe gás, tensão, corrente e tubulação provável.</div>
+  `;
+}
+
+function searchAcervoTecnico() {
   const input = document.getElementById("acervoSearch");
-  const box = document.getElementById("acervoInfo");
+  const acervoInfo = document.getElementById("acervoInfo");
+  if (!input || !acervoInfo) return;
 
-  if (!box || !input) return;
-
-  const codigoDigitado = input.value.trim();
+  const rawValue = String(input.value || "").trim();
+  const value = normalizeSearchText(rawValue);
+  const fabricante = getFabricanteSelecionado();
 
   if (!fabricante) {
-    box.innerHTML = `
+    acervoInfo.innerHTML = `
       <h2>Selecione o fabricante</h2>
-      <div class="info-row">
-        Antes de digitar o código, escolha o fabricante. Isso evita leitura errada entre marcas diferentes.
-      </div>
+      <div class="info-row">Antes de digitar o código, selecione o fabricante para o app aplicar a máscara correta.</div>
     `;
     return;
   }
 
-  if (!codigoDigitado) {
-    box.innerHTML = `
-      <h2>Consultar Equipamento</h2>
-      <div class="info-row">
-        <span>Como usar:</span><br>
-        Digite o código exato do condensador conforme a etiqueta da unidade externa.
-      </div>
-      <div class="info-row">
-        <span>Fabricante selecionado:</span><br>
-        ${escaparHTML(nomeFabricante(fabricante))}
-      </div>
-      <div class="info-row">
-        <span>Regra aplicada:</span><br>
-        Sem fallback genérico. O app só consulta acervo exato e máscara do fabricante escolhido.
-      </div>
-    `;
+  if (value.length < 2) {
+    renderAcervoIntro();
     return;
   }
 
-  const codigoNormalizado = normalizarCodigo(codigoDigitado);
+  const baseAcervo = getAcervoTecnico();
+  const resultados = getAcervoSearchResults(baseAcervo, rawValue, fabricante);
 
-  const resultadoExato = buscarNoAcervoExato(fabricante, codigoNormalizado);
-
-  if (resultadoExato) {
-    box.innerHTML = renderFichaOficial(resultadoExato);
+  if (resultados.length) {
+    acervoInfo.innerHTML = resultados.map(renderAcervoItem).join("");
     return;
   }
 
-  const mascara = obterMascaraFabricante(fabricante);
+  if (typeof window.interpretarMascaraFabricante === "function") {
+    const leitura = window.interpretarMascaraFabricante(fabricante, rawValue);
 
-  if (mascara && typeof mascara.interpretar === "function") {
-    const leitura = mascara.interpretar(codigoDigitado);
-
-    if (leitura) {
-      box.innerHTML = renderFichaMascara(leitura);
+    if (leitura && leitura.encontrado) {
+      acervoInfo.innerHTML = renderMascaraItem(leitura);
       return;
     }
+
+    acervoInfo.innerHTML = `
+      <h2>Código não reconhecido pela máscara</h2>
+      <div class="info-row"><span>Fabricante selecionado:</span><br><strong style="color:#f8fafc !important;">${fabricante}</strong></div>
+      <div class="info-row"><span>Código digitado:</span><br><strong style="color:#f8fafc !important;">${rawValue}</strong></div>
+      <div class="info-row"><span>Motivo:</span><br>${leitura && leitura.motivo ? leitura.motivo : "Máscara não encontrou padrão compatível."}</div>
+      <div class="info-row"><span>Próximo passo:</span><br>Conferir se o fabricante selecionado está correto ou validar o código na etiqueta/manual.</div>
+    `;
+    return;
   }
 
-  box.innerHTML = `
-    <h2>Código não reconhecido</h2>
-    <div class="confidence danger">⚠️ Sem resultado seguro</div>
-    <div class="info-row">
-      O código <strong>${escaparHTML(codigoDigitado)}</strong> não foi encontrado no acervo técnico e não bateu com a máscara de <strong>${escaparHTML(nomeFabricante(fabricante))}</strong>.
-    </div>
-    <div class="info-row">
-      <span>Decisão técnica:</span><br>
-      Nenhum fallback genérico foi aplicado. O app não vai misturar padrão de outro fabricante nem inventar ficha técnica.
-    </div>
-    <div class="info-row">
-      <span>Próximo passo:</span><br>
-      Conferir a etiqueta do equipamento, manual oficial ou cadastrar esse modelo no acervo técnico.
-    </div>
-  `;
-};
-
-function obterBaseAcervo() {
-  const base =
-    window.ACERVO_TECNICO ||
-    window.acervoTecnico ||
-    window.ACERVO ||
-    window.acervo ||
-    [];
-
-  if (Array.isArray(base)) return base;
-
-  return [];
-}
-
-function buscarNoAcervoExato(fabricante, codigoNormalizado) {
-  const base = obterBaseAcervo();
-
-  if (!base.length) return null;
-
-  return base.find(function (item) {
-    const fabItem = normalizarCodigo(item.fabricante || item.marca || item.brand || "");
-    const codigosPossiveis = [
-      item.modelo,
-      item.codigo,
-      item.condensadora,
-      item.codigoCondensadora,
-      item.modeloCondensadora,
-      item.model
-    ].filter(Boolean).map(normalizarCodigo);
-
-    const fabSelecionado = normalizarCodigo(fabricante);
-
-    const fabricanteBate =
-      fabItem === fabSelecionado ||
-      fabItem.includes(fabSelecionado) ||
-      fabSelecionado.includes(fabItem);
-
-    const codigoBate = codigosPossiveis.includes(codigoNormalizado);
-
-    return fabricanteBate && codigoBate;
-  }) || null;
-}
-
-function obterMascaraFabricante(fabricante) {
-  if (!window.MASCARAS_FABRICANTES) return null;
-
-  return window.MASCARAS_FABRICANTES[fabricante] || null;
-}
-
-function renderFichaOficial(item) {
-  const campos = [];
-
-  addCampo(campos, "MARCA", item.marca || item.fabricante);
-  addCampo(campos, "MODELO", item.modelo || item.codigo);
-  addCampo(campos, "LINHA", item.linha);
-  addCampo(campos, "TIPO", item.tipo);
-  addCampo(campos, "CAPACIDADE", item.capacidade);
-  addCampo(campos, "TENSÃO", item.tensao);
-  addCampo(campos, "CORRENTE", item.corrente);
-  addCampo(campos, "GÁS", item.gas);
-  addCampo(campos, "CARGA DE GÁS", item.cargaGas || item.carga_gas || item.carga);
-  addCampo(campos, "TUBULAÇÃO", item.tubulacao);
-  addCampo(campos, "COMPRESSOR", item.compressor);
-  addCampo(campos, "SENSOR EVAPORADORA", item.sensorEvaporadora || item.sensor_evaporadora);
-  addCampo(campos, "SENSOR CONDENSADORA", item.sensorCondensadora || item.sensor_condensadora);
-  addCampo(campos, "CAPACITOR", item.capacitor);
-  addCampo(campos, "FONTE", item.fonte);
-  addCampo(campos, "CONFIANÇA", "🟢 Informação oficial / cadastrada");
-
-  return `
-    <h2>Etiqueta Técnica</h2>
-    <div class="confidence official">🟢 Dados encontrados no acervo técnico</div>
-    ${campos.join("")}
-    ${renderFonteLink(item)}
+  acervoInfo.innerHTML = `
+    <h2>Máscara não carregada</h2>
+    <div class="info-row">O arquivo <strong>databases/mascaras_fabricantes.js</strong> não foi carregado.</div>
   `;
 }
 
-function renderFichaMascara(info) {
-  const campos = [];
-
-  addCampo(campos, "FABRICANTE", info.fabricante);
-  addCampo(campos, "CÓDIGO DIGITADO", info.codigoDigitado);
-  addCampo(campos, "CÓDIGO NORMALIZADO", info.codigoNormalizado);
-  addCampo(campos, "LINHA PROVÁVEL", info.linhaProvavel);
-  addCampo(campos, "TIPO PROVÁVEL", info.tipoProvavel);
-  addCampo(campos, "CAPACIDADE PROVÁVEL", info.capacidadeProvavel);
-  addCampo(campos, "TENSÃO PROVÁVEL", info.tensaoProvavel);
-  addCampo(campos, "GÁS PROVÁVEL", info.gasProvavel);
-  addCampo(campos, "OBSERVAÇÃO", info.observacao);
-  addCampo(campos, "CONFIANÇA", "🟠 Leitura provável por máscara");
+function renderAcervoItem(item) {
+  const ficha = [
+    renderAcervoField("Marca", item.marca, item, "marca"),
+    renderAcervoField("Modelo", item.modelo, item, "modelo"),
+    renderAcervoField("Linha", item.linha, item, "linha"),
+    renderAcervoField("Tipo", item.tipo, item, "tipo"),
+    renderAcervoField("Capacidade", item.capacidade, item, "capacidade"),
+    renderAcervoField("Tensão", item.tensao, item, "tensao"),
+    renderAcervoField("Corrente", item.corrente || item.correnteNominal, item, "correnteNominal"),
+    renderAcervoField("Gás", item.gas || item.fluidoRefrigerante, item, "fluidoRefrigerante"),
+    renderAcervoField("Carga de gás", item.cargaGas, item, "cargaGas"),
+    renderAcervoField("Tubulação", item.tubulacao, item, "tubulacao"),
+    renderAcervoField("Tubulação líquido / alta", item.tubulacaoAlta, item, "tubulacaoAlta"),
+    renderAcervoField("Tubulação sucção / baixa", item.tubulacaoBaixa, item, "tubulacaoBaixa"),
+    renderAcervoTextField("Fonte", item.fonte),
+    renderAcervoManual("Manual de instalação", item.manualInstalacao, "🔗 Abrir manual de instalação do fabricante")
+  ].join("");
 
   return `
-    <h2>Leitura por Máscara</h2>
-    <div class="confidence probable">🟠 Resultado provável — validar na etiqueta/manual</div>
-    ${campos.join("")}
-    <div class="info-row">
-      <span>Importante:</span><br>
-      Esta leitura não substitui manual oficial, etiqueta da máquina ou documentação do fabricante.
-    </div>
+    <h2>${safeValue(item.modelo, "Condensador")}</h2>
+    ${ficha}
+    <div class="note">Resultado encontrado no acervo técnico do fabricante selecionado. Campos sem informação validada não aparecem.</div>
+  `;
+}
+
+function renderMascaraItem(leitura) {
+  const ficha = [
+    renderMascaraField("Fabricante", leitura.fabricante),
+    renderMascaraField("Grupo", leitura.grupo),
+    renderMascaraField("Código do condensador", leitura.codigo),
+    renderMascaraField("Máscara aplicada", leitura.mascaraAplicada),
+    renderMascaraField("Tipo de código", leitura.tipoCodigo),
+    renderMascaraField("Linha provável", leitura.linhaProvavel),
+    renderMascaraField("Tipo provável", leitura.tipoProvavel),
+    renderMascaraField("Tecnologia provável", leitura.tecnologiaProvavel),
+    renderMascaraField("Capacidade provável", leitura.capacidadeProvavel),
+    renderMascaraField("Ciclo provável", leitura.cicloProvavel),
+    renderMascaraField("Gás provável", leitura.gasProvavel),
+    renderMascaraField("Tensão provável", leitura.tensaoProvavel),
+    renderMascaraField("Corrente estimada", leitura.correnteEstimada),
+    renderMascaraField("Tubulação provável", leitura.tubulacaoProvavel),
+    renderMascaraField("Confiabilidade da máscara", leitura.confiabilidadeMascara),
+    renderMascaraField("Origem da leitura", leitura.origemLeitura),
+    renderMascaraField("Observação técnica", leitura.observacao)
+  ].join("");
+
+  return `
+    <h2>Etiqueta gerada por máscara</h2>
+    ${ficha}
+    <div class="note">Essa leitura é automática por padrão de engenharia do fabricante selecionado. Dados como gás, tensão, corrente e tubulação são prováveis/estimados e devem ser validados na etiqueta ou manual.</div>
   `;
 }
 
 /* =========================================================
-   FUNÇÕES AUXILIARES DE INTERFACE
+   SWIPE DOS CARROSSÉIS INTERNOS
 ========================================================= */
 
-function moverCarouselGenerico(carousel, index) {
-  const children = carousel.children;
-  if (!children.length) return;
+function setupSwipe(id, prevFn, nextFn) {
+  const element = document.getElementById(id);
+  if (!element) return;
 
-  const card = children[0];
-  const largura = card.offsetWidth || 220;
-  const gap = obterGap(carousel, 18);
-  const move = index * (largura + gap);
+  let sx = 0;
+  let ex = 0;
 
-  carousel.style.transition = "transform .35s ease";
-  carousel.style.transform = "translateX(-" + move + "px)";
-}
+  element.addEventListener("touchstart", (event) => {
+    sx = event.touches[0].clientX;
+  });
 
-function obterGap(elemento, padrao) {
-  if (!elemento) return padrao;
-
-  const style = window.getComputedStyle(elemento);
-  const gap = parseInt(style.gap || style.columnGap || "0", 10);
-
-  if (Number.isFinite(gap) && gap > 0) return gap;
-
-  return padrao;
-}
-
-function cardMiniVazio(texto) {
-  return `
-    <div class="model-info" style="min-width:260px;">
-      <h2>Sem resultado</h2>
-      <div class="info-row">${escaparHTML(texto)}</div>
-    </div>
-  `;
-}
-
-function addCampo(lista, nome, valor) {
-  if (valor === undefined || valor === null) return;
-
-  const texto = String(valor).trim();
-
-  if (!texto) return;
-  if (normalizarTexto(texto) === "NAO CONFIRMADO") return;
-  if (normalizarTexto(texto) === "NÃO CONFIRMADO") return;
-  if (normalizarTexto(texto) === "NAO ENCONTRADO") return;
-  if (normalizarTexto(texto) === "NÃO ENCONTRADO") return;
-  if (normalizarTexto(texto) === "INDISPONIVEL") return;
-  if (normalizarTexto(texto) === "INDISPONÍVEL") return;
-
-  lista.push(`
-    <div class="info-row">
-      <span>${escaparHTML(nome)}:</span><br>
-      ${escaparHTML(texto)}
-    </div>
-  `);
-}
-
-function renderFonteLink(item) {
-  const link = item.linkFonte || item.link || item.manual || item.url || item.fonteUrl;
-
-  if (!link) return "";
-
-  return `
-    <div class="info-row source-link">
-      <span>FONTE / MANUAL:</span><br>
-      <a href="${escaparHTML(link)}" target="_blank" rel="noopener noreferrer">
-        Abrir fonte técnica
-      </a>
-    </div>
-  `;
-}
-
-function nomeFabricante(valor) {
-  const nomes = {
-    LG: "LG",
-    MIDEA: "Midea / Springer / Carrier",
-    GREE: "Gree",
-    ELGIN: "Elgin",
-    SAMSUNG: "Samsung",
-    CONSUL: "Consul",
-    ELECTROLUX: "Electrolux",
-    DAIKIN: "Daikin",
-    FUJITSU: "Fujitsu",
-    KOMECO: "Komeco",
-    PHILCO: "Philco",
-    AGRATTO: "Agratto",
-    TCL: "TCL"
-  };
-
-  return nomes[valor] || valor;
-}
-
-function normalizarCodigo(valor) {
-  return String(valor || "")
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, "")
-    .replace(/[–—]/g, "-");
-}
-
-function normalizarTexto(valor) {
-  return String(valor || "")
-    .trim()
-    .toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function escaparHTML(valor) {
-  return String(valor)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function encodeJS(valor) {
-  return String(valor)
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'")
-    .replace(/"/g, "&quot;");
+  element.addEventListener("touchend", (event) => {
+    ex = event.changedTouches[0].clientX;
+    const diff = ex - sx;
+    if (diff > 45) prevFn();
+    if (diff < -45) nextFn();
+  });
 }
 
 /* =========================================================
-   SEGURANÇA EXTRA CONTRA ERROS DE ARQUIVOS EXTERNOS
+   INIT
 ========================================================= */
 
-window.addEventListener("error", function (event) {
-  console.warn("HVAC PRO capturou um erro:", event.message);
-});
+function initApp() {
+  cards = document.querySelectorAll(".card");
+  current = 0;
 
-/* =========================================================
-   REAJUSTE RESPONSIVO
-========================================================= */
+  updateCarousel();
+  setupMainSwipe();
 
-window.addEventListener("resize", function () {
-  updateHomeCarousel();
-  updateCategoryCarousel();
-  updateBrandCarousel();
-  updateModelCarousel();
-  updateCodeCarousel();
-});
+  setupSwipe("categoryCarousel", prevCategory, nextCategory);
+  setupSwipe("brandCarousel", prevBrand, nextBrand);
+  setupSwipe("modelCarousel", prevModel, nextModel);
+  setupSwipe("codeCarousel", prevCode, nextCode);
+
+  const acervoSearch = document.getElementById("acervoSearch");
+  if (acervoSearch) {
+    acervoSearch.addEventListener("input", searchAcervoTecnico);
+  }
+
+  const acervoFabricante = document.getElementById("acervoFabricante");
+  if (acervoFabricante) {
+    acervoFabricante.addEventListener("change", validarFabricanteAcervo);
+  }
+
+  renderGas("R410A");
+  renderCategoryCarousel();
+  validarFabricanteAcervo();
+  renderAcervoIntro();
+}
+
+window.addEventListener("load", initApp);
